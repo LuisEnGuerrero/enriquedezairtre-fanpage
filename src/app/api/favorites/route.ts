@@ -1,0 +1,124 @@
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { db } from '@/lib/db'
+
+export async function GET() {
+  try {
+    const session = await getServerSession()
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const favorites = await db.favorite.findMany({
+      where: { userId: session.user.id },
+      include: {
+        song: true
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+    
+    return NextResponse.json(favorites)
+  } catch (error) {
+    return NextResponse.json({ error: 'Error fetching favorites' }, { status: 500 })
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession()
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { songId } = await request.json()
+
+    if (!songId) {
+      return NextResponse.json({ error: 'Song ID is required' }, { status: 400 })
+    }
+
+    // Check if already favorited
+    const existing = await db.favorite.findUnique({
+      where: {
+        userId_songId: {
+          userId: session.user.id,
+          songId
+        }
+      }
+    })
+
+    if (existing) {
+      // Remove from favorites
+      await db.favorite.delete({
+        where: {
+          userId_songId: {
+            userId: session.user.id,
+            songId
+          }
+        }
+      })
+
+      // Update user stats
+      await db.user.update({
+        where: { id: session.user.id },
+        data: {
+          favoriteCount: {
+            decrement: 1
+          }
+        }
+      })
+
+      // Log activity
+      await db.activity.create({
+        data: {
+          userId: session.user.id,
+          type: 'unfavorite',
+          songId,
+          metadata: JSON.stringify({ action: 'removed_from_favorites' })
+        }
+      })
+
+      return NextResponse.json({ favorited: false })
+    } else {
+      // Add to favorites
+      const favorite = await db.favorite.create({
+        data: {
+          userId: session.user.id,
+          songId
+        },
+        include: {
+          song: true
+        }
+      })
+
+      // Update user stats
+      await db.user.update({
+        where: { id: session.user.id },
+        data: {
+          favoriteCount: {
+            increment: 1
+          },
+          loyaltyPoints: {
+            increment: 5
+          }
+        }
+      })
+
+      // Log activity
+      await db.activity.create({
+        data: {
+          userId: session.user.id,
+          type: 'favorite',
+          songId,
+          metadata: JSON.stringify({ action: 'added_to_favorites' })
+        }
+      })
+
+      return NextResponse.json({ favorited: true, favorite })
+    }
+  } catch (error) {
+    console.error('Error managing favorite:', error)
+    return NextResponse.json({ error: 'Error managing favorite' }, { status: 500 })
+  }
+}

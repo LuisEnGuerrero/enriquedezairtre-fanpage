@@ -1,0 +1,345 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { Plus, Edit, Trash2, Play, Pause, Eye } from 'lucide-react'
+import { toast } from 'sonner'
+
+interface Song {
+  id: string
+  title: string
+  artist: string
+  duration: number
+  coverImage: string
+  audioUrl: string
+  lyrics?: string
+  published: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export function SongManager() {
+  const [songs, setSongs] = useState<Song[]>([])
+  const [loading, setLoading] = useState(true)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [editingSong, setEditingSong] = useState<Song | null>(null)
+  const [formData, setFormData] = useState({
+    title: '',
+    artist: 'Enrique de Zairtre',
+    duration: 0,
+    coverImage: '',
+    audioUrl: '',
+    lyrics: '',
+    published: true
+  })
+
+  useEffect(() => {
+    fetchSongs()
+  }, [])
+
+  const fetchSongs = async () => {
+    try {
+      const response = await fetch('/api/songs')
+      if (response.ok) {
+        const data = await response.json()
+        setSongs(data)
+      }
+    } catch (error) {
+      toast.error('Error al cargar canciones')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    try {
+      const url = editingSong ? `/api/songs/${editingSong.id}` : '/api/songs'
+      const method = editingSong ? 'PUT' : 'POST'
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        toast.success(editingSong ? 'Canción actualizada' : 'Canción creada')
+        setIsDialogOpen(false)
+        setEditingSong(null)
+        resetForm()
+        fetchSongs()
+      } else {
+        toast.error('Error al guardar canción')
+      }
+    } catch (error) {
+      toast.error('Error al guardar canción')
+    }
+  }
+
+  const handleEdit = (song: Song) => {
+    setEditingSong(song)
+    setFormData({
+      title: song.title,
+      artist: song.artist,
+      duration: song.duration,
+      coverImage: song.coverImage,
+      audioUrl: song.audioUrl,
+      lyrics: song.lyrics || '',
+      published: song.published
+    })
+    setIsDialogOpen(true)
+  }
+
+  const handleDelete = async (id: string) => {
+    if (confirm('¿Estás seguro de eliminar esta canción?')) {
+      try {
+        const response = await fetch(`/api/songs/${id}`, {
+          method: 'DELETE',
+        })
+
+        if (response.ok) {
+          toast.success('Canción eliminada')
+          fetchSongs()
+        } else {
+          toast.error('Error al eliminar canción')
+        }
+      } catch (error) {
+        toast.error('Error al eliminar canción')
+      }
+    }
+  }
+
+  const togglePublish = async (id: string, published: boolean) => {
+    try {
+      const response = await fetch(`/api/songs/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ published: !published }),
+      })
+
+      if (response.ok) {
+        toast.success(published ? 'Canción despublicada' : 'Canción publicada')
+        fetchSongs()
+      }
+    } catch (error) {
+      toast.error('Error al cambiar estado')
+    }
+  }
+
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      artist: 'Enrique de Zairtre',
+      duration: 0,
+      coverImage: '',
+      audioUrl: '',
+      lyrics: '',
+      published: true
+    })
+  }
+
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
+  if (loading) {
+    return <div className="text-center py-8">Cargando canciones...</div>
+  }
+
+  return (
+    <Card className="bg-black/50 border-gray-700">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Gestión de Canciones</CardTitle>
+            <CardDescription>Administra el catálogo musical</CardDescription>
+          </div>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button 
+                onClick={() => {
+                  resetForm()
+                  setEditingSong(null)
+                }}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Nueva Canción
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingSong ? 'Editar Canción' : 'Nueva Canción'}
+                </DialogTitle>
+                <DialogDescription>
+                  {editingSong ? 'Modifica los datos de la canción' : 'Agrega una nueva canción al catálogo'}
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="title">Título</Label>
+                    <Input
+                      id="title"
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      className="bg-gray-800 border-gray-600"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="artist">Artista</Label>
+                    <Input
+                      id="artist"
+                      value={formData.artist}
+                      onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
+                      className="bg-gray-800 border-gray-600"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="duration">Duración (segundos)</Label>
+                    <Input
+                      id="duration"
+                      type="number"
+                      value={formData.duration}
+                      onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
+                      className="bg-gray-800 border-gray-600"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="coverImage">URL Imagen</Label>
+                    <Input
+                      id="coverImage"
+                      value={formData.coverImage}
+                      onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+                      className="bg-gray-800 border-gray-600"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="audioUrl">URL Audio</Label>
+                  <Input
+                    id="audioUrl"
+                    value={formData.audioUrl}
+                    onChange={(e) => setFormData({ ...formData, audioUrl: e.target.value })}
+                    className="bg-gray-800 border-gray-600"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="lyrics">Letras</Label>
+                  <Textarea
+                    id="lyrics"
+                    value={formData.lyrics}
+                    onChange={(e) => setFormData({ ...formData, lyrics: e.target.value })}
+                    className="bg-gray-800 border-gray-600"
+                    rows={4}
+                  />
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="published"
+                    checked={formData.published}
+                    onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
+                    className="rounded"
+                  />
+                  <Label htmlFor="published">Publicada</Label>
+                </div>
+
+                <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
+                    {editingSong ? 'Actualizar' : 'Crear'}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Título</TableHead>
+              <TableHead>Artista</TableHead>
+              <TableHead>Duración</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead>Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {songs.map((song) => (
+              <TableRow key={song.id}>
+                <TableCell className="font-medium">{song.title}</TableCell>
+                <TableCell>{song.artist}</TableCell>
+                <TableCell>{formatDuration(song.duration)}</TableCell>
+                <TableCell>
+                  <Badge variant={song.published ? 'default' : 'secondary'}>
+                    {song.published ? 'Publicada' : 'Borrador'}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex space-x-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEdit(song)}
+                      className="border-gray-600"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => togglePublish(song.id, song.published)}
+                      className="border-gray-600"
+                    >
+                      {song.published ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDelete(song.id)}
+                      className="border-red-600 text-red-400 hover:bg-red-900/20"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  )
+}

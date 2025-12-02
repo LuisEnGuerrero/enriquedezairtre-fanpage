@@ -1,0 +1,12 @@
+services:
+  nextjs:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXTAUTH_URL=http://localhost:3000
+      - DATABASE_URL=file:/app/db/custom.db
+    volumes:
+      - ./db:/app/db
+      - ./public:/app/public
+    restart: unless-stopped

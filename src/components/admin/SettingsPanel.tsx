@@ -1,0 +1,355 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Switch } from '@/components/ui/switch'
+import { Separator } from '@/components/ui/separator'
+import { Badge } from '@/components/ui/badge'
+import { Save, RefreshCw, Download, Upload } from 'lucide-react'
+import { toast } from 'sonner'
+
+interface SiteSettings {
+  siteName: string
+  siteDescription: string
+  artistName: string
+  contactEmail: string
+  socialLinks: {
+    facebook?: string
+    twitter?: string
+    instagram?: string
+    youtube?: string
+    spotify?: string
+  }
+  features: {
+    enableComments: boolean
+    enableDownloads: boolean
+    enableLyrics: boolean
+    enablePlaylists: boolean
+  }
+}
+
+export function SettingsPanel() {
+  const [settings, setSettings] = useState<SiteSettings>({
+    siteName: 'Enrique de Zairtre',
+    siteDescription: 'Poeta, Artista, Productor y Estrella de Rock',
+    artistName: 'Enrique de Zairtre',
+    contactEmail: 'contacto@enriquezairtre.com',
+    socialLinks: {
+      facebook: '',
+      twitter: '',
+      instagram: '',
+      youtube: '',
+      spotify: ''
+    },
+    features: {
+      enableComments: true,
+      enableDownloads: false,
+      enableLyrics: true,
+      enablePlaylists: true
+    }
+  })
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    fetchSettings()
+  }, [])
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/admin/settings')
+      if (response.ok) {
+        const data = await response.json()
+        setSettings(data)
+      }
+    } catch (error) {
+      console.error('Error fetching settings:', error)
+    }
+  }
+
+  const handleSave = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(settings),
+      })
+
+      if (response.ok) {
+        toast.success('Configuración guardada')
+      } else {
+        toast.error('Error al guardar configuración')
+      }
+    } catch (error) {
+      toast.error('Error al guardar configuración')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleExport = async () => {
+    try {
+      const response = await fetch('/api/admin/export')
+      if (response.ok) {
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'backup.json'
+        a.click()
+        window.URL.revokeObjectURL(url)
+        toast.success('Datos exportados')
+      }
+    } catch (error) {
+      toast.error('Error al exportar datos')
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* General Settings */}
+      <Card className="bg-black/50 border-gray-700">
+        <CardHeader>
+          <CardTitle>Configuración General</CardTitle>
+          <CardDescription>Información básica del sitio</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="siteName">Nombre del Sitio</Label>
+              <Input
+                id="siteName"
+                value={settings.siteName}
+                onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
+                className="bg-gray-800 border-gray-600"
+              />
+            </div>
+            <div>
+              <Label htmlFor="artistName">Nombre del Artista</Label>
+              <Input
+                id="artistName"
+                value={settings.artistName}
+                onChange={(e) => setSettings({ ...settings, artistName: e.target.value })}
+                className="bg-gray-800 border-gray-600"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="siteDescription">Descripción del Sitio</Label>
+            <Textarea
+              id="siteDescription"
+              value={settings.siteDescription}
+              onChange={(e) => setSettings({ ...settings, siteDescription: e.target.value })}
+              className="bg-gray-800 border-gray-600"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="contactEmail">Email de Contacto</Label>
+            <Input
+              id="contactEmail"
+              type="email"
+              value={settings.contactEmail}
+              onChange={(e) => setSettings({ ...settings, contactEmail: e.target.value })}
+              className="bg-gray-800 border-gray-600"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Social Links */}
+      <Card className="bg-black/50 border-gray-700">
+        <CardHeader>
+          <CardTitle>Redes Sociales</CardTitle>
+          <CardDescription>Enlaces a perfiles sociales</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="facebook">Facebook</Label>
+              <Input
+                id="facebook"
+                value={settings.socialLinks.facebook}
+                onChange={(e) => setSettings({ 
+                  ...settings, 
+                  socialLinks: { ...settings.socialLinks, facebook: e.target.value }
+                })}
+                className="bg-gray-800 border-gray-600"
+                placeholder="https://facebook.com/..."
+              />
+            </div>
+            <div>
+              <Label htmlFor="twitter">Twitter/X</Label>
+              <Input
+                id="twitter"
+                value={settings.socialLinks.twitter}
+                onChange={(e) => setSettings({ 
+                  ...settings, 
+                  socialLinks: { ...settings.socialLinks, twitter: e.target.value }
+                })}
+                className="bg-gray-800 border-gray-600"
+                placeholder="https://twitter.com/..."
+              />
+            </div>
+            <div>
+              <Label htmlFor="instagram">Instagram</Label>
+              <Input
+                id="instagram"
+                value={settings.socialLinks.instagram}
+                onChange={(e) => setSettings({ 
+                  ...settings, 
+                  socialLinks: { ...settings.socialLinks, instagram: e.target.value }
+                })}
+                className="bg-gray-800 border-gray-600"
+                placeholder="https://instagram.com/..."
+              />
+            </div>
+            <div>
+              <Label htmlFor="youtube">YouTube</Label>
+              <Input
+                id="youtube"
+                value={settings.socialLinks.youtube}
+                onChange={(e) => setSettings({ 
+                  ...settings, 
+                  socialLinks: { ...settings.socialLinks, youtube: e.target.value }
+                })}
+                className="bg-gray-800 border-gray-600"
+                placeholder="https://youtube.com/..."
+              />
+            </div>
+            <div>
+              <Label htmlFor="spotify">Spotify</Label>
+              <Input
+                id="spotify"
+                value={settings.socialLinks.spotify}
+                onChange={(e) => setSettings({ 
+                  ...settings, 
+                  socialLinks: { ...settings.socialLinks, spotify: e.target.value }
+                })}
+                className="bg-gray-800 border-gray-600"
+                placeholder="https://spotify.com/..."
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Features */}
+      <Card className="bg-black/50 border-gray-700">
+        <CardHeader>
+          <CardTitle>Características</CardTitle>
+          <CardDescription>Activar o desactivar funcionalidades</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <Label>Comentarios</Label>
+              <p className="text-sm text-gray-400">Permitir comentarios en canciones</p>
+            </div>
+            <Switch
+              checked={settings.features.enableComments}
+              onCheckedChange={(checked) => setSettings({
+                ...settings,
+                features: { ...settings.features, enableComments: checked }
+              })}
+            />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div>
+              <Label>Descargas</Label>
+              <p className="text-sm text-gray-400">Permitir descarga de canciones</p>
+            </div>
+            <Switch
+              checked={settings.features.enableDownloads}
+              onCheckedChange={(checked) => setSettings({
+                ...settings,
+                features: { ...settings.features, enableDownloads: checked }
+              })}
+            />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div>
+              <Label>Letras</Label>
+              <p className="text-sm text-gray-400">Mostrar letras de canciones</p>
+            </div>
+            <Switch
+              checked={settings.features.enableLyrics}
+              onCheckedChange={(checked) => setSettings({
+                ...settings,
+                features: { ...settings.features, enableLyrics: checked }
+              })}
+            />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div>
+              <Label>Playlists</Label>
+              <p className="text-sm text-gray-400">Activar sistema de playlists</p>
+            </div>
+            <Switch
+              checked={settings.features.enablePlaylists}
+              onCheckedChange={(checked) => setSettings({
+                ...settings,
+                features: { ...settings.features, enablePlaylists: checked }
+              })}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Actions */}
+      <Card className="bg-black/50 border-gray-700">
+        <CardHeader>
+          <CardTitle>Acciones</CardTitle>
+          <CardDescription>Operaciones de mantenimiento</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-4">
+            <Button 
+              onClick={handleSave}
+              disabled={loading}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {loading ? 'Guardando...' : 'Guardar Cambios'}
+            </Button>
+
+            <Button 
+              variant="outline"
+              onClick={handleExport}
+              className="border-gray-600"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Exportar Datos
+            </Button>
+
+            <Button 
+              variant="outline"
+              onClick={() => window.location.reload()}
+              className="border-gray-600"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Recargar
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}

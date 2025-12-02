@@ -1,0 +1,86 @@
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { db } from '@/lib/db'
+
+export async function GET() {
+  try {
+    const session = await getServerSession()
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const playlists = await db.userPlaylist.findMany({
+      where: { userId: session.user.id },
+      include: {
+        songs: {
+          include: {
+            song: true
+          },
+          orderBy: {
+            position: 'asc'
+          }
+        },
+        _count: {
+          select: { songs: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+    
+    return NextResponse.json(playlists)
+  } catch (error) {
+    return NextResponse.json({ error: 'Error fetching playlists' }, { status: 500 })
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession()
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { name, description, isPublic } = await request.json()
+
+    if (!name) {
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 })
+    }
+
+    const playlist = await db.userPlaylist.create({
+      data: {
+        userId: session.user.id,
+        name,
+        description: description || '',
+        isPublic: isPublic || false
+      }
+    })
+
+    // Update user stats
+    await db.user.update({
+      where: { id: session.user.id },
+      data: {
+        playlistCount: {
+          increment: 1
+        },
+        loyaltyPoints: {
+          increment: 10
+        }
+      }
+    })
+
+    // Log activity
+    await db.activity.create({
+      data: {
+        userId: session.user.id,
+        type: 'playlist_create',
+        metadata: JSON.stringify({ playlistName: name })
+      }
+    })
+
+    return NextResponse.json(playlist)
+  } catch (error) {
+    return NextResponse.json({ error: 'Error creating playlist' }, { status: 500 })
+  }
+}

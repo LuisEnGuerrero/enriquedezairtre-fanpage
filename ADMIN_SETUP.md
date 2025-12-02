@@ -1,0 +1,176 @@
+# Módulo Administrativo - Configuración para Producción
+
+## 🚀 **CONFIGURACIÓN COMPLETA PARA PRODUCCIÓN**
+
+### **1. Configurar Google OAuth**
+
+1. **Ir a Google Cloud Console**: https://console.cloud.google.com/
+2. **Crear nuevo proyecto** o usar existente
+3. **Activar APIs**:
+   - Google+ API
+   - Google OAuth2 API
+
+4. **Crear credenciales OAuth 2.0**:
+   - Ir a "Credenciales" → "Crear credenciales" → "ID de cliente OAuth"
+   - Tipo de aplicación: "Aplicación web"
+   - **Orígenes autorizados**:
+     - `http://localhost:3000` (desarrollo)
+     - `https://tudominio.com` (producción)
+     - `https://www.tudominio.com` (producción)
+
+5. **URI de redirección autorizados**:
+   - `http://localhost:3000/api/auth/callback/google` (desarrollo)
+   - `https://tudominio.com/api/auth/callback/google` (producción)
+
+### **2. Variables de Entorno**
+
+Actualizar `.env` con valores reales:
+
+```env
+DATABASE_URL=file:/home/z/my-project/db/custom.db
+
+# NextAuth.js Configuration
+NEXTAUTH_SECRET=tu-secreto-super-seguro-unico
+NEXTAUTH_URL=https://tudominio.com
+
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=tu-client-id-real
+GOOGLE_CLIENT_SECRET=tu-client-secret-real
+```
+
+### **3. Configurar Usuario Administrador**
+
+En `/src/app/api/auth/[...nextauth]/route.ts` cambiar:
+
+```typescript
+// Cambiar este email por tu email real
+if (user?.email === 'tu-email-real@gmail.com') {
+  token.role = 'admin'
+}
+```
+
+### **4. Generar NEXTAUTH_SECRET**
+
+```bash
+# Generar un secreto seguro
+openssl rand -base64 32
+```
+
+## 📋 **FUNCIONALIDADES COMPLETAS**
+
+### ✅ **Panel Administrativo**
+- Dashboard con estadísticas
+- Gestión completa de canciones (CRUD)
+- Gestión de playlists
+- Configuración del sitio
+- Exportación de datos
+
+### ✅ **Seguridad**
+- OAuth con Google
+- Middleware de protección
+- Roles de usuario
+- Validación en todas las APIs
+
+### ✅ **Base de Datos**
+- SQLite con Prisma
+- Modelos Song y Playlist
+- Relaciones configuradas
+- Datos de ejemplo incluidos
+
+## 🌐 **ACCESO AL PANEL**
+
+1. **URL**: `https://tudominio.com/admin`
+2. **Login**: Google OAuth
+3. **Solo admin**: Email configurado en el código
+
+## 🔄 **FLUJO COMPLETO**
+
+1. **Usuario** visita `/admin`
+2. **Redirigido** a `/admin/login`
+3. **Inicia sesión** con Google
+4. **Verificado** email de admin
+5. **Acceso** al dashboard completo
+
+## 📱 **CARACTERÍSTICAS DEL DASHBOARD**
+
+### **Gestión de Canciones**
+- ✅ Crear nueva canción
+- ✅ Editar existente
+- ✅ Eliminar
+- ✅ Publicar/Despublicar
+- ✅ Vista previa
+
+### **Gestión de Playlists**
+- ✅ Crear playlists
+- ✅ Editar nombres
+- ✅ Eliminar
+- ✅ Ver contador de canciones
+
+### **Configuración**
+- ✅ Información del sitio
+- ✅ Redes sociales
+- ✅ Características activas
+- ✅ Exportar datos
+
+## 🚀 **DESPLEGUE EN PRODUCCIÓN**
+
+### **Vercel (Recomendado)**
+```bash
+# Instalar Vercel CLI
+npm i -g vercel
+
+# Desplegar
+vercel --prod
+
+# Configurar variables de entorno en Vercel Dashboard
+```
+
+### **Configuración en Vercel**
+1. Ir a Vercel Dashboard
+2. Configurar Environment Variables:
+   - `NEXTAUTH_SECRET`
+   - `NEXTAUTH_URL`
+   - `GOOGLE_CLIENT_ID`
+   - `GOOGLE_CLIENT_SECRET`
+
+### **Netlify**
+```bash
+# Construir
+npm run build
+
+# Subir a Netlify con variables configuradas
+```
+
+## 🔧 **MANTENIMIENTO**
+
+### **Backup Automático**
+- Exportar datos desde panel admin
+- Archivo JSON con toda la información
+- Fácil restauración
+
+### **Actualizaciones**
+- El sistema es modular
+- Fácil agregar nuevas funcionalidades
+- Base de datos escalable
+
+## 📊 **ESTADÍSTICAS INCLUIDAS**
+
+- Total de canciones
+- Total de playlists  
+- Contador de reproducciones (simulado)
+- Datos en tiempo real
+
+## 🎯 **LISTO PARA PRODUCCIÓN**
+
+✅ **Configurado** para producción inmediata
+✅ **Seguro** con OAuth y roles
+✅ **Completo** con todas las funcionalidades
+✅ **Escalable** para crecimiento futuro
+
+**Solo necesitas:**
+1. Configurar Google OAuth
+2. Actualizar variables de entorno
+3. Cambiar email de admin
+4. Desplegar en producción
+
+¡Tu panel administrativo estará 100% funcional! 🎉

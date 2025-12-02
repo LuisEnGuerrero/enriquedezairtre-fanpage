@@ -1,0 +1,48 @@
+import { NextResponse } from 'next/server'
+import { db } from '@/lib/db'
+
+export async function POST(request: Request) {
+  try {
+    const { email, name, image } = await request.json()
+
+    if (!email) {
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 })
+    }
+
+    // Check if user exists
+    let user = await db.user.findUnique({
+      where: { email }
+    })
+
+    if (user) {
+      // Update last login
+      user = await db.user.update({
+        where: { email },
+        data: {
+          lastLogin: new Date(),
+          name: name || user.name,
+          image: image || user.image,
+        }
+      })
+    } else {
+      // Create new user
+      const isAdmin = email === 'enrique.zairtre@example.com'
+      user = await db.user.create({
+        data: {
+          email,
+          name: name || 'Unknown User',
+          image: image || '',
+          role: isAdmin ? 'admin' : 'fan',
+          isActive: true,
+          joinDate: new Date(),
+          lastLogin: new Date(),
+        }
+      })
+    }
+
+    return NextResponse.json(user)
+  } catch (error) {
+    console.error('Error syncing user:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
