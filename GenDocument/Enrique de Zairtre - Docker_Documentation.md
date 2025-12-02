@@ -1,0 +1,25139 @@
+# Enrique de Zairtre - Docker Documentation
+---
+### Project Architecture
+
+|-- .dockerignore
+|-- .env
+|-- .gitignore
+|-- ADMIN_SETUP.md
+|-- Caddyfile
+|-- components.json
+|-- docker-compose.yml
+|-- Dockerfile
+|-- eslint.config.mjs
+|-- middleware.ts
+|-- next.config.ts
+|-- package-lock.json
+|-- package.json
+|-- postcss.config.mjs
+|-- README.md
+|-- tailwind.config.ts
+|-- tsconfig.json
+|-- workspace-cb207cc8-54f2-4cba-b18e-449c2535ccfc
++-- db
+|   |-- custom.db
++-- examples
+|   +-- websocket
+|   |   |-- frontend.tsx
+|   |   |-- server.ts
++-- mini-services
+|   |-- .gitkeep
++-- prisma
+|   |-- schema.prisma
++-- public
+|   |-- logo.svg
+|   |-- robots.txt
++-- scripts
+|   |-- seed-songs.js
++-- src
+|   +-- app
+|   |   |-- globals.css
+|   |   |-- layout.tsx
+|   |   |-- page.tsx
+|   |   +-- admin
+|   |   |   |-- page.tsx
+|   |   |   +-- login
+|   |   |   |   |-- page.tsx
+|   |   +-- api
+|   |   |   |-- route.ts
+|   |   |   +-- admin
+|   |   |   |   +-- export
+|   |   |   |   |   |-- route.ts
+|   |   |   |   +-- fans
+|   |   |   |   |   |-- route.ts
+|   |   |   |   +-- settings
+|   |   |   |   |   |-- route.ts
+|   |   |   |   +-- stats
+|   |   |   |   |   |-- route.ts
+|   |   |   +-- auth
+|   |   |   |   +-- sync-user
+|   |   |   |   |   |-- route.ts
+|   |   |   |   +-- [...nextauth]
+|   |   |   +-- favorites
+|   |   |   |   |-- route.ts
+|   |   |   +-- playlists
+|   |   |   |   |-- route.ts
+|   |   |   |   +-- [id]
+|   |   |   +-- songs
+|   |   |   |   |-- route.ts
+|   |   |   |   +-- [id]
+|   |   |   +-- user
+|   |   |   |   +-- profile
+|   |   |   |   |   |-- route.ts
+|   |   |   |   +-- rewards
+|   |   |   |   |   |-- route.ts
+|   |   |   +-- user-playlists
+|   |   |   |   |-- route.ts
+|   |   |   |   +-- [id]
+|   |   +-- auth
+|   |   |   +-- signin
+|   |   |   |   |-- page.tsx
+|   |   +-- profile
+|   |   |   |-- page.tsx
+|   +-- components
+|   |   |-- AudioVisualizer.tsx
+|   |   +-- admin
+|   |   |   |-- FanManager.tsx
+|   |   |   |-- PlaylistManager.tsx
+|   |   |   |-- SettingsPanel.tsx
+|   |   |   |-- SongManager.tsx
+|   |   +-- providers
+|   |   |   |-- AuthProvider.tsx
+|   |   +-- ui
+|   |   |   |-- accordion.tsx
+|   |   |   |-- alert-dialog.tsx
+|   |   |   |-- alert.tsx
+|   |   |   |-- aspect-ratio.tsx
+|   |   |   |-- avatar.tsx
+|   |   |   |-- badge.tsx
+|   |   |   |-- breadcrumb.tsx
+|   |   |   |-- button.tsx
+|   |   |   |-- calendar.tsx
+|   |   |   |-- card.tsx
+|   |   |   |-- carousel.tsx
+|   |   |   |-- chart.tsx
+|   |   |   |-- checkbox.tsx
+|   |   |   |-- collapsible.tsx
+|   |   |   |-- command.tsx
+|   |   |   |-- context-menu.tsx
+|   |   |   |-- dialog.tsx
+|   |   |   |-- drawer.tsx
+|   |   |   |-- dropdown-menu.tsx
+|   |   |   |-- form.tsx
+|   |   |   |-- hover-card.tsx
+|   |   |   |-- input-otp.tsx
+|   |   |   |-- input.tsx
+|   |   |   |-- label.tsx
+|   |   |   |-- menubar.tsx
+|   |   |   |-- navigation-menu.tsx
+|   |   |   |-- pagination.tsx
+|   |   |   |-- popover.tsx
+|   |   |   |-- progress.tsx
+|   |   |   |-- radio-group.tsx
+|   |   |   |-- resizable.tsx
+|   |   |   |-- scroll-area.tsx
+|   |   |   |-- select.tsx
+|   |   |   |-- separator.tsx
+|   |   |   |-- sheet.tsx
+|   |   |   |-- sidebar.tsx
+|   |   |   |-- skeleton.tsx
+|   |   |   |-- slider.tsx
+|   |   |   |-- sonner.tsx
+|   |   |   |-- switch.tsx
+|   |   |   |-- table.tsx
+|   |   |   |-- tabs.tsx
+|   |   |   |-- textarea.tsx
+|   |   |   |-- toast.tsx
+|   |   |   |-- toaster.tsx
+|   |   |   |-- toggle-group.tsx
+|   |   |   |-- toggle.tsx
+|   |   |   |-- tooltip.tsx
+|   +-- hooks
+|   |   |-- use-mobile.ts
+|   |   |-- use-toast.ts
+|   +-- lib
+|   |   |-- db.ts
+|   |   |-- utils.ts
+|   +-- types
+|   |   |-- next-auth.d.ts
+
+---
+### Project Files
+
+
+## File: ADMIN_SETUP.md__.txt
+
+# ADMIN_SETUP.md
+# Módulo Administrativo - Configuración para Producción
+
+## 🚀 **CONFIGURACIÓN COMPLETA PARA PRODUCCIÓN**
+
+### **1. Configurar Google OAuth**
+
+1. **Ir a Google Cloud Console**: https://console.cloud.google.com/
+2. **Crear nuevo proyecto** o usar existente
+3. **Activar APIs**:
+   - Google+ API
+   - Google OAuth2 API
+
+4. **Crear credenciales OAuth 2.0**:
+   - Ir a "Credenciales" → "Crear credenciales" → "ID de cliente OAuth"
+   - Tipo de aplicación: "Aplicación web"
+   - **Orígenes autorizados**:
+     - `http://localhost:3000` (desarrollo)
+     - `https://tudominio.com` (producción)
+     - `https://www.tudominio.com` (producción)
+
+5. **URI de redirección autorizados**:
+   - `http://localhost:3000/api/auth/callback/google` (desarrollo)
+   - `https://tudominio.com/api/auth/callback/google` (producción)
+
+### **2. Variables de Entorno**
+
+Actualizar `.env` con valores reales:
+
+```env
+DATABASE_URL=file:/home/z/my-project/db/custom.db
+
+# NextAuth.js Configuration
+NEXTAUTH_SECRET=tu-secreto-super-seguro-unico
+NEXTAUTH_URL=https://tudominio.com
+
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=tu-client-id-real
+GOOGLE_CLIENT_SECRET=tu-client-secret-real
+```
+
+### **3. Configurar Usuario Administrador**
+
+En `/src/app/api/auth/[...nextauth]/route.ts` cambiar:
+
+```typescript
+// Cambiar este email por tu email real
+if (user?.email === 'tu-email-real@gmail.com') {
+  token.role = 'admin'
+}
+```
+
+### **4. Generar NEXTAUTH_SECRET**
+
+```bash
+# Generar un secreto seguro
+openssl rand -base64 32
+```
+
+## 📋 **FUNCIONALIDADES COMPLETAS**
+
+### ✅ **Panel Administrativo**
+- Dashboard con estadísticas
+- Gestión completa de canciones (CRUD)
+- Gestión de playlists
+- Configuración del sitio
+- Exportación de datos
+
+### ✅ **Seguridad**
+- OAuth con Google
+- Middleware de protección
+- Roles de usuario
+- Validación en todas las APIs
+
+### ✅ **Base de Datos**
+- SQLite con Prisma
+- Modelos Song y Playlist
+- Relaciones configuradas
+- Datos de ejemplo incluidos
+
+## 🌐 **ACCESO AL PANEL**
+
+1. **URL**: `https://tudominio.com/admin`
+2. **Login**: Google OAuth
+3. **Solo admin**: Email configurado en el código
+
+## 🔄 **FLUJO COMPLETO**
+
+1. **Usuario** visita `/admin`
+2. **Redirigido** a `/admin/login`
+3. **Inicia sesión** con Google
+4. **Verificado** email de admin
+5. **Acceso** al dashboard completo
+
+## 📱 **CARACTERÍSTICAS DEL DASHBOARD**
+
+### **Gestión de Canciones**
+- ✅ Crear nueva canción
+- ✅ Editar existente
+- ✅ Eliminar
+- ✅ Publicar/Despublicar
+- ✅ Vista previa
+
+### **Gestión de Playlists**
+- ✅ Crear playlists
+- ✅ Editar nombres
+- ✅ Eliminar
+- ✅ Ver contador de canciones
+
+### **Configuración**
+- ✅ Información del sitio
+- ✅ Redes sociales
+- ✅ Características activas
+- ✅ Exportar datos
+
+## 🚀 **DESPLEGUE EN PRODUCCIÓN**
+
+### **Vercel (Recomendado)**
+```bash
+# Instalar Vercel CLI
+npm i -g vercel
+
+# Desplegar
+vercel --prod
+
+# Configurar variables de entorno en Vercel Dashboard
+```
+
+### **Configuración en Vercel**
+1. Ir a Vercel Dashboard
+2. Configurar Environment Variables:
+   - `NEXTAUTH_SECRET`
+   - `NEXTAUTH_URL`
+   - `GOOGLE_CLIENT_ID`
+   - `GOOGLE_CLIENT_SECRET`
+
+### **Netlify**
+```bash
+# Construir
+npm run build
+
+# Subir a Netlify con variables configuradas
+```
+
+## 🔧 **MANTENIMIENTO**
+
+### **Backup Automático**
+- Exportar datos desde panel admin
+- Archivo JSON con toda la información
+- Fácil restauración
+
+### **Actualizaciones**
+- El sistema es modular
+- Fácil agregar nuevas funcionalidades
+- Base de datos escalable
+
+## 📊 **ESTADÍSTICAS INCLUIDAS**
+
+- Total de canciones
+- Total de playlists  
+- Contador de reproducciones (simulado)
+- Datos en tiempo real
+
+## 🎯 **LISTO PARA PRODUCCIÓN**
+
+✅ **Configurado** para producción inmediata
+✅ **Seguro** con OAuth y roles
+✅ **Completo** con todas las funcionalidades
+✅ **Escalable** para crecimiento futuro
+
+**Solo necesitas:**
+1. Configurar Google OAuth
+2. Actualizar variables de entorno
+3. Cambiar email de admin
+4. Desplegar en producción
+
+¡Tu panel administrativo estará 100% funcional! 🎉
+
+---
+
+
+## File: components.json__.txt
+
+# components.json
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/app/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "iconLibrary": "lucide"
+}
+
+---
+
+
+## File: examples__websocket__frontend.tsx__.txt
+
+# frontend.tsx
+'use client';
+
+import { useEffect, useState } from 'react';
+import { io } from 'socket.io-client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+type User = {
+  id: string;
+  username: string;
+}
+
+type Message = {
+  id: string;
+  username: string;
+  content: string;
+  timestamp: Date | string;
+  type: 'user' | 'system';
+}
+
+export default function SocketDemo() {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [username, setUsername] = useState('');
+  const [isUsernameSet, setIsUsernameSet] = useState(false);
+  const [socket, setSocket] = useState<any>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    // Connect to websocket server
+    // Never use PORT in the URL, alyways use XTransformPort
+    // DO NOT change the path, it is used by Caddy to forward the request to the correct port
+    const socketInstance = io('/?XTransformPort=3003', {
+      transports: ['websocket', 'polling'],
+      forceNew: true,
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      timeout: 10000
+    })
+
+    setSocket(socketInstance);
+
+    socketInstance.on('connect', () => {
+      setIsConnected(true);
+    });
+
+    socketInstance.on('disconnect', () => {
+      setIsConnected(false);
+    });
+
+    socketInstance.on('message', (msg: Message) => {
+      setMessages(prev => [...prev, msg]);
+    });
+
+    socketInstance.on('user-joined', (data: { user: User; message: Message }) => {
+      setMessages(prev => [...prev, data.message]);
+      setUsers(prev => {
+        if (!prev.find(u => u.id === data.user.id)) {
+          return [...prev, data.user];
+        }
+        return prev;
+      });
+    });
+
+    socketInstance.on('user-left', (data: { user: User; message: Message }) => {
+      setMessages(prev => [...prev, data.message]);
+      setUsers(prev => prev.filter(u => u.id !== data.user.id));
+    });
+
+    socketInstance.on('users-list', (data: { users: User[] }) => {
+      setUsers(data.users);
+    });
+
+    return () => {
+      socketInstance.disconnect();
+    };
+  }, []);
+
+  const handleJoin = () => {
+    if (socket && username.trim() && isConnected) {
+      socket.emit('join', { username: username.trim() });
+      setIsUsernameSet(true);
+    }
+  };
+
+  const sendMessage = () => {
+    if (socket && inputMessage.trim() && username.trim()) {
+      socket.emit('message', {
+        content: inputMessage.trim(),
+        username: username.trim()
+      });
+      setInputMessage('');
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  };
+
+  return (
+    <div className="container mx-auto p-4 max-w-2xl">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            WebSocket Demo
+            <span className={`text-sm px-2 py-1 rounded ${isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+              {isConnected ? 'Connected' : 'Disconnected'}
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {!isUsernameSet ? (
+            <div className="space-y-2">
+              <Input
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleJoin();
+                  }
+                }}
+                placeholder="Enter your username..."
+                disabled={!isConnected}
+                className="flex-1"
+              />
+              <Button
+                onClick={handleJoin}
+                disabled={!isConnected || !username.trim()}
+                className="w-full"
+              >
+                Join Chat
+              </Button>
+            </div>
+          ) : (
+            <>
+              <ScrollArea className="h-80 w-full border rounded-md p-4">
+                <div className="space-y-2">
+                  {messages.length === 0 ? (
+                    <p className="text-gray-500 text-center">No messages yet</p>
+                  ) : (
+                    messages.map((msg) => (
+                      <div key={msg.id} className="border-b pb-2 last:border-b-0">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <p className={`text-sm font-medium ${msg.type === 'system'
+                                ? 'text-blue-600 italic'
+                                : 'text-gray-700'
+                              }`}>
+                              {msg.username}
+                            </p>
+                            <p className={`${msg.type === 'system'
+                                ? 'text-blue-500 italic'
+                                : 'text-gray-900'
+                              }`}>
+                              {msg.content}
+                            </p>
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {new Date(msg.timestamp).toLocaleTimeString()}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </ScrollArea>
+
+              <div className="flex space-x-2">
+                <Input
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Type a message..."
+                  disabled={!isConnected}
+                  className="flex-1"
+                />
+                <Button
+                  onClick={sendMessage}
+                  disabled={!isConnected || !inputMessage.trim()}
+                >
+                  Send
+                </Button>
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+
+---
+
+
+## File: examples__websocket__server.ts__.txt
+
+# server.ts
+import { createServer } from 'http'
+import { Server } from 'socket.io'
+
+const httpServer = createServer()
+const io = new Server(httpServer, {
+  // DO NOT change the path, it is used by Caddy to forward the request to the correct port
+  path: '/',
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  },
+  pingTimeout: 60000,
+  pingInterval: 25000,
+})
+
+interface User {
+  id: string
+  username: string
+}
+
+interface Message {
+  id: string
+  username: string
+  content: string
+  timestamp: Date
+  type: 'user' | 'system'
+}
+
+const users = new Map<string, User>()
+
+const generateMessageId = () => Math.random().toString(36).substr(2, 9)
+
+const createSystemMessage = (content: string): Message => ({
+  id: generateMessageId(),
+  username: 'System',
+  content,
+  timestamp: new Date(),
+  type: 'system'
+})
+
+const createUserMessage = (username: string, content: string): Message => ({
+  id: generateMessageId(),
+  username,
+  content,
+  timestamp: new Date(),
+  type: 'user'
+})
+
+io.on('connection', (socket) => {
+  console.log(`User connected: ${socket.id}`)
+
+  // Add test event handler
+  socket.on('test', (data) => {
+    console.log('Received test message:', data)
+    socket.emit('test-response', { 
+      message: 'Server received test message', 
+      data: data,
+      timestamp: new Date().toISOString()
+    })
+  })
+
+  socket.on('join', (data: { username: string }) => {
+    const { username } = data
+    
+    // Create user object
+    const user: User = {
+      id: socket.id,
+      username
+    }
+    
+    // Add to user list
+    users.set(socket.id, user)
+    
+    // Send join message to all users
+    const joinMessage = createSystemMessage(`${username} joined the chat room`)
+    io.emit('user-joined', { user, message: joinMessage })
+    
+    // Send current user list to new user
+    const usersList = Array.from(users.values())
+    socket.emit('users-list', { users: usersList })
+    
+    console.log(`${username} joined the chat room, current online users: ${users.size}`)
+  })
+
+  socket.on('message', (data: { content: string; username: string }) => {
+    const { content, username } = data
+    const user = users.get(socket.id)
+    
+    if (user && user.username === username) {
+      const message = createUserMessage(username, content)
+      io.emit('message', message)
+      console.log(`${username}: ${content}`)
+    }
+  })
+
+  socket.on('disconnect', () => {
+    const user = users.get(socket.id)
+    
+    if (user) {
+      // Remove from user list
+      users.delete(socket.id)
+      
+      // Send leave message to all users
+      const leaveMessage = createSystemMessage(`${user.username} left the chat room`)
+      io.emit('user-left', { user: { id: socket.id, username: user.username }, message: leaveMessage })
+      
+      console.log(`${user.username} left the chat room, current online users: ${users.size}`)
+    } else {
+      console.log(`User disconnected: ${socket.id}`)
+    }
+  })
+
+  socket.on('error', (error) => {
+    console.error(`Socket error (${socket.id}):`, error)
+  })
+})
+
+const PORT = 3003
+httpServer.listen(PORT, () => {
+  console.log(`WebSocket server running on port ${PORT}`)
+})
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('Received SIGTERM signal, shutting down server...')
+  httpServer.close(() => {
+    console.log('WebSocket server closed')
+    process.exit(0)
+  })
+})
+
+process.on('SIGINT', () => {
+  console.log('Received SIGINT signal, shutting down server...')
+  httpServer.close(() => {
+    console.log('WebSocket server closed')
+    process.exit(0)
+  })
+})
+
+---
+
+
+## File: middleware.ts__.txt
+
+# middleware.ts
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { getToken } from 'next-auth/jwt'
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // Protect admin routes
+  if (pathname.startsWith('/admin')) {
+    const token = await getToken({ 
+      req: request, 
+      secret: process.env.NEXTAUTH_SECRET 
+    })
+
+    // Allow access to login page
+    if (pathname === '/admin/login') {
+      return NextResponse.next()
+    }
+
+    // Check if user is authenticated and is admin
+    if (!token || token.role !== 'admin') {
+      const loginUrl = new URL('/admin/login', request.url)
+      loginUrl.searchParams.set('callbackUrl', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+  }
+
+  return NextResponse.next()
+}
+
+export const config = {
+  matcher: ['/admin/:path*']
+}
+
+---
+
+
+## File: next.config.ts__.txt
+
+# next.config.ts
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  output: "standalone",
+  /* config options here */
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  // 禁用 Next.js 热重载，由 nodemon 处理重编译
+  reactStrictMode: false,
+  eslint: {
+    // 构建时忽略ESLint错误
+    ignoreDuringBuilds: true,
+  },
+};
+
+export default nextConfig;
+
+
+---
+
+
+## File: package.json__.txt
+
+# package.json
+{
+  "name": "enrique_de_zaritre_fanpage",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000 2>&1 | tee dev.log",
+    "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
+    "start": "NODE_ENV=production node .next/standalone/server.js 2>&1 | tee server.log",
+    "lint": "next lint",
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:reset": "prisma migrate reset"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@hookform/resolvers": "^5.1.1",
+    "@mdxeditor/editor": "^3.39.1",
+    "@prisma/client": "^6.11.1",
+    "@radix-ui/react-accordion": "^1.2.11",
+    "@radix-ui/react-alert-dialog": "^1.1.14",
+    "@radix-ui/react-aspect-ratio": "^1.1.7",
+    "@radix-ui/react-avatar": "^1.1.10",
+    "@radix-ui/react-checkbox": "^1.3.2",
+    "@radix-ui/react-collapsible": "^1.1.11",
+    "@radix-ui/react-context-menu": "^2.2.15",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-dropdown-menu": "^2.1.15",
+    "@radix-ui/react-hover-card": "^1.1.14",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-menubar": "^1.1.15",
+    "@radix-ui/react-navigation-menu": "^1.2.13",
+    "@radix-ui/react-popover": "^1.1.14",
+    "@radix-ui/react-progress": "^1.1.7",
+    "@radix-ui/react-radio-group": "^1.3.7",
+    "@radix-ui/react-scroll-area": "^1.2.9",
+    "@radix-ui/react-select": "^2.2.5",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slider": "^1.3.5",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.2.5",
+    "@radix-ui/react-tabs": "^1.1.12",
+    "@radix-ui/react-toast": "^1.2.14",
+    "@radix-ui/react-toggle": "^1.1.9",
+    "@radix-ui/react-toggle-group": "^1.1.10",
+    "@radix-ui/react-tooltip": "^1.2.7",
+    "@reactuses/core": "^6.0.5",
+    "@tanstack/react-query": "^5.82.0",
+    "@tanstack/react-table": "^8.21.3",
+    "axios": "^1.10.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "date-fns": "^4.1.0",
+    "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^12.23.2",
+    "input-otp": "^1.4.2",
+    "lucide-react": "^0.525.0",
+    "next": "15.3.5",
+    "next-auth": "^4.24.11",
+    "next-intl": "^4.3.4",
+    "next-themes": "^0.4.6",
+    "nodemon": "^3.1.11",
+    "prisma": "^6.11.1",
+    "react": "^19.0.0",
+    "react-day-picker": "^9.8.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.60.0",
+    "react-markdown": "^10.1.0",
+    "react-resizable-panels": "^3.0.3",
+    "react-syntax-highlighter": "^15.6.1",
+    "recharts": "^2.15.4",
+    "sharp": "^0.34.3",
+    "sonner": "^2.0.6",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.20.3",
+    "uuid": "^11.1.0",
+    "vaul": "^1.1.2",
+    "z-ai-web-dev-sdk": "^0.0.10",
+    "zod": "^4.0.2",
+    "zustand": "^5.0.6"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.5",
+    "tailwindcss": "^4",
+    "tw-animate-css": "^1.3.5",
+    "typescript": "^5"
+  }
+}
+
+
+---
+
+
+## File: package-lock.json__.txt
+
+# package-lock.json
+{
+  "name": "nextjs_tailwind_shadcn_ts",
+  "version": "0.1.0",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "nextjs_tailwind_shadcn_ts",
+      "version": "0.1.0",
+      "dependencies": {
+        "@dnd-kit/core": "^6.3.1",
+        "@dnd-kit/sortable": "^10.0.0",
+        "@dnd-kit/utilities": "^3.2.2",
+        "@hookform/resolvers": "^5.1.1",
+        "@mdxeditor/editor": "^3.39.1",
+        "@prisma/client": "^6.11.1",
+        "@radix-ui/react-accordion": "^1.2.11",
+        "@radix-ui/react-alert-dialog": "^1.1.14",
+        "@radix-ui/react-aspect-ratio": "^1.1.7",
+        "@radix-ui/react-avatar": "^1.1.10",
+        "@radix-ui/react-checkbox": "^1.3.2",
+        "@radix-ui/react-collapsible": "^1.1.11",
+        "@radix-ui/react-context-menu": "^2.2.15",
+        "@radix-ui/react-dialog": "^1.1.14",
+        "@radix-ui/react-dropdown-menu": "^2.1.15",
+        "@radix-ui/react-hover-card": "^1.1.14",
+        "@radix-ui/react-label": "^2.1.7",
+        "@radix-ui/react-menubar": "^1.1.15",
+        "@radix-ui/react-navigation-menu": "^1.2.13",
+        "@radix-ui/react-popover": "^1.1.14",
+        "@radix-ui/react-progress": "^1.1.7",
+        "@radix-ui/react-radio-group": "^1.3.7",
+        "@radix-ui/react-scroll-area": "^1.2.9",
+        "@radix-ui/react-select": "^2.2.5",
+        "@radix-ui/react-separator": "^1.1.7",
+        "@radix-ui/react-slider": "^1.3.5",
+        "@radix-ui/react-slot": "^1.2.3",
+        "@radix-ui/react-switch": "^1.2.5",
+        "@radix-ui/react-tabs": "^1.1.12",
+        "@radix-ui/react-toast": "^1.2.14",
+        "@radix-ui/react-toggle": "^1.1.9",
+        "@radix-ui/react-toggle-group": "^1.1.10",
+        "@radix-ui/react-tooltip": "^1.2.7",
+        "@reactuses/core": "^6.0.5",
+        "@tanstack/react-query": "^5.82.0",
+        "@tanstack/react-table": "^8.21.3",
+        "axios": "^1.10.0",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "cmdk": "^1.1.1",
+        "date-fns": "^4.1.0",
+        "embla-carousel-react": "^8.6.0",
+        "framer-motion": "^12.23.2",
+        "input-otp": "^1.4.2",
+        "lucide-react": "^0.525.0",
+        "next": "15.3.5",
+        "next-auth": "^4.24.11",
+        "next-intl": "^4.3.4",
+        "next-themes": "^0.4.6",
+        "nodemon": "^3.1.11",
+        "prisma": "^6.11.1",
+        "react": "^19.0.0",
+        "react-day-picker": "^9.8.0",
+        "react-dom": "^19.0.0",
+        "react-hook-form": "^7.60.0",
+        "react-markdown": "^10.1.0",
+        "react-resizable-panels": "^3.0.3",
+        "react-syntax-highlighter": "^15.6.1",
+        "recharts": "^2.15.4",
+        "sharp": "^0.34.3",
+        "sonner": "^2.0.6",
+        "tailwind-merge": "^3.3.1",
+        "tailwindcss-animate": "^1.0.7",
+        "tsx": "^4.20.3",
+        "uuid": "^11.1.0",
+        "vaul": "^1.1.2",
+        "z-ai-web-dev-sdk": "^0.0.10",
+        "zod": "^4.0.2",
+        "zustand": "^5.0.6"
+      },
+      "devDependencies": {
+        "@eslint/eslintrc": "^3",
+        "@tailwindcss/postcss": "^4",
+        "@types/node": "^20",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "eslint": "^9",
+        "eslint-config-next": "15.3.5",
+        "tailwindcss": "^4",
+        "tw-animate-css": "^1.3.5",
+        "typescript": "^5"
+      }
+    },
+    "node_modules/@alloc/quick-lru": {
+      "version": "5.2.0",
+      "resolved": "https://registry.npmjs.org/@alloc/quick-lru/-/quick-lru-5.2.0.tgz",
+      "integrity": "sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=10"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/@babel/code-frame": {
+      "version": "7.27.1",
+      "resolved": "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.27.1.tgz",
+      "integrity": "sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==",
+      "license": "MIT",
+      "dependencies": {
+        "@babel/helper-validator-identifier": "^7.27.1",
+        "js-tokens": "^4.0.0",
+        "picocolors": "^1.1.1"
+      },
+      "engines": {
+        "node": ">=6.9.0"
+      }
+    },
+    "node_modules/@babel/helper-validator-identifier": {
+      "version": "7.28.5",
+      "resolved": "https://registry.npmjs.org/@babel/helper-validator-identifier/-/helper-validator-identifier-7.28.5.tgz",
+      "integrity": "sha512-qSs4ifwzKJSV39ucNjsvc6WVHs6b7S03sOh2OcHF9UHfVPqWWALUsNUVzhSBiItjRZoLHx7nIarVjqKVusUZ1Q==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=6.9.0"
+      }
+    },
+    "node_modules/@babel/runtime": {
+      "version": "7.28.4",
+      "resolved": "https://registry.npmjs.org/@babel/runtime/-/runtime-7.28.4.tgz",
+      "integrity": "sha512-Q/N6JNWvIvPnLDvjlE1OUBLPQHH6l3CltCEsHIujp45zQUSSh8K+gHnaEX45yAT1nyngnINhvWtzN+Nb9D8RAQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=6.9.0"
+      }
+    },
+    "node_modules/@codemirror/autocomplete": {
+      "version": "6.20.0",
+      "resolved": "https://registry.npmjs.org/@codemirror/autocomplete/-/autocomplete-6.20.0.tgz",
+      "integrity": "sha512-bOwvTOIJcG5FVo5gUUupiwYh8MioPLQ4UcqbcRf7UQ98X90tCa9E1kZ3Z7tqwpZxYyOvh1YTYbmZE9RTfTp5hg==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/language": "^6.0.0",
+        "@codemirror/state": "^6.0.0",
+        "@codemirror/view": "^6.17.0",
+        "@lezer/common": "^1.0.0"
+      }
+    },
+    "node_modules/@codemirror/commands": {
+      "version": "6.10.0",
+      "resolved": "https://registry.npmjs.org/@codemirror/commands/-/commands-6.10.0.tgz",
+      "integrity": "sha512-2xUIc5mHXQzT16JnyOFkh8PvfeXuIut3pslWGfsGOhxP/lpgRm9HOl/mpzLErgt5mXDovqA0d11P21gofRLb9w==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/language": "^6.0.0",
+        "@codemirror/state": "^6.4.0",
+        "@codemirror/view": "^6.27.0",
+        "@lezer/common": "^1.1.0"
+      }
+    },
+    "node_modules/@codemirror/lang-angular": {
+      "version": "0.1.4",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-angular/-/lang-angular-0.1.4.tgz",
+      "integrity": "sha512-oap+gsltb/fzdlTQWD6BFF4bSLKcDnlxDsLdePiJpCVNKWXSTAbiiQeYI3UmES+BLAdkmIC1WjyztC1pi/bX4g==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/lang-html": "^6.0.0",
+        "@codemirror/lang-javascript": "^6.1.2",
+        "@codemirror/language": "^6.0.0",
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.3.3"
+      }
+    },
+    "node_modules/@codemirror/lang-cpp": {
+      "version": "6.0.3",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-cpp/-/lang-cpp-6.0.3.tgz",
+      "integrity": "sha512-URM26M3vunFFn9/sm6rzqrBzDgfWuDixp85uTY49wKudToc2jTHUrKIGGKs+QWND+YLofNNZpxcNGRynFJfvgA==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/language": "^6.0.0",
+        "@lezer/cpp": "^1.0.0"
+      }
+    },
+    "node_modules/@codemirror/lang-css": {
+      "version": "6.3.1",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-css/-/lang-css-6.3.1.tgz",
+      "integrity": "sha512-kr5fwBGiGtmz6l0LSJIbno9QrifNMUusivHbnA1H6Dmqy4HZFte3UAICix1VuKo0lMPKQr2rqB+0BkKi/S3Ejg==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/autocomplete": "^6.0.0",
+        "@codemirror/language": "^6.0.0",
+        "@codemirror/state": "^6.0.0",
+        "@lezer/common": "^1.0.2",
+        "@lezer/css": "^1.1.7"
+      }
+    },
+    "node_modules/@codemirror/lang-go": {
+      "version": "6.0.1",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-go/-/lang-go-6.0.1.tgz",
+      "integrity": "sha512-7fNvbyNylvqCphW9HD6WFnRpcDjr+KXX/FgqXy5H5ZS0eC5edDljukm/yNgYkwTsgp2busdod50AOTIy6Jikfg==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/autocomplete": "^6.0.0",
+        "@codemirror/language": "^6.6.0",
+        "@codemirror/state": "^6.0.0",
+        "@lezer/common": "^1.0.0",
+        "@lezer/go": "^1.0.0"
+      }
+    },
+    "node_modules/@codemirror/lang-html": {
+      "version": "6.4.11",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-html/-/lang-html-6.4.11.tgz",
+      "integrity": "sha512-9NsXp7Nwp891pQchI7gPdTwBuSuT3K65NGTHWHNJ55HjYcHLllr0rbIZNdOzas9ztc1EUVBlHou85FFZS4BNnw==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/autocomplete": "^6.0.0",
+        "@codemirror/lang-css": "^6.0.0",
+        "@codemirror/lang-javascript": "^6.0.0",
+        "@codemirror/language": "^6.4.0",
+        "@codemirror/state": "^6.0.0",
+        "@codemirror/view": "^6.17.0",
+        "@lezer/common": "^1.0.0",
+        "@lezer/css": "^1.1.0",
+        "@lezer/html": "^1.3.12"
+      }
+    },
+    "node_modules/@codemirror/lang-java": {
+      "version": "6.0.2",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-java/-/lang-java-6.0.2.tgz",
+      "integrity": "sha512-m5Nt1mQ/cznJY7tMfQTJchmrjdjQ71IDs+55d1GAa8DGaB8JXWsVCkVT284C3RTASaY43YknrK2X3hPO/J3MOQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/language": "^6.0.0",
+        "@lezer/java": "^1.0.0"
+      }
+    },
+    "node_modules/@codemirror/lang-javascript": {
+      "version": "6.2.4",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-javascript/-/lang-javascript-6.2.4.tgz",
+      "integrity": "sha512-0WVmhp1QOqZ4Rt6GlVGwKJN3KW7Xh4H2q8ZZNGZaP6lRdxXJzmjm4FqvmOojVj6khWJHIb9sp7U/72W7xQgqAA==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/autocomplete": "^6.0.0",
+        "@codemirror/language": "^6.6.0",
+        "@codemirror/lint": "^6.0.0",
+        "@codemirror/state": "^6.0.0",
+        "@codemirror/view": "^6.17.0",
+        "@lezer/common": "^1.0.0",
+        "@lezer/javascript": "^1.0.0"
+      }
+    },
+    "node_modules/@codemirror/lang-jinja": {
+      "version": "6.0.0",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-jinja/-/lang-jinja-6.0.0.tgz",
+      "integrity": "sha512-47MFmRcR8UAxd8DReVgj7WJN1WSAMT7OJnewwugZM4XiHWkOjgJQqvEM1NpMj9ALMPyxmlziEI1opH9IaEvmaw==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/lang-html": "^6.0.0",
+        "@codemirror/language": "^6.0.0",
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.2.0",
+        "@lezer/lr": "^1.4.0"
+      }
+    },
+    "node_modules/@codemirror/lang-json": {
+      "version": "6.0.2",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-json/-/lang-json-6.0.2.tgz",
+      "integrity": "sha512-x2OtO+AvwEHrEwR0FyyPtfDUiloG3rnVTSZV1W8UteaLL8/MajQd8DpvUb2YVzC+/T18aSDv0H9mu+xw0EStoQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/language": "^6.0.0",
+        "@lezer/json": "^1.0.0"
+      }
+    },
+    "node_modules/@codemirror/lang-less": {
+      "version": "6.0.2",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-less/-/lang-less-6.0.2.tgz",
+      "integrity": "sha512-EYdQTG22V+KUUk8Qq582g7FMnCZeEHsyuOJisHRft/mQ+ZSZ2w51NupvDUHiqtsOy7It5cHLPGfHQLpMh9bqpQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/lang-css": "^6.2.0",
+        "@codemirror/language": "^6.0.0",
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.0.0"
+      }
+    },
+    "node_modules/@codemirror/lang-liquid": {
+      "version": "6.3.0",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-liquid/-/lang-liquid-6.3.0.tgz",
+      "integrity": "sha512-fY1YsUExcieXRTsCiwX/bQ9+PbCTA/Fumv7C7mTUZHoFkibfESnaXwpr2aKH6zZVwysEunsHHkaIpM/pl3xETQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/autocomplete": "^6.0.0",
+        "@codemirror/lang-html": "^6.0.0",
+        "@codemirror/language": "^6.0.0",
+        "@codemirror/state": "^6.0.0",
+        "@codemirror/view": "^6.0.0",
+        "@lezer/common": "^1.0.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.3.1"
+      }
+    },
+    "node_modules/@codemirror/lang-markdown": {
+      "version": "6.5.0",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-markdown/-/lang-markdown-6.5.0.tgz",
+      "integrity": "sha512-0K40bZ35jpHya6FriukbgaleaqzBLZfOh7HuzqbMxBXkbYMJDxfF39c23xOgxFezR+3G+tR2/Mup+Xk865OMvw==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/autocomplete": "^6.7.1",
+        "@codemirror/lang-html": "^6.0.0",
+        "@codemirror/language": "^6.3.0",
+        "@codemirror/state": "^6.0.0",
+        "@codemirror/view": "^6.0.0",
+        "@lezer/common": "^1.2.1",
+        "@lezer/markdown": "^1.0.0"
+      }
+    },
+    "node_modules/@codemirror/lang-php": {
+      "version": "6.0.2",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-php/-/lang-php-6.0.2.tgz",
+      "integrity": "sha512-ZKy2v1n8Fc8oEXj0Th0PUMXzQJ0AIR6TaZU+PbDHExFwdu+guzOA4jmCHS1Nz4vbFezwD7LyBdDnddSJeScMCA==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/lang-html": "^6.0.0",
+        "@codemirror/language": "^6.0.0",
+        "@codemirror/state": "^6.0.0",
+        "@lezer/common": "^1.0.0",
+        "@lezer/php": "^1.0.0"
+      }
+    },
+    "node_modules/@codemirror/lang-python": {
+      "version": "6.2.1",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-python/-/lang-python-6.2.1.tgz",
+      "integrity": "sha512-IRjC8RUBhn9mGR9ywecNhB51yePWCGgvHfY1lWN/Mrp3cKuHr0isDKia+9HnvhiWNnMpbGhWrkhuWOc09exRyw==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/autocomplete": "^6.3.2",
+        "@codemirror/language": "^6.8.0",
+        "@codemirror/state": "^6.0.0",
+        "@lezer/common": "^1.2.1",
+        "@lezer/python": "^1.1.4"
+      }
+    },
+    "node_modules/@codemirror/lang-rust": {
+      "version": "6.0.2",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-rust/-/lang-rust-6.0.2.tgz",
+      "integrity": "sha512-EZaGjCUegtiU7kSMvOfEZpaCReowEf3yNidYu7+vfuGTm9ow4mthAparY5hisJqOHmJowVH3Upu+eJlUji6qqA==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/language": "^6.0.0",
+        "@lezer/rust": "^1.0.0"
+      }
+    },
+    "node_modules/@codemirror/lang-sass": {
+      "version": "6.0.2",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-sass/-/lang-sass-6.0.2.tgz",
+      "integrity": "sha512-l/bdzIABvnTo1nzdY6U+kPAC51czYQcOErfzQ9zSm9D8GmNPD0WTW8st/CJwBTPLO8jlrbyvlSEcN20dc4iL0Q==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/lang-css": "^6.2.0",
+        "@codemirror/language": "^6.0.0",
+        "@codemirror/state": "^6.0.0",
+        "@lezer/common": "^1.0.2",
+        "@lezer/sass": "^1.0.0"
+      }
+    },
+    "node_modules/@codemirror/lang-sql": {
+      "version": "6.10.0",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-sql/-/lang-sql-6.10.0.tgz",
+      "integrity": "sha512-6ayPkEd/yRw0XKBx5uAiToSgGECo/GY2NoJIHXIIQh1EVwLuKoU8BP/qK0qH5NLXAbtJRLuT73hx7P9X34iO4w==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/autocomplete": "^6.0.0",
+        "@codemirror/language": "^6.0.0",
+        "@codemirror/state": "^6.0.0",
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.0.0"
+      }
+    },
+    "node_modules/@codemirror/lang-vue": {
+      "version": "0.1.3",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-vue/-/lang-vue-0.1.3.tgz",
+      "integrity": "sha512-QSKdtYTDRhEHCfo5zOShzxCmqKJvgGrZwDQSdbvCRJ5pRLWBS7pD/8e/tH44aVQT6FKm0t6RVNoSUWHOI5vNug==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/lang-html": "^6.0.0",
+        "@codemirror/lang-javascript": "^6.1.2",
+        "@codemirror/language": "^6.0.0",
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.3.1"
+      }
+    },
+    "node_modules/@codemirror/lang-wast": {
+      "version": "6.0.2",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-wast/-/lang-wast-6.0.2.tgz",
+      "integrity": "sha512-Imi2KTpVGm7TKuUkqyJ5NRmeFWF7aMpNiwHnLQe0x9kmrxElndyH0K6H/gXtWwY6UshMRAhpENsgfpSwsgmC6Q==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/language": "^6.0.0",
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.0.0"
+      }
+    },
+    "node_modules/@codemirror/lang-xml": {
+      "version": "6.1.0",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-xml/-/lang-xml-6.1.0.tgz",
+      "integrity": "sha512-3z0blhicHLfwi2UgkZYRPioSgVTo9PV5GP5ducFH6FaHy0IAJRg+ixj5gTR1gnT/glAIC8xv4w2VL1LoZfs+Jg==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/autocomplete": "^6.0.0",
+        "@codemirror/language": "^6.4.0",
+        "@codemirror/state": "^6.0.0",
+        "@codemirror/view": "^6.0.0",
+        "@lezer/common": "^1.0.0",
+        "@lezer/xml": "^1.0.0"
+      }
+    },
+    "node_modules/@codemirror/lang-yaml": {
+      "version": "6.1.2",
+      "resolved": "https://registry.npmjs.org/@codemirror/lang-yaml/-/lang-yaml-6.1.2.tgz",
+      "integrity": "sha512-dxrfG8w5Ce/QbT7YID7mWZFKhdhsaTNOYjOkSIMt1qmC4VQnXSDSYVHHHn8k6kJUfIhtLo8t1JJgltlxWdsITw==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/autocomplete": "^6.0.0",
+        "@codemirror/language": "^6.0.0",
+        "@codemirror/state": "^6.0.0",
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.2.0",
+        "@lezer/lr": "^1.0.0",
+        "@lezer/yaml": "^1.0.0"
+      }
+    },
+    "node_modules/@codemirror/language": {
+      "version": "6.11.3",
+      "resolved": "https://registry.npmjs.org/@codemirror/language/-/language-6.11.3.tgz",
+      "integrity": "sha512-9HBM2XnwDj7fnu0551HkGdrUrrqmYq/WC5iv6nbY2WdicXdGbhR/gfbZOH73Aqj4351alY1+aoG9rCNfiwS1RA==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/state": "^6.0.0",
+        "@codemirror/view": "^6.23.0",
+        "@lezer/common": "^1.1.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.0.0",
+        "style-mod": "^4.0.0"
+      }
+    },
+    "node_modules/@codemirror/language-data": {
+      "version": "6.5.2",
+      "resolved": "https://registry.npmjs.org/@codemirror/language-data/-/language-data-6.5.2.tgz",
+      "integrity": "sha512-CPkWBKrNS8stYbEU5kwBwTf3JB1kghlbh4FSAwzGW2TEscdeHHH4FGysREW86Mqnj3Qn09s0/6Ea/TutmoTobg==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/lang-angular": "^0.1.0",
+        "@codemirror/lang-cpp": "^6.0.0",
+        "@codemirror/lang-css": "^6.0.0",
+        "@codemirror/lang-go": "^6.0.0",
+        "@codemirror/lang-html": "^6.0.0",
+        "@codemirror/lang-java": "^6.0.0",
+        "@codemirror/lang-javascript": "^6.0.0",
+        "@codemirror/lang-jinja": "^6.0.0",
+        "@codemirror/lang-json": "^6.0.0",
+        "@codemirror/lang-less": "^6.0.0",
+        "@codemirror/lang-liquid": "^6.0.0",
+        "@codemirror/lang-markdown": "^6.0.0",
+        "@codemirror/lang-php": "^6.0.0",
+        "@codemirror/lang-python": "^6.0.0",
+        "@codemirror/lang-rust": "^6.0.0",
+        "@codemirror/lang-sass": "^6.0.0",
+        "@codemirror/lang-sql": "^6.0.0",
+        "@codemirror/lang-vue": "^0.1.1",
+        "@codemirror/lang-wast": "^6.0.0",
+        "@codemirror/lang-xml": "^6.0.0",
+        "@codemirror/lang-yaml": "^6.0.0",
+        "@codemirror/language": "^6.0.0",
+        "@codemirror/legacy-modes": "^6.4.0"
+      }
+    },
+    "node_modules/@codemirror/legacy-modes": {
+      "version": "6.5.2",
+      "resolved": "https://registry.npmjs.org/@codemirror/legacy-modes/-/legacy-modes-6.5.2.tgz",
+      "integrity": "sha512-/jJbwSTazlQEDOQw2FJ8LEEKVS72pU0lx6oM54kGpL8t/NJ2Jda3CZ4pcltiKTdqYSRk3ug1B3pil1gsjA6+8Q==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/language": "^6.0.0"
+      }
+    },
+    "node_modules/@codemirror/lint": {
+      "version": "6.9.2",
+      "resolved": "https://registry.npmjs.org/@codemirror/lint/-/lint-6.9.2.tgz",
+      "integrity": "sha512-sv3DylBiIyi+xKwRCJAAsBZZZWo82shJ/RTMymLabAdtbkV5cSKwWDeCgtUq3v8flTaXS2y1kKkICuRYtUswyQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/state": "^6.0.0",
+        "@codemirror/view": "^6.35.0",
+        "crelt": "^1.0.5"
+      }
+    },
+    "node_modules/@codemirror/merge": {
+      "version": "6.11.2",
+      "resolved": "https://registry.npmjs.org/@codemirror/merge/-/merge-6.11.2.tgz",
+      "integrity": "sha512-NO5EJd2rLRbwVWLgMdhIntDIhfDtMOKYEZgqV5WnkNUS2oXOCVWLPjG/kgl/Jth2fGiOuG947bteqxP9nBXmMg==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/language": "^6.0.0",
+        "@codemirror/state": "^6.0.0",
+        "@codemirror/view": "^6.17.0",
+        "@lezer/highlight": "^1.0.0",
+        "style-mod": "^4.1.0"
+      }
+    },
+    "node_modules/@codemirror/search": {
+      "version": "6.5.11",
+      "resolved": "https://registry.npmjs.org/@codemirror/search/-/search-6.5.11.tgz",
+      "integrity": "sha512-KmWepDE6jUdL6n8cAAqIpRmLPBZ5ZKnicE8oGU/s3QrAVID+0VhLFrzUucVKHG5035/BSykhExDL/Xm7dHthiA==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/state": "^6.0.0",
+        "@codemirror/view": "^6.0.0",
+        "crelt": "^1.0.5"
+      }
+    },
+    "node_modules/@codemirror/state": {
+      "version": "6.5.2",
+      "resolved": "https://registry.npmjs.org/@codemirror/state/-/state-6.5.2.tgz",
+      "integrity": "sha512-FVqsPqtPWKVVL3dPSxy8wEF/ymIEuVzF1PK3VbUgrxXpJUSHQWWZz4JMToquRxnkw+36LTamCZG2iua2Ptq0fA==",
+      "license": "MIT",
+      "dependencies": {
+        "@marijn/find-cluster-break": "^1.0.0"
+      }
+    },
+    "node_modules/@codemirror/view": {
+      "version": "6.38.8",
+      "resolved": "https://registry.npmjs.org/@codemirror/view/-/view-6.38.8.tgz",
+      "integrity": "sha512-XcE9fcnkHCbWkjeKyi0lllwXmBLtyYb5dt89dJyx23I9+LSh5vZDIuk7OLG4VM1lgrXZQcY6cxyZyk5WVPRv/A==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/state": "^6.5.0",
+        "crelt": "^1.0.6",
+        "style-mod": "^4.1.0",
+        "w3c-keyname": "^2.2.4"
+      }
+    },
+    "node_modules/@codesandbox/nodebox": {
+      "version": "0.1.8",
+      "resolved": "https://registry.npmjs.org/@codesandbox/nodebox/-/nodebox-0.1.8.tgz",
+      "integrity": "sha512-2VRS6JDSk+M+pg56GA6CryyUSGPjBEe8Pnae0QL3jJF1mJZJVMDKr93gJRtBbLkfZN6LD/DwMtf+2L0bpWrjqg==",
+      "license": "SEE LICENSE IN ./LICENSE",
+      "dependencies": {
+        "outvariant": "^1.4.0",
+        "strict-event-emitter": "^0.4.3"
+      }
+    },
+    "node_modules/@codesandbox/sandpack-client": {
+      "version": "2.19.8",
+      "resolved": "https://registry.npmjs.org/@codesandbox/sandpack-client/-/sandpack-client-2.19.8.tgz",
+      "integrity": "sha512-CMV4nr1zgKzVpx4I3FYvGRM5YT0VaQhALMW9vy4wZRhEyWAtJITQIqZzrTGWqB1JvV7V72dVEUCUPLfYz5hgJQ==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@codesandbox/nodebox": "0.1.8",
+        "buffer": "^6.0.3",
+        "dequal": "^2.0.2",
+        "mime-db": "^1.52.0",
+        "outvariant": "1.4.0",
+        "static-browser-server": "1.0.3"
+      }
+    },
+    "node_modules/@codesandbox/sandpack-react": {
+      "version": "2.20.0",
+      "resolved": "https://registry.npmjs.org/@codesandbox/sandpack-react/-/sandpack-react-2.20.0.tgz",
+      "integrity": "sha512-takd1YpW/PMQ6KPQfvseWLHWklJovGY8QYj8MtWnskGKbjOGJ6uZfyZbcJ6aCFLQMpNyjTqz9AKNbvhCOZ1TUQ==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@codemirror/autocomplete": "^6.4.0",
+        "@codemirror/commands": "^6.1.3",
+        "@codemirror/lang-css": "^6.0.1",
+        "@codemirror/lang-html": "^6.4.0",
+        "@codemirror/lang-javascript": "^6.1.2",
+        "@codemirror/language": "^6.3.2",
+        "@codemirror/state": "^6.2.0",
+        "@codemirror/view": "^6.7.1",
+        "@codesandbox/sandpack-client": "^2.19.8",
+        "@lezer/highlight": "^1.1.3",
+        "@react-hook/intersection-observer": "^3.1.1",
+        "@stitches/core": "^1.2.6",
+        "anser": "^2.1.1",
+        "clean-set": "^1.1.2",
+        "dequal": "^2.0.2",
+        "escape-carriage": "^1.3.1",
+        "lz-string": "^1.4.4",
+        "react-devtools-inline": "4.4.0",
+        "react-is": "^17.0.2"
+      },
+      "peerDependencies": {
+        "react": "^16.8.0 || ^17 || ^18 || ^19",
+        "react-dom": "^16.8.0 || ^17 || ^18 || ^19"
+      }
+    },
+    "node_modules/@date-fns/tz": {
+      "version": "1.4.1",
+      "resolved": "https://registry.npmjs.org/@date-fns/tz/-/tz-1.4.1.tgz",
+      "integrity": "sha512-P5LUNhtbj6YfI3iJjw5EL9eUAG6OitD0W3fWQcpQjDRc/QIsL0tRNuO1PcDvPccWL1fSTXXdE1ds+l95DV/OFA==",
+      "license": "MIT"
+    },
+    "node_modules/@dnd-kit/accessibility": {
+      "version": "3.1.1",
+      "resolved": "https://registry.npmjs.org/@dnd-kit/accessibility/-/accessibility-3.1.1.tgz",
+      "integrity": "sha512-2P+YgaXF+gRsIihwwY1gCsQSYnu9Zyj2py8kY5fFvUM1qm2WA2u639R6YNVfU4GWr+ZM5mqEsfHZZLoRONbemw==",
+      "license": "MIT",
+      "dependencies": {
+        "tslib": "^2.0.0"
+      },
+      "peerDependencies": {
+        "react": ">=16.8.0"
+      }
+    },
+    "node_modules/@dnd-kit/core": {
+      "version": "6.3.1",
+      "resolved": "https://registry.npmjs.org/@dnd-kit/core/-/core-6.3.1.tgz",
+      "integrity": "sha512-xkGBRQQab4RLwgXxoqETICr6S5JlogafbhNsidmrkVv2YRs5MLwpjoF2qpiGjQt8S9AoxtIV603s0GIUpY5eYQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@dnd-kit/accessibility": "^3.1.1",
+        "@dnd-kit/utilities": "^3.2.2",
+        "tslib": "^2.0.0"
+      },
+      "peerDependencies": {
+        "react": ">=16.8.0",
+        "react-dom": ">=16.8.0"
+      }
+    },
+    "node_modules/@dnd-kit/sortable": {
+      "version": "10.0.0",
+      "resolved": "https://registry.npmjs.org/@dnd-kit/sortable/-/sortable-10.0.0.tgz",
+      "integrity": "sha512-+xqhmIIzvAYMGfBYYnbKuNicfSsk4RksY2XdmJhT+HAC01nix6fHCztU68jooFiMUB01Ky3F0FyOvhG/BZrWkg==",
+      "license": "MIT",
+      "dependencies": {
+        "@dnd-kit/utilities": "^3.2.2",
+        "tslib": "^2.0.0"
+      },
+      "peerDependencies": {
+        "@dnd-kit/core": "^6.3.0",
+        "react": ">=16.8.0"
+      }
+    },
+    "node_modules/@dnd-kit/utilities": {
+      "version": "3.2.2",
+      "resolved": "https://registry.npmjs.org/@dnd-kit/utilities/-/utilities-3.2.2.tgz",
+      "integrity": "sha512-+MKAJEOfaBe5SmV6t34p80MMKhjvUz0vRrvVJbPT0WElzaOJ/1xs+D+KDv+tD/NE5ujfrChEcshd4fLn0wpiqg==",
+      "license": "MIT",
+      "dependencies": {
+        "tslib": "^2.0.0"
+      },
+      "peerDependencies": {
+        "react": ">=16.8.0"
+      }
+    },
+    "node_modules/@emnapi/core": {
+      "version": "1.7.1",
+      "resolved": "https://registry.npmjs.org/@emnapi/core/-/core-1.7.1.tgz",
+      "integrity": "sha512-o1uhUASyo921r2XtHYOHy7gdkGLge8ghBEQHMWmyJFoXlpU58kIrhhN3w26lpQb6dspetweapMn2CSNwQ8I4wg==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "@emnapi/wasi-threads": "1.1.0",
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@emnapi/runtime": {
+      "version": "1.7.1",
+      "resolved": "https://registry.npmjs.org/@emnapi/runtime/-/runtime-1.7.1.tgz",
+      "integrity": "sha512-PVtJr5CmLwYAU9PZDMITZoR5iAOShYREoR45EyyLrbntV50mdePTgUn4AmOw90Ifcj+x2kRjdzr1HP3RrNiHGA==",
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@emnapi/wasi-threads": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/@emnapi/wasi-threads/-/wasi-threads-1.1.0.tgz",
+      "integrity": "sha512-WI0DdZ8xFSbgMjR1sFsKABJ/C5OnRrjT06JXbZKexJGrDuPTzZdDYfFlsgcCXCyf+suG5QU2e/y1Wo2V/OapLQ==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@esbuild/aix-ppc64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/aix-ppc64/-/aix-ppc64-0.25.12.tgz",
+      "integrity": "sha512-Hhmwd6CInZ3dwpuGTF8fJG6yoWmsToE+vYgD4nytZVxcu1ulHpUQRAB1UJ8+N1Am3Mz4+xOByoQoSZf4D+CpkA==",
+      "cpu": [
+        "ppc64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "aix"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/android-arm": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/android-arm/-/android-arm-0.25.12.tgz",
+      "integrity": "sha512-VJ+sKvNA/GE7Ccacc9Cha7bpS8nyzVv0jdVgwNDaR4gDMC/2TTRc33Ip8qrNYUcpkOHUT5OZ0bUcNNVZQ9RLlg==",
+      "cpu": [
+        "arm"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/android-arm64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.25.12.tgz",
+      "integrity": "sha512-6AAmLG7zwD1Z159jCKPvAxZd4y/VTO0VkprYy+3N2FtJ8+BQWFXU+OxARIwA46c5tdD9SsKGZ/1ocqBS/gAKHg==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/android-x64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/android-x64/-/android-x64-0.25.12.tgz",
+      "integrity": "sha512-5jbb+2hhDHx5phYR2By8GTWEzn6I9UqR11Kwf22iKbNpYrsmRB18aX/9ivc5cabcUiAT/wM+YIZ6SG9QO6a8kg==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/darwin-arm64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.25.12.tgz",
+      "integrity": "sha512-N3zl+lxHCifgIlcMUP5016ESkeQjLj/959RxxNYIthIg+CQHInujFuXeWbWMgnTo4cp5XVHqFPmpyu9J65C1Yg==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/darwin-x64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.25.12.tgz",
+      "integrity": "sha512-HQ9ka4Kx21qHXwtlTUVbKJOAnmG1ipXhdWTmNXiPzPfWKpXqASVcWdnf2bnL73wgjNrFXAa3yYvBSd9pzfEIpA==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/freebsd-arm64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/freebsd-arm64/-/freebsd-arm64-0.25.12.tgz",
+      "integrity": "sha512-gA0Bx759+7Jve03K1S0vkOu5Lg/85dou3EseOGUes8flVOGxbhDDh/iZaoek11Y8mtyKPGF3vP8XhnkDEAmzeg==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/freebsd-x64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/freebsd-x64/-/freebsd-x64-0.25.12.tgz",
+      "integrity": "sha512-TGbO26Yw2xsHzxtbVFGEXBFH0FRAP7gtcPE7P5yP7wGy7cXK2oO7RyOhL5NLiqTlBh47XhmIUXuGciXEqYFfBQ==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-arm": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-arm/-/linux-arm-0.25.12.tgz",
+      "integrity": "sha512-lPDGyC1JPDou8kGcywY0YILzWlhhnRjdof3UlcoqYmS9El818LLfJJc3PXXgZHrHCAKs/Z2SeZtDJr5MrkxtOw==",
+      "cpu": [
+        "arm"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-arm64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.25.12.tgz",
+      "integrity": "sha512-8bwX7a8FghIgrupcxb4aUmYDLp8pX06rGh5HqDT7bB+8Rdells6mHvrFHHW2JAOPZUbnjUpKTLg6ECyzvas2AQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-ia32": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-ia32/-/linux-ia32-0.25.12.tgz",
+      "integrity": "sha512-0y9KrdVnbMM2/vG8KfU0byhUN+EFCny9+8g202gYqSSVMonbsCfLjUO+rCci7pM0WBEtz+oK/PIwHkzxkyharA==",
+      "cpu": [
+        "ia32"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-loong64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-loong64/-/linux-loong64-0.25.12.tgz",
+      "integrity": "sha512-h///Lr5a9rib/v1GGqXVGzjL4TMvVTv+s1DPoxQdz7l/AYv6LDSxdIwzxkrPW438oUXiDtwM10o9PmwS/6Z0Ng==",
+      "cpu": [
+        "loong64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-mips64el": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-mips64el/-/linux-mips64el-0.25.12.tgz",
+      "integrity": "sha512-iyRrM1Pzy9GFMDLsXn1iHUm18nhKnNMWscjmp4+hpafcZjrr2WbT//d20xaGljXDBYHqRcl8HnxbX6uaA/eGVw==",
+      "cpu": [
+        "mips64el"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-ppc64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.25.12.tgz",
+      "integrity": "sha512-9meM/lRXxMi5PSUqEXRCtVjEZBGwB7P/D4yT8UG/mwIdze2aV4Vo6U5gD3+RsoHXKkHCfSxZKzmDssVlRj1QQA==",
+      "cpu": [
+        "ppc64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-riscv64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-riscv64/-/linux-riscv64-0.25.12.tgz",
+      "integrity": "sha512-Zr7KR4hgKUpWAwb1f3o5ygT04MzqVrGEGXGLnj15YQDJErYu/BGg+wmFlIDOdJp0PmB0lLvxFIOXZgFRrdjR0w==",
+      "cpu": [
+        "riscv64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-s390x": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-s390x/-/linux-s390x-0.25.12.tgz",
+      "integrity": "sha512-MsKncOcgTNvdtiISc/jZs/Zf8d0cl/t3gYWX8J9ubBnVOwlk65UIEEvgBORTiljloIWnBzLs4qhzPkJcitIzIg==",
+      "cpu": [
+        "s390x"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-x64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.25.12.tgz",
+      "integrity": "sha512-uqZMTLr/zR/ed4jIGnwSLkaHmPjOjJvnm6TVVitAa08SLS9Z0VM8wIRx7gWbJB5/J54YuIMInDquWyYvQLZkgw==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/netbsd-arm64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/netbsd-arm64/-/netbsd-arm64-0.25.12.tgz",
+      "integrity": "sha512-xXwcTq4GhRM7J9A8Gv5boanHhRa/Q9KLVmcyXHCTaM4wKfIpWkdXiMog/KsnxzJ0A1+nD+zoecuzqPmCRyBGjg==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "netbsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/netbsd-x64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.25.12.tgz",
+      "integrity": "sha512-Ld5pTlzPy3YwGec4OuHh1aCVCRvOXdH8DgRjfDy/oumVovmuSzWfnSJg+VtakB9Cm0gxNO9BzWkj6mtO1FMXkQ==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "netbsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/openbsd-arm64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/openbsd-arm64/-/openbsd-arm64-0.25.12.tgz",
+      "integrity": "sha512-fF96T6KsBo/pkQI950FARU9apGNTSlZGsv1jZBAlcLL1MLjLNIWPBkj5NlSz8aAzYKg+eNqknrUJ24QBybeR5A==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "openbsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/openbsd-x64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/openbsd-x64/-/openbsd-x64-0.25.12.tgz",
+      "integrity": "sha512-MZyXUkZHjQxUvzK7rN8DJ3SRmrVrke8ZyRusHlP+kuwqTcfWLyqMOE3sScPPyeIXN/mDJIfGXvcMqCgYKekoQw==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "openbsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/openharmony-arm64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/openharmony-arm64/-/openharmony-arm64-0.25.12.tgz",
+      "integrity": "sha512-rm0YWsqUSRrjncSXGA7Zv78Nbnw4XL6/dzr20cyrQf7ZmRcsovpcRBdhD43Nuk3y7XIoW2OxMVvwuRvk9XdASg==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "openharmony"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/sunos-x64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.25.12.tgz",
+      "integrity": "sha512-3wGSCDyuTHQUzt0nV7bocDy72r2lI33QL3gkDNGkod22EsYl04sMf0qLb8luNKTOmgF/eDEDP5BFNwoBKH441w==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "sunos"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/win32-arm64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/win32-arm64/-/win32-arm64-0.25.12.tgz",
+      "integrity": "sha512-rMmLrur64A7+DKlnSuwqUdRKyd3UE7oPJZmnljqEptesKM8wx9J8gx5u0+9Pq0fQQW8vqeKebwNXdfOyP+8Bsg==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/win32-ia32": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/win32-ia32/-/win32-ia32-0.25.12.tgz",
+      "integrity": "sha512-HkqnmmBoCbCwxUKKNPBixiWDGCpQGVsrQfJoVGYLPT41XWF8lHuE5N6WhVia2n4o5QK5M4tYr21827fNhi4byQ==",
+      "cpu": [
+        "ia32"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/win32-x64": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.25.12.tgz",
+      "integrity": "sha512-alJC0uCZpTFrSL0CCDjcgleBXPnCrEAhTBILpeAp7M/OFgoqtAetfBzX0xM00MUsVVPpVjlPuMbREqnZCXaTnA==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@eslint-community/eslint-utils": {
+      "version": "4.9.0",
+      "resolved": "https://registry.npmjs.org/@eslint-community/eslint-utils/-/eslint-utils-4.9.0.tgz",
+      "integrity": "sha512-ayVFHdtZ+hsq1t2Dy24wCmGXGe4q9Gu3smhLYALJrr473ZH27MsnSL+LKUlimp4BWJqMDMLmPpx/Q9R3OAlL4g==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "eslint-visitor-keys": "^3.4.3"
+      },
+      "engines": {
+        "node": "^12.22.0 || ^14.17.0 || >=16.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/eslint"
+      },
+      "peerDependencies": {
+        "eslint": "^6.0.0 || ^7.0.0 || >=8.0.0"
+      }
+    },
+    "node_modules/@eslint-community/eslint-utils/node_modules/eslint-visitor-keys": {
+      "version": "3.4.3",
+      "resolved": "https://registry.npmjs.org/eslint-visitor-keys/-/eslint-visitor-keys-3.4.3.tgz",
+      "integrity": "sha512-wpc+LXeiyiisxPlEkUzU6svyS1frIO3Mgxj1fdy7Pm8Ygzguax2N3Fa/D/ag1WqbOprdI+uY6wMUl8/a2G+iag==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "engines": {
+        "node": "^12.22.0 || ^14.17.0 || >=16.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/eslint"
+      }
+    },
+    "node_modules/@eslint-community/regexpp": {
+      "version": "4.12.2",
+      "resolved": "https://registry.npmjs.org/@eslint-community/regexpp/-/regexpp-4.12.2.tgz",
+      "integrity": "sha512-EriSTlt5OC9/7SXkRSCAhfSxxoSUgBm33OH+IkwbdpgoqsSsUg7y3uh+IICI/Qg4BBWr3U2i39RpmycbxMq4ew==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^12.0.0 || ^14.0.0 || >=16.0.0"
+      }
+    },
+    "node_modules/@eslint/config-array": {
+      "version": "0.21.1",
+      "resolved": "https://registry.npmjs.org/@eslint/config-array/-/config-array-0.21.1.tgz",
+      "integrity": "sha512-aw1gNayWpdI/jSYVgzN5pL0cfzU02GT3NBpeT/DXbx1/1x7ZKxFPd9bwrzygx/qiwIQiJ1sw/zD8qY/kRvlGHA==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@eslint/object-schema": "^2.1.7",
+        "debug": "^4.3.1",
+        "minimatch": "^3.1.2"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      }
+    },
+    "node_modules/@eslint/config-helpers": {
+      "version": "0.4.2",
+      "resolved": "https://registry.npmjs.org/@eslint/config-helpers/-/config-helpers-0.4.2.tgz",
+      "integrity": "sha512-gBrxN88gOIf3R7ja5K9slwNayVcZgK6SOUORm2uBzTeIEfeVaIhOpCtTox3P6R7o2jLFwLFTLnC7kU/RGcYEgw==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@eslint/core": "^0.17.0"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      }
+    },
+    "node_modules/@eslint/core": {
+      "version": "0.17.0",
+      "resolved": "https://registry.npmjs.org/@eslint/core/-/core-0.17.0.tgz",
+      "integrity": "sha512-yL/sLrpmtDaFEiUj1osRP4TI2MDz1AddJL+jZ7KSqvBuliN4xqYY54IfdN8qD8Toa6g1iloph1fxQNkjOxrrpQ==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@types/json-schema": "^7.0.15"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      }
+    },
+    "node_modules/@eslint/eslintrc": {
+      "version": "3.3.1",
+      "resolved": "https://registry.npmjs.org/@eslint/eslintrc/-/eslintrc-3.3.1.tgz",
+      "integrity": "sha512-gtF186CXhIl1p4pJNGZw8Yc6RlshoePRvE0X91oPGb3vZ8pM3qOS9W9NGPat9LziaBV7XrJWGylNQXkGcnM3IQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ajv": "^6.12.4",
+        "debug": "^4.3.2",
+        "espree": "^10.0.1",
+        "globals": "^14.0.0",
+        "ignore": "^5.2.0",
+        "import-fresh": "^3.2.1",
+        "js-yaml": "^4.1.0",
+        "minimatch": "^3.1.2",
+        "strip-json-comments": "^3.1.1"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/eslint"
+      }
+    },
+    "node_modules/@eslint/js": {
+      "version": "9.39.1",
+      "resolved": "https://registry.npmjs.org/@eslint/js/-/js-9.39.1.tgz",
+      "integrity": "sha512-S26Stp4zCy88tH94QbBv3XCuzRQiZ9yXofEILmglYTh/Ug/a9/umqvgFtYBAo3Lp0nsI/5/qH1CCrbdK3AP1Tw==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      },
+      "funding": {
+        "url": "https://eslint.org/donate"
+      }
+    },
+    "node_modules/@eslint/object-schema": {
+      "version": "2.1.7",
+      "resolved": "https://registry.npmjs.org/@eslint/object-schema/-/object-schema-2.1.7.tgz",
+      "integrity": "sha512-VtAOaymWVfZcmZbp6E2mympDIHvyjXs/12LqWYjVw6qjrfF+VK+fyG33kChz3nnK+SU5/NeHOqrTEHS8sXO3OA==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      }
+    },
+    "node_modules/@eslint/plugin-kit": {
+      "version": "0.4.1",
+      "resolved": "https://registry.npmjs.org/@eslint/plugin-kit/-/plugin-kit-0.4.1.tgz",
+      "integrity": "sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@eslint/core": "^0.17.0",
+        "levn": "^0.4.1"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      }
+    },
+    "node_modules/@floating-ui/core": {
+      "version": "1.7.3",
+      "resolved": "https://registry.npmjs.org/@floating-ui/core/-/core-1.7.3.tgz",
+      "integrity": "sha512-sGnvb5dmrJaKEZ+LDIpguvdX3bDlEllmv4/ClQ9awcmCZrlx5jQyyMWFM5kBI+EyNOCDDiKk8il0zeuX3Zlg/w==",
+      "license": "MIT",
+      "dependencies": {
+        "@floating-ui/utils": "^0.2.10"
+      }
+    },
+    "node_modules/@floating-ui/dom": {
+      "version": "1.7.4",
+      "resolved": "https://registry.npmjs.org/@floating-ui/dom/-/dom-1.7.4.tgz",
+      "integrity": "sha512-OOchDgh4F2CchOX94cRVqhvy7b3AFb+/rQXyswmzmGakRfkMgoWVjfnLWkRirfLEfuD4ysVW16eXzwt3jHIzKA==",
+      "license": "MIT",
+      "dependencies": {
+        "@floating-ui/core": "^1.7.3",
+        "@floating-ui/utils": "^0.2.10"
+      }
+    },
+    "node_modules/@floating-ui/react": {
+      "version": "0.27.16",
+      "resolved": "https://registry.npmjs.org/@floating-ui/react/-/react-0.27.16.tgz",
+      "integrity": "sha512-9O8N4SeG2z++TSM8QA/KTeKFBVCNEz/AGS7gWPJf6KFRzmRWixFRnCnkPHRDwSVZW6QPDO6uT0P2SpWNKCc9/g==",
+      "license": "MIT",
+      "dependencies": {
+        "@floating-ui/react-dom": "^2.1.6",
+        "@floating-ui/utils": "^0.2.10",
+        "tabbable": "^6.0.0"
+      },
+      "peerDependencies": {
+        "react": ">=17.0.0",
+        "react-dom": ">=17.0.0"
+      }
+    },
+    "node_modules/@floating-ui/react-dom": {
+      "version": "2.1.6",
+      "resolved": "https://registry.npmjs.org/@floating-ui/react-dom/-/react-dom-2.1.6.tgz",
+      "integrity": "sha512-4JX6rEatQEvlmgU80wZyq9RT96HZJa88q8hp0pBd+LrczeDI4o6uA2M+uvxngVHo4Ihr8uibXxH6+70zhAFrVw==",
+      "license": "MIT",
+      "dependencies": {
+        "@floating-ui/dom": "^1.7.4"
+      },
+      "peerDependencies": {
+        "react": ">=16.8.0",
+        "react-dom": ">=16.8.0"
+      }
+    },
+    "node_modules/@floating-ui/utils": {
+      "version": "0.2.10",
+      "resolved": "https://registry.npmjs.org/@floating-ui/utils/-/utils-0.2.10.tgz",
+      "integrity": "sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==",
+      "license": "MIT"
+    },
+    "node_modules/@formatjs/ecma402-abstract": {
+      "version": "2.3.6",
+      "resolved": "https://registry.npmjs.org/@formatjs/ecma402-abstract/-/ecma402-abstract-2.3.6.tgz",
+      "integrity": "sha512-HJnTFeRM2kVFVr5gr5kH1XP6K0JcJtE7Lzvtr3FS/so5f1kpsqqqxy5JF+FRaO6H2qmcMfAUIox7AJteieRtVw==",
+      "license": "MIT",
+      "dependencies": {
+        "@formatjs/fast-memoize": "2.2.7",
+        "@formatjs/intl-localematcher": "0.6.2",
+        "decimal.js": "^10.4.3",
+        "tslib": "^2.8.0"
+      }
+    },
+    "node_modules/@formatjs/ecma402-abstract/node_modules/@formatjs/intl-localematcher": {
+      "version": "0.6.2",
+      "resolved": "https://registry.npmjs.org/@formatjs/intl-localematcher/-/intl-localematcher-0.6.2.tgz",
+      "integrity": "sha512-XOMO2Hupl0wdd172Y06h6kLpBz6Dv+J4okPLl4LPtzbr8f66WbIoy4ev98EBuZ6ZK4h5ydTN6XneT4QVpD7cdA==",
+      "license": "MIT",
+      "dependencies": {
+        "tslib": "^2.8.0"
+      }
+    },
+    "node_modules/@formatjs/fast-memoize": {
+      "version": "2.2.7",
+      "resolved": "https://registry.npmjs.org/@formatjs/fast-memoize/-/fast-memoize-2.2.7.tgz",
+      "integrity": "sha512-Yabmi9nSvyOMrlSeGGWDiH7rf3a7sIwplbvo/dlz9WCIjzIQAfy1RMf4S0X3yG724n5Ghu2GmEl5NJIV6O9sZQ==",
+      "license": "MIT",
+      "dependencies": {
+        "tslib": "^2.8.0"
+      }
+    },
+    "node_modules/@formatjs/icu-messageformat-parser": {
+      "version": "2.11.4",
+      "resolved": "https://registry.npmjs.org/@formatjs/icu-messageformat-parser/-/icu-messageformat-parser-2.11.4.tgz",
+      "integrity": "sha512-7kR78cRrPNB4fjGFZg3Rmj5aah8rQj9KPzuLsmcSn4ipLXQvC04keycTI1F7kJYDwIXtT2+7IDEto842CfZBtw==",
+      "license": "MIT",
+      "dependencies": {
+        "@formatjs/ecma402-abstract": "2.3.6",
+        "@formatjs/icu-skeleton-parser": "1.8.16",
+        "tslib": "^2.8.0"
+      }
+    },
+    "node_modules/@formatjs/icu-skeleton-parser": {
+      "version": "1.8.16",
+      "resolved": "https://registry.npmjs.org/@formatjs/icu-skeleton-parser/-/icu-skeleton-parser-1.8.16.tgz",
+      "integrity": "sha512-H13E9Xl+PxBd8D5/6TVUluSpxGNvFSlN/b3coUp0e0JpuWXXnQDiavIpY3NnvSp4xhEMoXyyBvVfdFX8jglOHQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@formatjs/ecma402-abstract": "2.3.6",
+        "tslib": "^2.8.0"
+      }
+    },
+    "node_modules/@formatjs/intl-localematcher": {
+      "version": "0.5.10",
+      "resolved": "https://registry.npmjs.org/@formatjs/intl-localematcher/-/intl-localematcher-0.5.10.tgz",
+      "integrity": "sha512-af3qATX+m4Rnd9+wHcjJ4w2ijq+rAVP3CCinJQvFv1kgSu1W6jypUmvleJxcewdxmutM8dmIRZFxO/IQBZmP2Q==",
+      "license": "MIT",
+      "dependencies": {
+        "tslib": "2"
+      }
+    },
+    "node_modules/@hookform/resolvers": {
+      "version": "5.2.2",
+      "resolved": "https://registry.npmjs.org/@hookform/resolvers/-/resolvers-5.2.2.tgz",
+      "integrity": "sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA==",
+      "license": "MIT",
+      "dependencies": {
+        "@standard-schema/utils": "^0.3.0"
+      },
+      "peerDependencies": {
+        "react-hook-form": "^7.55.0"
+      }
+    },
+    "node_modules/@humanfs/core": {
+      "version": "0.19.1",
+      "resolved": "https://registry.npmjs.org/@humanfs/core/-/core-0.19.1.tgz",
+      "integrity": "sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">=18.18.0"
+      }
+    },
+    "node_modules/@humanfs/node": {
+      "version": "0.16.7",
+      "resolved": "https://registry.npmjs.org/@humanfs/node/-/node-0.16.7.tgz",
+      "integrity": "sha512-/zUx+yOsIrG4Y43Eh2peDeKCxlRt/gET6aHfaKpuq267qXdYDFViVHfMaLyygZOnl0kGWxFIgsBy8QFuTLUXEQ==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@humanfs/core": "^0.19.1",
+        "@humanwhocodes/retry": "^0.4.0"
+      },
+      "engines": {
+        "node": ">=18.18.0"
+      }
+    },
+    "node_modules/@humanwhocodes/module-importer": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/@humanwhocodes/module-importer/-/module-importer-1.0.1.tgz",
+      "integrity": "sha512-bxveV4V8v5Yb4ncFTT3rPSgZBOpCkjfK0y4oVVVJwIuDVBRMDXrPyXRL988i5ap9m9bnyEEjWfm5WkBmtffLfA==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">=12.22"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/nzakas"
+      }
+    },
+    "node_modules/@humanwhocodes/retry": {
+      "version": "0.4.3",
+      "resolved": "https://registry.npmjs.org/@humanwhocodes/retry/-/retry-0.4.3.tgz",
+      "integrity": "sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">=18.18"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/nzakas"
+      }
+    },
+    "node_modules/@img/colour": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/@img/colour/-/colour-1.0.0.tgz",
+      "integrity": "sha512-A5P/LfWGFSl6nsckYtjw9da+19jB8hkJ6ACTGcDfEJ0aE+l2n2El7dsVM7UVHZQ9s2lmYMWlrS21YLy2IR1LUw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@img/sharp-darwin-arm64": {
+      "version": "0.34.5",
+      "resolved": "https://registry.npmjs.org/@img/sharp-darwin-arm64/-/sharp-darwin-arm64-0.34.5.tgz",
+      "integrity": "sha512-imtQ3WMJXbMY4fxb/Ndp6HBTNVtWCUI0WdobyheGf5+ad6xX8VIDO8u2xE4qc/fr08CKG/7dDseFtn6M6g/r3w==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "Apache-2.0",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      },
+      "optionalDependencies": {
+        "@img/sharp-libvips-darwin-arm64": "1.2.4"
+      }
+    },
+    "node_modules/@img/sharp-darwin-x64": {
+      "version": "0.34.5",
+      "resolved": "https://registry.npmjs.org/@img/sharp-darwin-x64/-/sharp-darwin-x64-0.34.5.tgz",
+      "integrity": "sha512-YNEFAF/4KQ/PeW0N+r+aVVsoIY0/qxxikF2SWdp+NRkmMB7y9LBZAVqQ4yhGCm/H3H270OSykqmQMKLBhBJDEw==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "Apache-2.0",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      },
+      "optionalDependencies": {
+        "@img/sharp-libvips-darwin-x64": "1.2.4"
+      }
+    },
+    "node_modules/@img/sharp-libvips-darwin-arm64": {
+      "version": "1.2.4",
+      "resolved": "https://registry.npmjs.org/@img/sharp-libvips-darwin-arm64/-/sharp-libvips-darwin-arm64-1.2.4.tgz",
+      "integrity": "sha512-zqjjo7RatFfFoP0MkQ51jfuFZBnVE2pRiaydKJ1G/rHZvnsrHAOcQALIi9sA5co5xenQdTugCvtb1cuf78Vf4g==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "LGPL-3.0-or-later",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      }
+    },
+    "node_modules/@img/sharp-libvips-darwin-x64": {
+      "version": "1.2.4",
+      "resolved": "https://registry.npmjs.org/@img/sharp-libvips-darwin-x64/-/sharp-libvips-darwin-x64-1.2.4.tgz",
+      "integrity": "sha512-1IOd5xfVhlGwX+zXv2N93k0yMONvUlANylbJw1eTah8K/Jtpi15KC+WSiaX/nBmbm2HxRM1gZ0nSdjSsrZbGKg==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "LGPL-3.0-or-later",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      }
+    },
+    "node_modules/@img/sharp-libvips-linux-arm": {
+      "version": "1.2.4",
+      "resolved": "https://registry.npmjs.org/@img/sharp-libvips-linux-arm/-/sharp-libvips-linux-arm-1.2.4.tgz",
+      "integrity": "sha512-bFI7xcKFELdiNCVov8e44Ia4u2byA+l3XtsAj+Q8tfCwO6BQ8iDojYdvoPMqsKDkuoOo+X6HZA0s0q11ANMQ8A==",
+      "cpu": [
+        "arm"
+      ],
+      "license": "LGPL-3.0-or-later",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      }
+    },
+    "node_modules/@img/sharp-libvips-linux-arm64": {
+      "version": "1.2.4",
+      "resolved": "https://registry.npmjs.org/@img/sharp-libvips-linux-arm64/-/sharp-libvips-linux-arm64-1.2.4.tgz",
+      "integrity": "sha512-excjX8DfsIcJ10x1Kzr4RcWe1edC9PquDRRPx3YVCvQv+U5p7Yin2s32ftzikXojb1PIFc/9Mt28/y+iRklkrw==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "LGPL-3.0-or-later",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      }
+    },
+    "node_modules/@img/sharp-libvips-linux-ppc64": {
+      "version": "1.2.4",
+      "resolved": "https://registry.npmjs.org/@img/sharp-libvips-linux-ppc64/-/sharp-libvips-linux-ppc64-1.2.4.tgz",
+      "integrity": "sha512-FMuvGijLDYG6lW+b/UvyilUWu5Ayu+3r2d1S8notiGCIyYU/76eig1UfMmkZ7vwgOrzKzlQbFSuQfgm7GYUPpA==",
+      "cpu": [
+        "ppc64"
+      ],
+      "license": "LGPL-3.0-or-later",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      }
+    },
+    "node_modules/@img/sharp-libvips-linux-riscv64": {
+      "version": "1.2.4",
+      "resolved": "https://registry.npmjs.org/@img/sharp-libvips-linux-riscv64/-/sharp-libvips-linux-riscv64-1.2.4.tgz",
+      "integrity": "sha512-oVDbcR4zUC0ce82teubSm+x6ETixtKZBh/qbREIOcI3cULzDyb18Sr/Wcyx7NRQeQzOiHTNbZFF1UwPS2scyGA==",
+      "cpu": [
+        "riscv64"
+      ],
+      "license": "LGPL-3.0-or-later",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      }
+    },
+    "node_modules/@img/sharp-libvips-linux-s390x": {
+      "version": "1.2.4",
+      "resolved": "https://registry.npmjs.org/@img/sharp-libvips-linux-s390x/-/sharp-libvips-linux-s390x-1.2.4.tgz",
+      "integrity": "sha512-qmp9VrzgPgMoGZyPvrQHqk02uyjA0/QrTO26Tqk6l4ZV0MPWIW6LTkqOIov+J1yEu7MbFQaDpwdwJKhbJvuRxQ==",
+      "cpu": [
+        "s390x"
+      ],
+      "license": "LGPL-3.0-or-later",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      }
+    },
+    "node_modules/@img/sharp-libvips-linux-x64": {
+      "version": "1.2.4",
+      "resolved": "https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.2.4.tgz",
+      "integrity": "sha512-tJxiiLsmHc9Ax1bz3oaOYBURTXGIRDODBqhveVHonrHJ9/+k89qbLl0bcJns+e4t4rvaNBxaEZsFtSfAdquPrw==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "LGPL-3.0-or-later",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      }
+    },
+    "node_modules/@img/sharp-libvips-linuxmusl-arm64": {
+      "version": "1.2.4",
+      "resolved": "https://registry.npmjs.org/@img/sharp-libvips-linuxmusl-arm64/-/sharp-libvips-linuxmusl-arm64-1.2.4.tgz",
+      "integrity": "sha512-FVQHuwx1IIuNow9QAbYUzJ+En8KcVm9Lk5+uGUQJHaZmMECZmOlix9HnH7n1TRkXMS0pGxIJokIVB9SuqZGGXw==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "LGPL-3.0-or-later",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      }
+    },
+    "node_modules/@img/sharp-libvips-linuxmusl-x64": {
+      "version": "1.2.4",
+      "resolved": "https://registry.npmjs.org/@img/sharp-libvips-linuxmusl-x64/-/sharp-libvips-linuxmusl-x64-1.2.4.tgz",
+      "integrity": "sha512-+LpyBk7L44ZIXwz/VYfglaX/okxezESc6UxDSoyo2Ks6Jxc4Y7sGjpgU9s4PMgqgjj1gZCylTieNamqA1MF7Dg==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "LGPL-3.0-or-later",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      }
+    },
+    "node_modules/@img/sharp-linux-arm": {
+      "version": "0.34.5",
+      "resolved": "https://registry.npmjs.org/@img/sharp-linux-arm/-/sharp-linux-arm-0.34.5.tgz",
+      "integrity": "sha512-9dLqsvwtg1uuXBGZKsxem9595+ujv0sJ6Vi8wcTANSFpwV/GONat5eCkzQo/1O6zRIkh0m/8+5BjrRr7jDUSZw==",
+      "cpu": [
+        "arm"
+      ],
+      "license": "Apache-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      },
+      "optionalDependencies": {
+        "@img/sharp-libvips-linux-arm": "1.2.4"
+      }
+    },
+    "node_modules/@img/sharp-linux-arm64": {
+      "version": "0.34.5",
+      "resolved": "https://registry.npmjs.org/@img/sharp-linux-arm64/-/sharp-linux-arm64-0.34.5.tgz",
+      "integrity": "sha512-bKQzaJRY/bkPOXyKx5EVup7qkaojECG6NLYswgktOZjaXecSAeCWiZwwiFf3/Y+O1HrauiE3FVsGxFg8c24rZg==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "Apache-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      },
+      "optionalDependencies": {
+        "@img/sharp-libvips-linux-arm64": "1.2.4"
+      }
+    },
+    "node_modules/@img/sharp-linux-ppc64": {
+      "version": "0.34.5",
+      "resolved": "https://registry.npmjs.org/@img/sharp-linux-ppc64/-/sharp-linux-ppc64-0.34.5.tgz",
+      "integrity": "sha512-7zznwNaqW6YtsfrGGDA6BRkISKAAE1Jo0QdpNYXNMHu2+0dTrPflTLNkpc8l7MUP5M16ZJcUvysVWWrMefZquA==",
+      "cpu": [
+        "ppc64"
+      ],
+      "license": "Apache-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      },
+      "optionalDependencies": {
+        "@img/sharp-libvips-linux-ppc64": "1.2.4"
+      }
+    },
+    "node_modules/@img/sharp-linux-riscv64": {
+      "version": "0.34.5",
+      "resolved": "https://registry.npmjs.org/@img/sharp-linux-riscv64/-/sharp-linux-riscv64-0.34.5.tgz",
+      "integrity": "sha512-51gJuLPTKa7piYPaVs8GmByo7/U7/7TZOq+cnXJIHZKavIRHAP77e3N2HEl3dgiqdD/w0yUfiJnII77PuDDFdw==",
+      "cpu": [
+        "riscv64"
+      ],
+      "license": "Apache-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      },
+      "optionalDependencies": {
+        "@img/sharp-libvips-linux-riscv64": "1.2.4"
+      }
+    },
+    "node_modules/@img/sharp-linux-s390x": {
+      "version": "0.34.5",
+      "resolved": "https://registry.npmjs.org/@img/sharp-linux-s390x/-/sharp-linux-s390x-0.34.5.tgz",
+      "integrity": "sha512-nQtCk0PdKfho3eC5MrbQoigJ2gd1CgddUMkabUj+rBevs8tZ2cULOx46E7oyX+04WGfABgIwmMC0VqieTiR4jg==",
+      "cpu": [
+        "s390x"
+      ],
+      "license": "Apache-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      },
+      "optionalDependencies": {
+        "@img/sharp-libvips-linux-s390x": "1.2.4"
+      }
+    },
+    "node_modules/@img/sharp-linux-x64": {
+      "version": "0.34.5",
+      "resolved": "https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.34.5.tgz",
+      "integrity": "sha512-MEzd8HPKxVxVenwAa+JRPwEC7QFjoPWuS5NZnBt6B3pu7EG2Ge0id1oLHZpPJdn3OQK+BQDiw9zStiHBTJQQQQ==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "Apache-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      },
+      "optionalDependencies": {
+        "@img/sharp-libvips-linux-x64": "1.2.4"
+      }
+    },
+    "node_modules/@img/sharp-linuxmusl-arm64": {
+      "version": "0.34.5",
+      "resolved": "https://registry.npmjs.org/@img/sharp-linuxmusl-arm64/-/sharp-linuxmusl-arm64-0.34.5.tgz",
+      "integrity": "sha512-fprJR6GtRsMt6Kyfq44IsChVZeGN97gTD331weR1ex1c1rypDEABN6Tm2xa1wE6lYb5DdEnk03NZPqA7Id21yg==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "Apache-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      },
+      "optionalDependencies": {
+        "@img/sharp-libvips-linuxmusl-arm64": "1.2.4"
+      }
+    },
+    "node_modules/@img/sharp-linuxmusl-x64": {
+      "version": "0.34.5",
+      "resolved": "https://registry.npmjs.org/@img/sharp-linuxmusl-x64/-/sharp-linuxmusl-x64-0.34.5.tgz",
+      "integrity": "sha512-Jg8wNT1MUzIvhBFxViqrEhWDGzqymo3sV7z7ZsaWbZNDLXRJZoRGrjulp60YYtV4wfY8VIKcWidjojlLcWrd8Q==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "Apache-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      },
+      "optionalDependencies": {
+        "@img/sharp-libvips-linuxmusl-x64": "1.2.4"
+      }
+    },
+    "node_modules/@img/sharp-wasm32": {
+      "version": "0.34.5",
+      "resolved": "https://registry.npmjs.org/@img/sharp-wasm32/-/sharp-wasm32-0.34.5.tgz",
+      "integrity": "sha512-OdWTEiVkY2PHwqkbBI8frFxQQFekHaSSkUIJkwzclWZe64O1X4UlUjqqqLaPbUpMOQk6FBu/HtlGXNblIs0huw==",
+      "cpu": [
+        "wasm32"
+      ],
+      "license": "Apache-2.0 AND LGPL-3.0-or-later AND MIT",
+      "optional": true,
+      "dependencies": {
+        "@emnapi/runtime": "^1.7.0"
+      },
+      "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      }
+    },
+    "node_modules/@img/sharp-win32-arm64": {
+      "version": "0.34.5",
+      "resolved": "https://registry.npmjs.org/@img/sharp-win32-arm64/-/sharp-win32-arm64-0.34.5.tgz",
+      "integrity": "sha512-WQ3AgWCWYSb2yt+IG8mnC6Jdk9Whs7O0gxphblsLvdhSpSTtmu69ZG1Gkb6NuvxsNACwiPV6cNSZNzt0KPsw7g==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "Apache-2.0 AND LGPL-3.0-or-later",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      }
+    },
+    "node_modules/@img/sharp-win32-ia32": {
+      "version": "0.34.5",
+      "resolved": "https://registry.npmjs.org/@img/sharp-win32-ia32/-/sharp-win32-ia32-0.34.5.tgz",
+      "integrity": "sha512-FV9m/7NmeCmSHDD5j4+4pNI8Cp3aW+JvLoXcTUo0IqyjSfAZJ8dIUmijx1qaJsIiU+Hosw6xM5KijAWRJCSgNg==",
+      "cpu": [
+        "ia32"
+      ],
+      "license": "Apache-2.0 AND LGPL-3.0-or-later",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      }
+    },
+    "node_modules/@img/sharp-win32-x64": {
+      "version": "0.34.5",
+      "resolved": "https://registry.npmjs.org/@img/sharp-win32-x64/-/sharp-win32-x64-0.34.5.tgz",
+      "integrity": "sha512-+29YMsqY2/9eFEiW93eqWnuLcWcufowXewwSNIT6UwZdUUCrM3oFjMWH/Z6/TMmb4hlFenmfAVbpWeup2jryCw==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "Apache-2.0 AND LGPL-3.0-or-later",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      }
+    },
+    "node_modules/@jridgewell/gen-mapping": {
+      "version": "0.3.13",
+      "resolved": "https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.3.13.tgz",
+      "integrity": "sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/sourcemap-codec": "^1.5.0",
+        "@jridgewell/trace-mapping": "^0.3.24"
+      }
+    },
+    "node_modules/@jridgewell/remapping": {
+      "version": "2.3.5",
+      "resolved": "https://registry.npmjs.org/@jridgewell/remapping/-/remapping-2.3.5.tgz",
+      "integrity": "sha512-LI9u/+laYG4Ds1TDKSJW2YPrIlcVYOwi2fUC6xB43lueCjgxV4lffOCZCtYFiH6TNOX+tQKXx97T4IKHbhyHEQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/gen-mapping": "^0.3.5",
+        "@jridgewell/trace-mapping": "^0.3.24"
+      }
+    },
+    "node_modules/@jridgewell/resolve-uri": {
+      "version": "3.1.2",
+      "resolved": "https://registry.npmjs.org/@jridgewell/resolve-uri/-/resolve-uri-3.1.2.tgz",
+      "integrity": "sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=6.0.0"
+      }
+    },
+    "node_modules/@jridgewell/sourcemap-codec": {
+      "version": "1.5.5",
+      "resolved": "https://registry.npmjs.org/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.5.5.tgz",
+      "integrity": "sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/@jridgewell/trace-mapping": {
+      "version": "0.3.31",
+      "resolved": "https://registry.npmjs.org/@jridgewell/trace-mapping/-/trace-mapping-0.3.31.tgz",
+      "integrity": "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/resolve-uri": "^3.1.0",
+        "@jridgewell/sourcemap-codec": "^1.4.14"
+      }
+    },
+    "node_modules/@lexical/clipboard": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/clipboard/-/clipboard-0.35.0.tgz",
+      "integrity": "sha512-ko7xSIIiayvDiqjNDX6fgH9RlcM6r9vrrvJYTcfGVBor5httx16lhIi0QJZ4+RNPvGtTjyFv4bwRmsixRRwImg==",
+      "license": "MIT",
+      "dependencies": {
+        "@lexical/html": "0.35.0",
+        "@lexical/list": "0.35.0",
+        "@lexical/selection": "0.35.0",
+        "@lexical/utils": "0.35.0",
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/code": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/code/-/code-0.35.0.tgz",
+      "integrity": "sha512-ox4DZwETQ9IA7+DS6PN8RJNwSAF7RMjL7YTVODIqFZ5tUFIf+5xoCHbz7Fll0Bvixlp12hVH90xnLwTLRGpkKw==",
+      "license": "MIT",
+      "dependencies": {
+        "@lexical/utils": "0.35.0",
+        "lexical": "0.35.0",
+        "prismjs": "^1.30.0"
+      }
+    },
+    "node_modules/@lexical/devtools-core": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/devtools-core/-/devtools-core-0.35.0.tgz",
+      "integrity": "sha512-C2wwtsMCR6ZTfO0TqpSM17RLJWyfHmifAfCTjFtOJu15p3M6NO/nHYK5Mt7YMQteuS89mOjB4ng8iwoLEZ6QpQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@lexical/html": "0.35.0",
+        "@lexical/link": "0.35.0",
+        "@lexical/mark": "0.35.0",
+        "@lexical/table": "0.35.0",
+        "@lexical/utils": "0.35.0",
+        "lexical": "0.35.0"
+      },
+      "peerDependencies": {
+        "react": ">=17.x",
+        "react-dom": ">=17.x"
+      }
+    },
+    "node_modules/@lexical/dragon": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/dragon/-/dragon-0.35.0.tgz",
+      "integrity": "sha512-SL6mT5pcqrt6hEbJ16vWxip5+r3uvMd0bQV5UUxuk+cxIeuP86iTgRh0HFR7SM2dRTYovL6/tM/O+8QLAUGTIg==",
+      "license": "MIT",
+      "dependencies": {
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/hashtag": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/hashtag/-/hashtag-0.35.0.tgz",
+      "integrity": "sha512-LYJWzXuO2ZjKsvQwrLkNZiS2TsjwYkKjlDgtugzejquTBQ/o/nfSn/MmVx6EkYLOYizaJemmZbz3IBh+u732FA==",
+      "license": "MIT",
+      "dependencies": {
+        "@lexical/utils": "0.35.0",
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/history": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/history/-/history-0.35.0.tgz",
+      "integrity": "sha512-onjDRLLxGbCfHexSxxrQaDaieIHyV28zCDrbxR5dxTfW8F8PxjuNyuaG0z6o468AXYECmclxkP+P4aT6poHEpQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@lexical/utils": "0.35.0",
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/html": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/html/-/html-0.35.0.tgz",
+      "integrity": "sha512-rXGFE5S5rKsg3tVnr1s4iEgOfCApNXGpIFI3T2jGEShaCZ5HLaBY9NVBXnE9Nb49e9bkDkpZ8FZd1qokCbQXbw==",
+      "license": "MIT",
+      "dependencies": {
+        "@lexical/selection": "0.35.0",
+        "@lexical/utils": "0.35.0",
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/link": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/link/-/link-0.35.0.tgz",
+      "integrity": "sha512-+0Wx6cBwO8TfdMzpkYFacsmgFh8X1rkiYbq3xoLvk3qV8upYxaMzK1s8Q1cpKmWyI0aZrU6z7fiK4vUqB7+69w==",
+      "license": "MIT",
+      "dependencies": {
+        "@lexical/utils": "0.35.0",
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/list": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/list/-/list-0.35.0.tgz",
+      "integrity": "sha512-owsmc8iwgExBX8sFe8fKTiwJVhYULt9hD1RZ/HwfaiEtRZZkINijqReOBnW2mJfRxBzhFSWc4NG3ISB+fHYzqw==",
+      "license": "MIT",
+      "dependencies": {
+        "@lexical/selection": "0.35.0",
+        "@lexical/utils": "0.35.0",
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/mark": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/mark/-/mark-0.35.0.tgz",
+      "integrity": "sha512-W0hwMTAVeexvpk9/+J6n1G/sNkpI/Meq1yeDazahFLLAwXLHtvhIAq2P/klgFknDy1hr8X7rcsQuN/bqKcKHYg==",
+      "license": "MIT",
+      "dependencies": {
+        "@lexical/utils": "0.35.0",
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/markdown": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/markdown/-/markdown-0.35.0.tgz",
+      "integrity": "sha512-BlNyXZAt4gWidMw0SRWrhBETY1BpPglFBZI7yzfqukFqgXRh7HUQA28OYeI/nsx9pgNob8TiUduUwShqqvOdEA==",
+      "license": "MIT",
+      "dependencies": {
+        "@lexical/code": "0.35.0",
+        "@lexical/link": "0.35.0",
+        "@lexical/list": "0.35.0",
+        "@lexical/rich-text": "0.35.0",
+        "@lexical/text": "0.35.0",
+        "@lexical/utils": "0.35.0",
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/offset": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/offset/-/offset-0.35.0.tgz",
+      "integrity": "sha512-DRE4Df6qYf2XiV6foh6KpGNmGAv2ANqt3oVXpyS6W8hTx3+cUuAA1APhCZmLNuU107um4zmHym7taCu6uXW5Yg==",
+      "license": "MIT",
+      "dependencies": {
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/overflow": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/overflow/-/overflow-0.35.0.tgz",
+      "integrity": "sha512-B25YvnJQTGlZcrNv7b0PJBLWq3tl8sql497OHfYYLem7EOMPKKDGJScJAKM/91D4H/mMAsx5gnA/XgKobriuTg==",
+      "license": "MIT",
+      "dependencies": {
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/plain-text": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/plain-text/-/plain-text-0.35.0.tgz",
+      "integrity": "sha512-lwBCUNMJf7Gujp2syVWMpKRahfbTv5Wq+H3HK1Q1gKH1P2IytPRxssCHvexw9iGwprSyghkKBlbF3fGpEdIJvQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@lexical/clipboard": "0.35.0",
+        "@lexical/selection": "0.35.0",
+        "@lexical/utils": "0.35.0",
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/react": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/react/-/react-0.35.0.tgz",
+      "integrity": "sha512-uYAZSqumH8tRymMef+A0f2hQvMwplKK9DXamcefnk3vSNDHHqRWQXpiUo6kD+rKWuQmMbVa5RW4xRQebXEW+1A==",
+      "license": "MIT",
+      "dependencies": {
+        "@floating-ui/react": "^0.27.8",
+        "@lexical/devtools-core": "0.35.0",
+        "@lexical/dragon": "0.35.0",
+        "@lexical/hashtag": "0.35.0",
+        "@lexical/history": "0.35.0",
+        "@lexical/link": "0.35.0",
+        "@lexical/list": "0.35.0",
+        "@lexical/mark": "0.35.0",
+        "@lexical/markdown": "0.35.0",
+        "@lexical/overflow": "0.35.0",
+        "@lexical/plain-text": "0.35.0",
+        "@lexical/rich-text": "0.35.0",
+        "@lexical/table": "0.35.0",
+        "@lexical/text": "0.35.0",
+        "@lexical/utils": "0.35.0",
+        "@lexical/yjs": "0.35.0",
+        "lexical": "0.35.0",
+        "react-error-boundary": "^3.1.4"
+      },
+      "peerDependencies": {
+        "react": ">=17.x",
+        "react-dom": ">=17.x"
+      }
+    },
+    "node_modules/@lexical/rich-text": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/rich-text/-/rich-text-0.35.0.tgz",
+      "integrity": "sha512-qEHu8g7vOEzz9GUz1VIUxZBndZRJPh9iJUFI+qTDHj+tQqnd5LCs+G9yz6jgNfiuWWpezTp0i1Vz/udNEuDPKQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@lexical/clipboard": "0.35.0",
+        "@lexical/selection": "0.35.0",
+        "@lexical/utils": "0.35.0",
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/selection": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/selection/-/selection-0.35.0.tgz",
+      "integrity": "sha512-mMtDE7Q0nycXdFTTH/+ta6EBrBwxBB4Tg8QwsGntzQ1Cq//d838dpXpFjJOqHEeVHUqXpiuj+cBG8+bvz/rPRw==",
+      "license": "MIT",
+      "dependencies": {
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/table": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/table/-/table-0.35.0.tgz",
+      "integrity": "sha512-9jlTlkVideBKwsEnEkqkdg7A3mije1SvmfiqoYnkl1kKJCLA5iH90ywx327PU0p+bdnURAytWUeZPXaEuEl2OA==",
+      "license": "MIT",
+      "dependencies": {
+        "@lexical/clipboard": "0.35.0",
+        "@lexical/utils": "0.35.0",
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/text": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/text/-/text-0.35.0.tgz",
+      "integrity": "sha512-uaMh46BkysV8hK8wQwp5g/ByZW+2hPDt8ahAErxtf8NuzQem1FHG/f5RTchmFqqUDVHO3qLNTv4AehEGmXv8MA==",
+      "license": "MIT",
+      "dependencies": {
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/utils": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/utils/-/utils-0.35.0.tgz",
+      "integrity": "sha512-2H393EYDnFznYCDFOW3MHiRzwEO5M/UBhtUjvTT+9kc+qhX4U3zc8ixQalo5UmZ5B2nh7L/inXdTFzvSRXtsRA==",
+      "license": "MIT",
+      "dependencies": {
+        "@lexical/list": "0.35.0",
+        "@lexical/selection": "0.35.0",
+        "@lexical/table": "0.35.0",
+        "lexical": "0.35.0"
+      }
+    },
+    "node_modules/@lexical/yjs": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/@lexical/yjs/-/yjs-0.35.0.tgz",
+      "integrity": "sha512-3DSP7QpmTGYU9bN/yljP0PIao4tNIQtsR4ycauWNSawxs/GQCZtSmAPcLRnCm6qpqsDDjUtKjO/1Ej8FRp0m0w==",
+      "license": "MIT",
+      "dependencies": {
+        "@lexical/offset": "0.35.0",
+        "@lexical/selection": "0.35.0",
+        "lexical": "0.35.0"
+      },
+      "peerDependencies": {
+        "yjs": ">=13.5.22"
+      }
+    },
+    "node_modules/@lezer/common": {
+      "version": "1.3.0",
+      "resolved": "https://registry.npmjs.org/@lezer/common/-/common-1.3.0.tgz",
+      "integrity": "sha512-L9X8uHCYU310o99L3/MpJKYxPzXPOS7S0NmBaM7UO/x2Kb2WbmMLSkfvdr1KxRIFYOpbY0Jhn7CfLSUDzL8arQ==",
+      "license": "MIT"
+    },
+    "node_modules/@lezer/cpp": {
+      "version": "1.1.3",
+      "resolved": "https://registry.npmjs.org/@lezer/cpp/-/cpp-1.1.3.tgz",
+      "integrity": "sha512-ykYvuFQKGsRi6IcE+/hCSGUhb/I4WPjd3ELhEblm2wS2cOznDFzO+ubK2c+ioysOnlZ3EduV+MVQFCPzAIoY3w==",
+      "license": "MIT",
+      "dependencies": {
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.0.0"
+      }
+    },
+    "node_modules/@lezer/css": {
+      "version": "1.3.0",
+      "resolved": "https://registry.npmjs.org/@lezer/css/-/css-1.3.0.tgz",
+      "integrity": "sha512-pBL7hup88KbI7hXnZV3PQsn43DHy6TWyzuyk2AO9UyoXcDltvIdqWKE1dLL/45JVZ+YZkHe1WVHqO6wugZZWcw==",
+      "license": "MIT",
+      "dependencies": {
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.3.0"
+      }
+    },
+    "node_modules/@lezer/go": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/@lezer/go/-/go-1.0.1.tgz",
+      "integrity": "sha512-xToRsYxwsgJNHTgNdStpcvmbVuKxTapV0dM0wey1geMMRc9aggoVyKgzYp41D2/vVOx+Ii4hmE206kvxIXBVXQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.3.0"
+      }
+    },
+    "node_modules/@lezer/highlight": {
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/@lezer/highlight/-/highlight-1.2.3.tgz",
+      "integrity": "sha512-qXdH7UqTvGfdVBINrgKhDsVTJTxactNNxLk7+UMwZhU13lMHaOBlJe9Vqp907ya56Y3+ed2tlqzys7jDkTmW0g==",
+      "license": "MIT",
+      "dependencies": {
+        "@lezer/common": "^1.3.0"
+      }
+    },
+    "node_modules/@lezer/html": {
+      "version": "1.3.12",
+      "resolved": "https://registry.npmjs.org/@lezer/html/-/html-1.3.12.tgz",
+      "integrity": "sha512-RJ7eRWdaJe3bsiiLLHjCFT1JMk8m1YP9kaUbvu2rMLEoOnke9mcTVDyfOslsln0LtujdWespjJ39w6zo+RsQYw==",
+      "license": "MIT",
+      "dependencies": {
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.0.0"
+      }
+    },
+    "node_modules/@lezer/java": {
+      "version": "1.1.3",
+      "resolved": "https://registry.npmjs.org/@lezer/java/-/java-1.1.3.tgz",
+      "integrity": "sha512-yHquUfujwg6Yu4Fd1GNHCvidIvJwi/1Xu2DaKl/pfWIA2c1oXkVvawH3NyXhCaFx4OdlYBVX5wvz2f7Aoa/4Xw==",
+      "license": "MIT",
+      "dependencies": {
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.0.0"
+      }
+    },
+    "node_modules/@lezer/javascript": {
+      "version": "1.5.4",
+      "resolved": "https://registry.npmjs.org/@lezer/javascript/-/javascript-1.5.4.tgz",
+      "integrity": "sha512-vvYx3MhWqeZtGPwDStM2dwgljd5smolYD2lR2UyFcHfxbBQebqx8yjmFmxtJ/E6nN6u1D9srOiVWm3Rb4tmcUA==",
+      "license": "MIT",
+      "dependencies": {
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.1.3",
+        "@lezer/lr": "^1.3.0"
+      }
+    },
+    "node_modules/@lezer/json": {
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/@lezer/json/-/json-1.0.3.tgz",
+      "integrity": "sha512-BP9KzdF9Y35PDpv04r0VeSTKDeox5vVr3efE7eBbx3r4s3oNLfunchejZhjArmeieBH+nVOpgIiBJpEAv8ilqQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.0.0"
+      }
+    },
+    "node_modules/@lezer/lr": {
+      "version": "1.4.3",
+      "resolved": "https://registry.npmjs.org/@lezer/lr/-/lr-1.4.3.tgz",
+      "integrity": "sha512-yenN5SqAxAPv/qMnpWW0AT7l+SxVrgG+u0tNsRQWqbrz66HIl8DnEbBObvy21J5K7+I1v7gsAnlE2VQ5yYVSeA==",
+      "license": "MIT",
+      "dependencies": {
+        "@lezer/common": "^1.0.0"
+      }
+    },
+    "node_modules/@lezer/markdown": {
+      "version": "1.6.0",
+      "resolved": "https://registry.npmjs.org/@lezer/markdown/-/markdown-1.6.0.tgz",
+      "integrity": "sha512-AXb98u3M6BEzTnreBnGtQaF7xFTiMA92Dsy5tqEjpacbjRxDSFdN4bKJo9uvU4cEEOS7D2B9MT7kvDgOEIzJSw==",
+      "license": "MIT",
+      "dependencies": {
+        "@lezer/common": "^1.0.0",
+        "@lezer/highlight": "^1.0.0"
+      }
+    },
+    "node_modules/@lezer/php": {
+      "version": "1.0.5",
+      "resolved": "https://registry.npmjs.org/@lezer/php/-/php-1.0.5.tgz",
+      "integrity": "sha512-W7asp9DhM6q0W6DYNwIkLSKOvxlXRrif+UXBMxzsJUuqmhE7oVU+gS3THO4S/Puh7Xzgm858UNaFi6dxTP8dJA==",
+      "license": "MIT",
+      "dependencies": {
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.1.0"
+      }
+    },
+    "node_modules/@lezer/python": {
+      "version": "1.1.18",
+      "resolved": "https://registry.npmjs.org/@lezer/python/-/python-1.1.18.tgz",
+      "integrity": "sha512-31FiUrU7z9+d/ElGQLJFXl+dKOdx0jALlP3KEOsGTex8mvj+SoE1FgItcHWK/axkxCHGUSpqIHt6JAWfWu9Rhg==",
+      "license": "MIT",
+      "dependencies": {
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.0.0"
+      }
+    },
+    "node_modules/@lezer/rust": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/@lezer/rust/-/rust-1.0.2.tgz",
+      "integrity": "sha512-Lz5sIPBdF2FUXcWeCu1//ojFAZqzTQNRga0aYv6dYXqJqPfMdCAI0NzajWUd4Xijj1IKJLtjoXRPMvTKWBcqKg==",
+      "license": "MIT",
+      "dependencies": {
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.0.0"
+      }
+    },
+    "node_modules/@lezer/sass": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/@lezer/sass/-/sass-1.1.0.tgz",
+      "integrity": "sha512-3mMGdCTUZ/84ArHOuXWQr37pnf7f+Nw9ycPUeKX+wu19b7pSMcZGLbaXwvD2APMBDOGxPmpK/O6S1v1EvLoqgQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.0.0"
+      }
+    },
+    "node_modules/@lezer/xml": {
+      "version": "1.0.6",
+      "resolved": "https://registry.npmjs.org/@lezer/xml/-/xml-1.0.6.tgz",
+      "integrity": "sha512-CdDwirL0OEaStFue/66ZmFSeppuL6Dwjlk8qk153mSQwiSH/Dlri4GNymrNWnUmPl2Um7QfV1FO9KFUyX3Twww==",
+      "license": "MIT",
+      "dependencies": {
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.0.0"
+      }
+    },
+    "node_modules/@lezer/yaml": {
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/@lezer/yaml/-/yaml-1.0.3.tgz",
+      "integrity": "sha512-GuBLekbw9jDBDhGur82nuwkxKQ+a3W5H0GfaAthDXcAu+XdpS43VlnxA9E9hllkpSP5ellRDKjLLj7Lu9Wr6xA==",
+      "license": "MIT",
+      "dependencies": {
+        "@lezer/common": "^1.2.0",
+        "@lezer/highlight": "^1.0.0",
+        "@lezer/lr": "^1.4.0"
+      }
+    },
+    "node_modules/@marijn/find-cluster-break": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/@marijn/find-cluster-break/-/find-cluster-break-1.0.2.tgz",
+      "integrity": "sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==",
+      "license": "MIT"
+    },
+    "node_modules/@mdxeditor/editor": {
+      "version": "3.50.0",
+      "resolved": "https://registry.npmjs.org/@mdxeditor/editor/-/editor-3.50.0.tgz",
+      "integrity": "sha512-PJPma6JBKAufOf+gKGHlXXl2+ZtLoBbQEQK8txuNjJzncULpxQXB4oG3sUqKaQSDQPiSRtYNWE2e9jg5SteP0Q==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/commands": "^6.2.4",
+        "@codemirror/lang-markdown": "^6.2.3",
+        "@codemirror/language-data": "^6.5.1",
+        "@codemirror/merge": "^6.4.0",
+        "@codemirror/state": "^6.4.0",
+        "@codemirror/view": "^6.23.0",
+        "@codesandbox/sandpack-react": "^2.20.0",
+        "@lexical/clipboard": "^0.35.0",
+        "@lexical/link": "^0.35.0",
+        "@lexical/list": "^0.35.0",
+        "@lexical/markdown": "^0.35.0",
+        "@lexical/plain-text": "^0.35.0",
+        "@lexical/react": "^0.35.0",
+        "@lexical/rich-text": "^0.35.0",
+        "@lexical/selection": "^0.35.0",
+        "@lexical/utils": "^0.35.0",
+        "@mdxeditor/gurx": "^1.2.4",
+        "@radix-ui/colors": "^3.0.0",
+        "@radix-ui/react-dialog": "^1.1.11",
+        "@radix-ui/react-icons": "^1.3.2",
+        "@radix-ui/react-popover": "^1.1.11",
+        "@radix-ui/react-popper": "^1.2.4",
+        "@radix-ui/react-select": "^2.2.2",
+        "@radix-ui/react-toggle-group": "^1.1.7",
+        "@radix-ui/react-toolbar": "^1.1.7",
+        "@radix-ui/react-tooltip": "^1.2.4",
+        "classnames": "^2.3.2",
+        "cm6-theme-basic-light": "^0.2.0",
+        "codemirror": "^6.0.1",
+        "downshift": "^7.6.0",
+        "js-yaml": "4.1.1",
+        "lexical": "^0.35.0",
+        "mdast-util-directive": "^3.0.0",
+        "mdast-util-from-markdown": "^2.0.0",
+        "mdast-util-frontmatter": "^2.0.1",
+        "mdast-util-gfm-strikethrough": "^2.0.0",
+        "mdast-util-gfm-table": "^2.0.0",
+        "mdast-util-gfm-task-list-item": "^2.0.0",
+        "mdast-util-highlight-mark": "^1.2.2",
+        "mdast-util-mdx": "^3.0.0",
+        "mdast-util-mdx-jsx": "^3.0.0",
+        "mdast-util-to-markdown": "^2.1.0",
+        "micromark-extension-directive": "^3.0.0",
+        "micromark-extension-frontmatter": "^2.0.0",
+        "micromark-extension-gfm-strikethrough": "^2.0.0",
+        "micromark-extension-gfm-table": "^2.0.0",
+        "micromark-extension-gfm-task-list-item": "^2.0.1",
+        "micromark-extension-highlight-mark": "^1.2.0",
+        "micromark-extension-mdx-jsx": "^3.0.0",
+        "micromark-extension-mdx-md": "^2.0.0",
+        "micromark-extension-mdxjs": "^3.0.0",
+        "micromark-factory-space": "^2.0.0",
+        "micromark-util-character": "^2.0.1",
+        "micromark-util-symbol": "^2.0.0",
+        "react-hook-form": "^7.56.1",
+        "unidiff": "^1.0.2"
+      },
+      "engines": {
+        "node": ">=16"
+      },
+      "peerDependencies": {
+        "react": ">= 18 || >= 19",
+        "react-dom": ">= 18 || >= 19"
+      }
+    },
+    "node_modules/@mdxeditor/gurx": {
+      "version": "1.2.4",
+      "resolved": "https://registry.npmjs.org/@mdxeditor/gurx/-/gurx-1.2.4.tgz",
+      "integrity": "sha512-9ZykIFYhKaXaaSPCs1cuI+FvYDegJjbKwmA4ASE/zY+hJY6EYqvoye4esiO85CjhOw9aoD/izD/CU78/egVqmg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=16"
+      },
+      "peerDependencies": {
+        "react": ">= 18 || >= 19",
+        "react-dom": ">= 18 || >= 19"
+      }
+    },
+    "node_modules/@microsoft/fetch-event-source": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/@microsoft/fetch-event-source/-/fetch-event-source-2.0.1.tgz",
+      "integrity": "sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA==",
+      "license": "MIT"
+    },
+    "node_modules/@napi-rs/wasm-runtime": {
+      "version": "0.2.12",
+      "resolved": "https://registry.npmjs.org/@napi-rs/wasm-runtime/-/wasm-runtime-0.2.12.tgz",
+      "integrity": "sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "@emnapi/core": "^1.4.3",
+        "@emnapi/runtime": "^1.4.3",
+        "@tybys/wasm-util": "^0.10.0"
+      }
+    },
+    "node_modules/@next/env": {
+      "version": "15.3.5",
+      "resolved": "https://registry.npmjs.org/@next/env/-/env-15.3.5.tgz",
+      "integrity": "sha512-7g06v8BUVtN2njAX/r8gheoVffhiKFVt4nx74Tt6G4Hqw9HCLYQVx/GkH2qHvPtAHZaUNZ0VXAa0pQP6v1wk7g==",
+      "license": "MIT"
+    },
+    "node_modules/@next/eslint-plugin-next": {
+      "version": "15.3.5",
+      "resolved": "https://registry.npmjs.org/@next/eslint-plugin-next/-/eslint-plugin-next-15.3.5.tgz",
+      "integrity": "sha512-BZwWPGfp9po/rAnJcwUBaM+yT/+yTWIkWdyDwc74G9jcfTrNrmsHe+hXHljV066YNdVs8cxROxX5IgMQGX190w==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "fast-glob": "3.3.1"
+      }
+    },
+    "node_modules/@next/swc-darwin-arm64": {
+      "version": "15.3.5",
+      "resolved": "https://registry.npmjs.org/@next/swc-darwin-arm64/-/swc-darwin-arm64-15.3.5.tgz",
+      "integrity": "sha512-lM/8tilIsqBq+2nq9kbTW19vfwFve0NR7MxfkuSUbRSgXlMQoJYg+31+++XwKVSXk4uT23G2eF/7BRIKdn8t8w==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@next/swc-darwin-x64": {
+      "version": "15.3.5",
+      "resolved": "https://registry.npmjs.org/@next/swc-darwin-x64/-/swc-darwin-x64-15.3.5.tgz",
+      "integrity": "sha512-WhwegPQJ5IfoUNZUVsI9TRAlKpjGVK0tpJTL6KeiC4cux9774NYE9Wu/iCfIkL/5J8rPAkqZpG7n+EfiAfidXA==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@next/swc-linux-arm64-gnu": {
+      "version": "15.3.5",
+      "resolved": "https://registry.npmjs.org/@next/swc-linux-arm64-gnu/-/swc-linux-arm64-gnu-15.3.5.tgz",
+      "integrity": "sha512-LVD6uMOZ7XePg3KWYdGuzuvVboxujGjbcuP2jsPAN3MnLdLoZUXKRc6ixxfs03RH7qBdEHCZjyLP/jBdCJVRJQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@next/swc-linux-arm64-musl": {
+      "version": "15.3.5",
+      "resolved": "https://registry.npmjs.org/@next/swc-linux-arm64-musl/-/swc-linux-arm64-musl-15.3.5.tgz",
+      "integrity": "sha512-k8aVScYZ++BnS2P69ClK7v4nOu702jcF9AIHKu6llhHEtBSmM2zkPGl9yoqbSU/657IIIb0QHpdxEr0iW9z53A==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@next/swc-linux-x64-gnu": {
+      "version": "15.3.5",
+      "resolved": "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-15.3.5.tgz",
+      "integrity": "sha512-2xYU0DI9DGN/bAHzVwADid22ba5d/xrbrQlr2U+/Q5WkFUzeL0TDR963BdrtLS/4bMmKZGptLeg6282H/S2i8A==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@next/swc-linux-x64-musl": {
+      "version": "15.3.5",
+      "resolved": "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-15.3.5.tgz",
+      "integrity": "sha512-TRYIqAGf1KCbuAB0gjhdn5Ytd8fV+wJSM2Nh2is/xEqR8PZHxfQuaiNhoF50XfY90sNpaRMaGhF6E+qjV1b9Tg==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@next/swc-win32-arm64-msvc": {
+      "version": "15.3.5",
+      "resolved": "https://registry.npmjs.org/@next/swc-win32-arm64-msvc/-/swc-win32-arm64-msvc-15.3.5.tgz",
+      "integrity": "sha512-h04/7iMEUSMY6fDGCvdanKqlO1qYvzNxntZlCzfE8i5P0uqzVQWQquU1TIhlz0VqGQGXLrFDuTJVONpqGqjGKQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@next/swc-win32-x64-msvc": {
+      "version": "15.3.5",
+      "resolved": "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-15.3.5.tgz",
+      "integrity": "sha512-5fhH6fccXxnX2KhllnGhkYMndhOiLOLEiVGYjP2nizqeGWkN10sA9taATlXwake2E2XMvYZjjz0Uj7T0y+z1yw==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@nodelib/fs.scandir": {
+      "version": "2.1.5",
+      "resolved": "https://registry.npmjs.org/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz",
+      "integrity": "sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@nodelib/fs.stat": "2.0.5",
+        "run-parallel": "^1.1.9"
+      },
+      "engines": {
+        "node": ">= 8"
+      }
+    },
+    "node_modules/@nodelib/fs.stat": {
+      "version": "2.0.5",
+      "resolved": "https://registry.npmjs.org/@nodelib/fs.stat/-/fs.stat-2.0.5.tgz",
+      "integrity": "sha512-RkhPPp2zrqDAQA/2jNhnztcPAlv64XdhIp7a7454A5ovI7Bukxgt7MX7udwAu3zg1DcpPU0rz3VV1SeaqvY4+A==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 8"
+      }
+    },
+    "node_modules/@nodelib/fs.walk": {
+      "version": "1.2.8",
+      "resolved": "https://registry.npmjs.org/@nodelib/fs.walk/-/fs.walk-1.2.8.tgz",
+      "integrity": "sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@nodelib/fs.scandir": "2.1.5",
+        "fastq": "^1.6.0"
+      },
+      "engines": {
+        "node": ">= 8"
+      }
+    },
+    "node_modules/@nolyfill/is-core-module": {
+      "version": "1.0.39",
+      "resolved": "https://registry.npmjs.org/@nolyfill/is-core-module/-/is-core-module-1.0.39.tgz",
+      "integrity": "sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=12.4.0"
+      }
+    },
+    "node_modules/@open-draft/deferred-promise": {
+      "version": "2.2.0",
+      "resolved": "https://registry.npmjs.org/@open-draft/deferred-promise/-/deferred-promise-2.2.0.tgz",
+      "integrity": "sha512-CecwLWx3rhxVQF6V4bAgPS5t+So2sTbPgAzafKkVizyi7tlwpcFpdFqq+wqF2OwNBmqFuu6tOyouTuxgpMfzmA==",
+      "license": "MIT"
+    },
+    "node_modules/@panva/hkdf": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/@panva/hkdf/-/hkdf-1.2.1.tgz",
+      "integrity": "sha512-6oclG6Y3PiDFcoyk8srjLfVKyMfVCKJ27JwNPViuXziFpmdz+MZnZN/aKY0JGXgYuO/VghU0jcOAZgWXZ1Dmrw==",
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/panva"
+      }
+    },
+    "node_modules/@prisma/client": {
+      "version": "6.19.0",
+      "resolved": "https://registry.npmjs.org/@prisma/client/-/client-6.19.0.tgz",
+      "integrity": "sha512-QXFT+N/bva/QI2qoXmjBzL7D6aliPffIwP+81AdTGq0FXDoLxLkWivGMawG8iM5B9BKfxLIXxfWWAF6wbuJU6g==",
+      "hasInstallScript": true,
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">=18.18"
+      },
+      "peerDependencies": {
+        "prisma": "*",
+        "typescript": ">=5.1.0"
+      },
+      "peerDependenciesMeta": {
+        "prisma": {
+          "optional": true
+        },
+        "typescript": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@prisma/config": {
+      "version": "6.19.0",
+      "resolved": "https://registry.npmjs.org/@prisma/config/-/config-6.19.0.tgz",
+      "integrity": "sha512-zwCayme+NzI/WfrvFEtkFhhOaZb/hI+X8TTjzjJ252VbPxAl2hWHK5NMczmnG9sXck2lsXrxIZuK524E25UNmg==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "c12": "3.1.0",
+        "deepmerge-ts": "7.1.5",
+        "effect": "3.18.4",
+        "empathic": "2.0.0"
+      }
+    },
+    "node_modules/@prisma/debug": {
+      "version": "6.19.0",
+      "resolved": "https://registry.npmjs.org/@prisma/debug/-/debug-6.19.0.tgz",
+      "integrity": "sha512-8hAdGG7JmxrzFcTzXZajlQCidX0XNkMJkpqtfbLV54wC6LSSX6Vni25W/G+nAANwLnZ2TmwkfIuWetA7jJxJFA==",
+      "license": "Apache-2.0"
+    },
+    "node_modules/@prisma/engines": {
+      "version": "6.19.0",
+      "resolved": "https://registry.npmjs.org/@prisma/engines/-/engines-6.19.0.tgz",
+      "integrity": "sha512-pMRJ+1S6NVdXoB8QJAPIGpKZevFjxhKt0paCkRDTZiczKb7F4yTgRP8M4JdVkpQwmaD4EoJf6qA+p61godDokw==",
+      "hasInstallScript": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@prisma/debug": "6.19.0",
+        "@prisma/engines-version": "6.19.0-26.2ba551f319ab1df4bc874a89965d8b3641056773",
+        "@prisma/fetch-engine": "6.19.0",
+        "@prisma/get-platform": "6.19.0"
+      }
+    },
+    "node_modules/@prisma/engines-version": {
+      "version": "6.19.0-26.2ba551f319ab1df4bc874a89965d8b3641056773",
+      "resolved": "https://registry.npmjs.org/@prisma/engines-version/-/engines-version-6.19.0-26.2ba551f319ab1df4bc874a89965d8b3641056773.tgz",
+      "integrity": "sha512-gV7uOBQfAFlWDvPJdQxMT1aSRur3a0EkU/6cfbAC5isV67tKDWUrPauyaHNpB+wN1ebM4A9jn/f4gH+3iHSYSQ==",
+      "license": "Apache-2.0"
+    },
+    "node_modules/@prisma/fetch-engine": {
+      "version": "6.19.0",
+      "resolved": "https://registry.npmjs.org/@prisma/fetch-engine/-/fetch-engine-6.19.0.tgz",
+      "integrity": "sha512-OOx2Lda0DGrZ1rodADT06ZGqHzr7HY7LNMaFE2Vp8dp146uJld58sRuasdX0OiwpHgl8SqDTUKHNUyzEq7pDdQ==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@prisma/debug": "6.19.0",
+        "@prisma/engines-version": "6.19.0-26.2ba551f319ab1df4bc874a89965d8b3641056773",
+        "@prisma/get-platform": "6.19.0"
+      }
+    },
+    "node_modules/@prisma/get-platform": {
+      "version": "6.19.0",
+      "resolved": "https://registry.npmjs.org/@prisma/get-platform/-/get-platform-6.19.0.tgz",
+      "integrity": "sha512-ym85WDO2yDhC3fIXHWYpG3kVMBA49cL1XD2GCsCF8xbwoy2OkDQY44gEbAt2X46IQ4Apq9H6g0Ex1iFfPqEkHA==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@prisma/debug": "6.19.0"
+      }
+    },
+    "node_modules/@radix-ui/colors": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/@radix-ui/colors/-/colors-3.0.0.tgz",
+      "integrity": "sha512-FUOsGBkHrYJwCSEtWRCIfQbZG7q1e6DgxCIOe1SUQzDe/7rXXeA47s8yCn6fuTNQAj1Zq4oTFi9Yjp3wzElcxg==",
+      "license": "MIT"
+    },
+    "node_modules/@radix-ui/number": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@radix-ui/number/-/number-1.1.1.tgz",
+      "integrity": "sha512-MkKCwxlXTgz6CFoJx3pCwn07GKp36+aZyu/u2Ln2VrA5DcdyCZkASEDBTd8x5whTQQL5CiYf4prXKLcgQdv29g==",
+      "license": "MIT"
+    },
+    "node_modules/@radix-ui/primitive": {
+      "version": "1.1.3",
+      "resolved": "https://registry.npmjs.org/@radix-ui/primitive/-/primitive-1.1.3.tgz",
+      "integrity": "sha512-JTF99U/6XIjCBo0wqkU5sK10glYe27MRRsfwoiq5zzOEZLHU3A3KCMa5X/azekYRCJ0HlwI0crAXS/5dEHTzDg==",
+      "license": "MIT"
+    },
+    "node_modules/@radix-ui/react-accordion": {
+      "version": "1.2.12",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-accordion/-/react-accordion-1.2.12.tgz",
+      "integrity": "sha512-T4nygeh9YE9dLRPhAHSeOZi7HBXo+0kYIPJXayZfvWOWA0+n3dESrZbjfDPUABkUNym6Hd+f2IR113To8D2GPA==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-collapsible": "1.1.12",
+        "@radix-ui/react-collection": "1.1.7",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-direction": "1.1.1",
+        "@radix-ui/react-id": "1.1.1",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-controllable-state": "1.2.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-alert-dialog": {
+      "version": "1.1.15",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-alert-dialog/-/react-alert-dialog-1.1.15.tgz",
+      "integrity": "sha512-oTVLkEw5GpdRe29BqJ0LSDFWI3qu0vR1M0mUkOQWDIUnY/QIkLpgDMWuKxP94c2NAC2LGcgVhG1ImF3jkZ5wXw==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-dialog": "1.1.15",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-slot": "1.2.3"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-alert-dialog/node_modules/@radix-ui/react-slot": {
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-slot/-/react-slot-1.2.3.tgz",
+      "integrity": "sha512-aeNmHnBxbi2St0au6VBVC7JXFlhLlOnvIIlePNniyUNAClzmtAUEY8/pBiK3iHjufOlwA+c20/8jngo7xcrg8A==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-compose-refs": "1.1.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-arrow": {
+      "version": "1.1.7",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-arrow/-/react-arrow-1.1.7.tgz",
+      "integrity": "sha512-F+M1tLhO+mlQaOWspE8Wstg+z6PwxwRd8oQ8IXceWz92kfAmalTRf0EjrouQeo7QssEPfCn05B4Ihs1K9WQ/7w==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-primitive": "2.1.3"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-aspect-ratio": {
+      "version": "1.1.8",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-aspect-ratio/-/react-aspect-ratio-1.1.8.tgz",
+      "integrity": "sha512-5nZrJTF7gH+e0nZS7/QxFz6tJV4VimhQb1avEgtsJxvvIp5JilL+c58HICsKzPxghdwaDt48hEfPM1au4zGy+w==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-primitive": "2.1.4"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-aspect-ratio/node_modules/@radix-ui/react-primitive": {
+      "version": "2.1.4",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-primitive/-/react-primitive-2.1.4.tgz",
+      "integrity": "sha512-9hQc4+GNVtJAIEPEqlYqW5RiYdrr8ea5XQ0ZOnD6fgru+83kqT15mq2OCcbe8KnjRZl5vF3ks69AKz3kh1jrhg==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-slot": "1.2.4"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-avatar": {
+      "version": "1.1.11",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-avatar/-/react-avatar-1.1.11.tgz",
+      "integrity": "sha512-0Qk603AHGV28BOBO34p7IgD5m+V5Sg/YovfayABkoDDBM5d3NCx0Mp4gGrjzLGes1jV5eNOE1r3itqOR33VC6Q==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-context": "1.1.3",
+        "@radix-ui/react-primitive": "2.1.4",
+        "@radix-ui/react-use-callback-ref": "1.1.1",
+        "@radix-ui/react-use-is-hydrated": "0.1.0",
+        "@radix-ui/react-use-layout-effect": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-avatar/node_modules/@radix-ui/react-context": {
+      "version": "1.1.3",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-context/-/react-context-1.1.3.tgz",
+      "integrity": "sha512-ieIFACdMpYfMEjF0rEf5KLvfVyIkOz6PDGyNnP+u+4xQ6jny3VCgA4OgXOwNx2aUkxn8zx9fiVcM8CfFYv9Lxw==",
+      "license": "MIT",
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-avatar/node_modules/@radix-ui/react-primitive": {
+      "version": "2.1.4",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-primitive/-/react-primitive-2.1.4.tgz",
+      "integrity": "sha512-9hQc4+GNVtJAIEPEqlYqW5RiYdrr8ea5XQ0ZOnD6fgru+83kqT15mq2OCcbe8KnjRZl5vF3ks69AKz3kh1jrhg==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-slot": "1.2.4"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-checkbox": {
+      "version": "1.3.3",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-checkbox/-/react-checkbox-1.3.3.tgz",
+      "integrity": "sha512-wBbpv+NQftHDdG86Qc0pIyXk5IR3tM8Vd0nWLKDcX8nNn4nXFOFwsKuqw2okA/1D/mpaAkmuyndrPJTYDNZtFw==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-presence": "1.1.5",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-controllable-state": "1.2.2",
+        "@radix-ui/react-use-previous": "1.1.1",
+        "@radix-ui/react-use-size": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-collapsible": {
+      "version": "1.1.12",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-collapsible/-/react-collapsible-1.1.12.tgz",
+      "integrity": "sha512-Uu+mSh4agx2ib1uIGPP4/CKNULyajb3p92LsVXmH2EHVMTfZWpll88XJ0j4W0z3f8NK1eYl1+Mf/szHPmcHzyA==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-id": "1.1.1",
+        "@radix-ui/react-presence": "1.1.5",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-controllable-state": "1.2.2",
+        "@radix-ui/react-use-layout-effect": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-collection": {
+      "version": "1.1.7",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-collection/-/react-collection-1.1.7.tgz",
+      "integrity": "sha512-Fh9rGN0MoI4ZFUNyfFVNU4y9LUz93u9/0K+yLgA2bwRojxM8JU1DyvvMBabnZPBgMWREAJvU2jjVzq+LrFUglw==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-slot": "1.2.3"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-collection/node_modules/@radix-ui/react-slot": {
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-slot/-/react-slot-1.2.3.tgz",
+      "integrity": "sha512-aeNmHnBxbi2St0au6VBVC7JXFlhLlOnvIIlePNniyUNAClzmtAUEY8/pBiK3iHjufOlwA+c20/8jngo7xcrg8A==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-compose-refs": "1.1.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-compose-refs": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-compose-refs/-/react-compose-refs-1.1.2.tgz",
+      "integrity": "sha512-z4eqJvfiNnFMHIIvXP3CY57y2WJs5g2v3X0zm9mEJkrkNv4rDxu+sg9Jh8EkXyeqBkB7SOcboo9dMVqhyrACIg==",
+      "license": "MIT",
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-context": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-context/-/react-context-1.1.2.tgz",
+      "integrity": "sha512-jCi/QKUM2r1Ju5a3J64TH2A5SpKAgh0LpknyqdQ4m6DCV0xJ2HG1xARRwNGPQfi1SLdLWZ1OJz6F4OMBBNiGJA==",
+      "license": "MIT",
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-context-menu": {
+      "version": "2.2.16",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-context-menu/-/react-context-menu-2.2.16.tgz",
+      "integrity": "sha512-O8morBEW+HsVG28gYDZPTrT9UUovQUlJue5YO836tiTJhuIWBm/zQHc7j388sHWtdH/xUZurK9olD2+pcqx5ww==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-menu": "2.1.16",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-callback-ref": "1.1.1",
+        "@radix-ui/react-use-controllable-state": "1.2.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-dialog": {
+      "version": "1.1.15",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-dialog/-/react-dialog-1.1.15.tgz",
+      "integrity": "sha512-TCglVRtzlffRNxRMEyR36DGBLJpeusFcgMVD9PZEzAKnUs1lKCgX5u9BmC2Yg+LL9MgZDugFFs1Vl+Jp4t/PGw==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-dismissable-layer": "1.1.11",
+        "@radix-ui/react-focus-guards": "1.1.3",
+        "@radix-ui/react-focus-scope": "1.1.7",
+        "@radix-ui/react-id": "1.1.1",
+        "@radix-ui/react-portal": "1.1.9",
+        "@radix-ui/react-presence": "1.1.5",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-slot": "1.2.3",
+        "@radix-ui/react-use-controllable-state": "1.2.2",
+        "aria-hidden": "^1.2.4",
+        "react-remove-scroll": "^2.6.3"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-dialog/node_modules/@radix-ui/react-slot": {
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-slot/-/react-slot-1.2.3.tgz",
+      "integrity": "sha512-aeNmHnBxbi2St0au6VBVC7JXFlhLlOnvIIlePNniyUNAClzmtAUEY8/pBiK3iHjufOlwA+c20/8jngo7xcrg8A==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-compose-refs": "1.1.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-direction": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-direction/-/react-direction-1.1.1.tgz",
+      "integrity": "sha512-1UEWRX6jnOA2y4H5WczZ44gOOjTEmlqv1uNW4GAJEO5+bauCBhv8snY65Iw5/VOS/ghKN9gr2KjnLKxrsvoMVw==",
+      "license": "MIT",
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-dismissable-layer": {
+      "version": "1.1.11",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-dismissable-layer/-/react-dismissable-layer-1.1.11.tgz",
+      "integrity": "sha512-Nqcp+t5cTB8BinFkZgXiMJniQH0PsUt2k51FUhbdfeKvc4ACcG2uQniY/8+h1Yv6Kza4Q7lD7PQV0z0oicE0Mg==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-callback-ref": "1.1.1",
+        "@radix-ui/react-use-escape-keydown": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-dropdown-menu": {
+      "version": "2.1.16",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-dropdown-menu/-/react-dropdown-menu-2.1.16.tgz",
+      "integrity": "sha512-1PLGQEynI/3OX/ftV54COn+3Sud/Mn8vALg2rWnBLnRaGtJDduNW/22XjlGgPdpcIbiQxjKtb7BkcjP00nqfJw==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-id": "1.1.1",
+        "@radix-ui/react-menu": "2.1.16",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-controllable-state": "1.2.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-focus-guards": {
+      "version": "1.1.3",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-focus-guards/-/react-focus-guards-1.1.3.tgz",
+      "integrity": "sha512-0rFg/Rj2Q62NCm62jZw0QX7a3sz6QCQU0LpZdNrJX8byRGaGVTqbrW9jAoIAHyMQqsNpeZ81YgSizOt5WXq0Pw==",
+      "license": "MIT",
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-focus-scope": {
+      "version": "1.1.7",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-focus-scope/-/react-focus-scope-1.1.7.tgz",
+      "integrity": "sha512-t2ODlkXBQyn7jkl6TNaw/MtVEVvIGelJDCG41Okq/KwUsJBwQ4XVZsHAVUkK4mBv3ewiAS3PGuUWuY2BoK4ZUw==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-callback-ref": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-hover-card": {
+      "version": "1.1.15",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-hover-card/-/react-hover-card-1.1.15.tgz",
+      "integrity": "sha512-qgTkjNT1CfKMoP0rcasmlH2r1DAiYicWsDsufxl940sT2wHNEWWv6FMWIQXWhVdmC1d/HYfbhQx60KYyAtKxjg==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-dismissable-layer": "1.1.11",
+        "@radix-ui/react-popper": "1.2.8",
+        "@radix-ui/react-portal": "1.1.9",
+        "@radix-ui/react-presence": "1.1.5",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-controllable-state": "1.2.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-icons": {
+      "version": "1.3.2",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-icons/-/react-icons-1.3.2.tgz",
+      "integrity": "sha512-fyQIhGDhzfc9pK2kH6Pl9c4BDJGfMkPqkyIgYDthyNYoNg3wVhoJMMh19WS4Up/1KMPFVpNsT2q3WmXn2N1m6g==",
+      "license": "MIT",
+      "peerDependencies": {
+        "react": "^16.x || ^17.x || ^18.x || ^19.0.0 || ^19.0.0-rc"
+      }
+    },
+    "node_modules/@radix-ui/react-id": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-id/-/react-id-1.1.1.tgz",
+      "integrity": "sha512-kGkGegYIdQsOb4XjsfM97rXsiHaBwco+hFI66oO4s9LU+PLAC5oJ7khdOVFxkhsmlbpUqDAvXw11CluXP+jkHg==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-use-layout-effect": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-label": {
+      "version": "2.1.8",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-label/-/react-label-2.1.8.tgz",
+      "integrity": "sha512-FmXs37I6hSBVDlO4y764TNz1rLgKwjJMQ0EGte6F3Cb3f4bIuHB/iLa/8I9VKkmOy+gNHq8rql3j686ACVV21A==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-primitive": "2.1.4"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-label/node_modules/@radix-ui/react-primitive": {
+      "version": "2.1.4",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-primitive/-/react-primitive-2.1.4.tgz",
+      "integrity": "sha512-9hQc4+GNVtJAIEPEqlYqW5RiYdrr8ea5XQ0ZOnD6fgru+83kqT15mq2OCcbe8KnjRZl5vF3ks69AKz3kh1jrhg==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-slot": "1.2.4"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-menu": {
+      "version": "2.1.16",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-menu/-/react-menu-2.1.16.tgz",
+      "integrity": "sha512-72F2T+PLlphrqLcAotYPp0uJMr5SjP5SL01wfEspJbru5Zs5vQaSHb4VB3ZMJPimgHHCHG7gMOeOB9H3Hdmtxg==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-collection": "1.1.7",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-direction": "1.1.1",
+        "@radix-ui/react-dismissable-layer": "1.1.11",
+        "@radix-ui/react-focus-guards": "1.1.3",
+        "@radix-ui/react-focus-scope": "1.1.7",
+        "@radix-ui/react-id": "1.1.1",
+        "@radix-ui/react-popper": "1.2.8",
+        "@radix-ui/react-portal": "1.1.9",
+        "@radix-ui/react-presence": "1.1.5",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-roving-focus": "1.1.11",
+        "@radix-ui/react-slot": "1.2.3",
+        "@radix-ui/react-use-callback-ref": "1.1.1",
+        "aria-hidden": "^1.2.4",
+        "react-remove-scroll": "^2.6.3"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-menu/node_modules/@radix-ui/react-slot": {
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-slot/-/react-slot-1.2.3.tgz",
+      "integrity": "sha512-aeNmHnBxbi2St0au6VBVC7JXFlhLlOnvIIlePNniyUNAClzmtAUEY8/pBiK3iHjufOlwA+c20/8jngo7xcrg8A==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-compose-refs": "1.1.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-menubar": {
+      "version": "1.1.16",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-menubar/-/react-menubar-1.1.16.tgz",
+      "integrity": "sha512-EB1FktTz5xRRi2Er974AUQZWg2yVBb1yjip38/lgwtCVRd3a+maUoGHN/xs9Yv8SY8QwbSEb+YrxGadVWbEutA==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-collection": "1.1.7",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-direction": "1.1.1",
+        "@radix-ui/react-id": "1.1.1",
+        "@radix-ui/react-menu": "2.1.16",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-roving-focus": "1.1.11",
+        "@radix-ui/react-use-controllable-state": "1.2.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-navigation-menu": {
+      "version": "1.2.14",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-navigation-menu/-/react-navigation-menu-1.2.14.tgz",
+      "integrity": "sha512-YB9mTFQvCOAQMHU+C/jVl96WmuWeltyUEpRJJky51huhds5W2FQr1J8D/16sQlf0ozxkPK8uF3niQMdUwZPv5w==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-collection": "1.1.7",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-direction": "1.1.1",
+        "@radix-ui/react-dismissable-layer": "1.1.11",
+        "@radix-ui/react-id": "1.1.1",
+        "@radix-ui/react-presence": "1.1.5",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-callback-ref": "1.1.1",
+        "@radix-ui/react-use-controllable-state": "1.2.2",
+        "@radix-ui/react-use-layout-effect": "1.1.1",
+        "@radix-ui/react-use-previous": "1.1.1",
+        "@radix-ui/react-visually-hidden": "1.2.3"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-popover": {
+      "version": "1.1.15",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-popover/-/react-popover-1.1.15.tgz",
+      "integrity": "sha512-kr0X2+6Yy/vJzLYJUPCZEc8SfQcf+1COFoAqauJm74umQhta9M7lNJHP7QQS3vkvcGLQUbWpMzwrXYwrYztHKA==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-dismissable-layer": "1.1.11",
+        "@radix-ui/react-focus-guards": "1.1.3",
+        "@radix-ui/react-focus-scope": "1.1.7",
+        "@radix-ui/react-id": "1.1.1",
+        "@radix-ui/react-popper": "1.2.8",
+        "@radix-ui/react-portal": "1.1.9",
+        "@radix-ui/react-presence": "1.1.5",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-slot": "1.2.3",
+        "@radix-ui/react-use-controllable-state": "1.2.2",
+        "aria-hidden": "^1.2.4",
+        "react-remove-scroll": "^2.6.3"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-popover/node_modules/@radix-ui/react-slot": {
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-slot/-/react-slot-1.2.3.tgz",
+      "integrity": "sha512-aeNmHnBxbi2St0au6VBVC7JXFlhLlOnvIIlePNniyUNAClzmtAUEY8/pBiK3iHjufOlwA+c20/8jngo7xcrg8A==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-compose-refs": "1.1.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-popper": {
+      "version": "1.2.8",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-popper/-/react-popper-1.2.8.tgz",
+      "integrity": "sha512-0NJQ4LFFUuWkE7Oxf0htBKS6zLkkjBH+hM1uk7Ng705ReR8m/uelduy1DBo0PyBXPKVnBA6YBlU94MBGXrSBCw==",
+      "license": "MIT",
+      "dependencies": {
+        "@floating-ui/react-dom": "^2.0.0",
+        "@radix-ui/react-arrow": "1.1.7",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-callback-ref": "1.1.1",
+        "@radix-ui/react-use-layout-effect": "1.1.1",
+        "@radix-ui/react-use-rect": "1.1.1",
+        "@radix-ui/react-use-size": "1.1.1",
+        "@radix-ui/rect": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-portal": {
+      "version": "1.1.9",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-portal/-/react-portal-1.1.9.tgz",
+      "integrity": "sha512-bpIxvq03if6UNwXZ+HTK71JLh4APvnXntDc6XOX8UVq4XQOVl7lwok0AvIl+b8zgCw3fSaVTZMpAPPagXbKmHQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-layout-effect": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-presence": {
+      "version": "1.1.5",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-presence/-/react-presence-1.1.5.tgz",
+      "integrity": "sha512-/jfEwNDdQVBCNvjkGit4h6pMOzq8bHkopq458dPt2lMjx+eBQUohZNG9A7DtO/O5ukSbxuaNGXMjHicgwy6rQQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-use-layout-effect": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-primitive": {
+      "version": "2.1.3",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-primitive/-/react-primitive-2.1.3.tgz",
+      "integrity": "sha512-m9gTwRkhy2lvCPe6QJp4d3G1TYEUHn/FzJUtq9MjH46an1wJU+GdoGC5VLof8RX8Ft/DlpshApkhswDLZzHIcQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-slot": "1.2.3"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-primitive/node_modules/@radix-ui/react-slot": {
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-slot/-/react-slot-1.2.3.tgz",
+      "integrity": "sha512-aeNmHnBxbi2St0au6VBVC7JXFlhLlOnvIIlePNniyUNAClzmtAUEY8/pBiK3iHjufOlwA+c20/8jngo7xcrg8A==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-compose-refs": "1.1.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-progress": {
+      "version": "1.1.8",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-progress/-/react-progress-1.1.8.tgz",
+      "integrity": "sha512-+gISHcSPUJ7ktBy9RnTqbdKW78bcGke3t6taawyZ71pio1JewwGSJizycs7rLhGTvMJYCQB1DBK4KQsxs7U8dA==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-context": "1.1.3",
+        "@radix-ui/react-primitive": "2.1.4"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-progress/node_modules/@radix-ui/react-context": {
+      "version": "1.1.3",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-context/-/react-context-1.1.3.tgz",
+      "integrity": "sha512-ieIFACdMpYfMEjF0rEf5KLvfVyIkOz6PDGyNnP+u+4xQ6jny3VCgA4OgXOwNx2aUkxn8zx9fiVcM8CfFYv9Lxw==",
+      "license": "MIT",
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-progress/node_modules/@radix-ui/react-primitive": {
+      "version": "2.1.4",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-primitive/-/react-primitive-2.1.4.tgz",
+      "integrity": "sha512-9hQc4+GNVtJAIEPEqlYqW5RiYdrr8ea5XQ0ZOnD6fgru+83kqT15mq2OCcbe8KnjRZl5vF3ks69AKz3kh1jrhg==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-slot": "1.2.4"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-radio-group": {
+      "version": "1.3.8",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-radio-group/-/react-radio-group-1.3.8.tgz",
+      "integrity": "sha512-VBKYIYImA5zsxACdisNQ3BjCBfmbGH3kQlnFVqlWU4tXwjy7cGX8ta80BcrO+WJXIn5iBylEH3K6ZTlee//lgQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-direction": "1.1.1",
+        "@radix-ui/react-presence": "1.1.5",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-roving-focus": "1.1.11",
+        "@radix-ui/react-use-controllable-state": "1.2.2",
+        "@radix-ui/react-use-previous": "1.1.1",
+        "@radix-ui/react-use-size": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-roving-focus": {
+      "version": "1.1.11",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-roving-focus/-/react-roving-focus-1.1.11.tgz",
+      "integrity": "sha512-7A6S9jSgm/S+7MdtNDSb+IU859vQqJ/QAtcYQcfFC6W8RS4IxIZDldLR0xqCFZ6DCyrQLjLPsxtTNch5jVA4lA==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-collection": "1.1.7",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-direction": "1.1.1",
+        "@radix-ui/react-id": "1.1.1",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-callback-ref": "1.1.1",
+        "@radix-ui/react-use-controllable-state": "1.2.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-scroll-area": {
+      "version": "1.2.10",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-scroll-area/-/react-scroll-area-1.2.10.tgz",
+      "integrity": "sha512-tAXIa1g3sM5CGpVT0uIbUx/U3Gs5N8T52IICuCtObaos1S8fzsrPXG5WObkQN3S6NVl6wKgPhAIiBGbWnvc97A==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/number": "1.1.1",
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-direction": "1.1.1",
+        "@radix-ui/react-presence": "1.1.5",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-callback-ref": "1.1.1",
+        "@radix-ui/react-use-layout-effect": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-select": {
+      "version": "2.2.6",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-select/-/react-select-2.2.6.tgz",
+      "integrity": "sha512-I30RydO+bnn2PQztvo25tswPH+wFBjehVGtmagkU78yMdwTwVf12wnAOF+AeP8S2N8xD+5UPbGhkUfPyvT+mwQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/number": "1.1.1",
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-collection": "1.1.7",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-direction": "1.1.1",
+        "@radix-ui/react-dismissable-layer": "1.1.11",
+        "@radix-ui/react-focus-guards": "1.1.3",
+        "@radix-ui/react-focus-scope": "1.1.7",
+        "@radix-ui/react-id": "1.1.1",
+        "@radix-ui/react-popper": "1.2.8",
+        "@radix-ui/react-portal": "1.1.9",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-slot": "1.2.3",
+        "@radix-ui/react-use-callback-ref": "1.1.1",
+        "@radix-ui/react-use-controllable-state": "1.2.2",
+        "@radix-ui/react-use-layout-effect": "1.1.1",
+        "@radix-ui/react-use-previous": "1.1.1",
+        "@radix-ui/react-visually-hidden": "1.2.3",
+        "aria-hidden": "^1.2.4",
+        "react-remove-scroll": "^2.6.3"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-select/node_modules/@radix-ui/react-slot": {
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-slot/-/react-slot-1.2.3.tgz",
+      "integrity": "sha512-aeNmHnBxbi2St0au6VBVC7JXFlhLlOnvIIlePNniyUNAClzmtAUEY8/pBiK3iHjufOlwA+c20/8jngo7xcrg8A==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-compose-refs": "1.1.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-separator": {
+      "version": "1.1.8",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-separator/-/react-separator-1.1.8.tgz",
+      "integrity": "sha512-sDvqVY4itsKwwSMEe0jtKgfTh+72Sy3gPmQpjqcQneqQ4PFmr/1I0YA+2/puilhggCe2gJcx5EBAYFkWkdpa5g==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-primitive": "2.1.4"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-separator/node_modules/@radix-ui/react-primitive": {
+      "version": "2.1.4",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-primitive/-/react-primitive-2.1.4.tgz",
+      "integrity": "sha512-9hQc4+GNVtJAIEPEqlYqW5RiYdrr8ea5XQ0ZOnD6fgru+83kqT15mq2OCcbe8KnjRZl5vF3ks69AKz3kh1jrhg==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-slot": "1.2.4"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-slider": {
+      "version": "1.3.6",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-slider/-/react-slider-1.3.6.tgz",
+      "integrity": "sha512-JPYb1GuM1bxfjMRlNLE+BcmBC8onfCi60Blk7OBqi2MLTFdS+8401U4uFjnwkOr49BLmXxLC6JHkvAsx5OJvHw==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/number": "1.1.1",
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-collection": "1.1.7",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-direction": "1.1.1",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-controllable-state": "1.2.2",
+        "@radix-ui/react-use-layout-effect": "1.1.1",
+        "@radix-ui/react-use-previous": "1.1.1",
+        "@radix-ui/react-use-size": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-slot": {
+      "version": "1.2.4",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-slot/-/react-slot-1.2.4.tgz",
+      "integrity": "sha512-Jl+bCv8HxKnlTLVrcDE8zTMJ09R9/ukw4qBs/oZClOfoQk/cOTbDn+NceXfV7j09YPVQUryJPHurafcSg6EVKA==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-compose-refs": "1.1.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-switch": {
+      "version": "1.2.6",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-switch/-/react-switch-1.2.6.tgz",
+      "integrity": "sha512-bByzr1+ep1zk4VubeEVViV592vu2lHE2BZY5OnzehZqOOgogN80+mNtCqPkhn2gklJqOpxWgPoYTSnhBCqpOXQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-controllable-state": "1.2.2",
+        "@radix-ui/react-use-previous": "1.1.1",
+        "@radix-ui/react-use-size": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-tabs": {
+      "version": "1.1.13",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-tabs/-/react-tabs-1.1.13.tgz",
+      "integrity": "sha512-7xdcatg7/U+7+Udyoj2zodtI9H/IIopqo+YOIcZOq1nJwXWBZ9p8xiu5llXlekDbZkca79a/fozEYQXIA4sW6A==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-direction": "1.1.1",
+        "@radix-ui/react-id": "1.1.1",
+        "@radix-ui/react-presence": "1.1.5",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-roving-focus": "1.1.11",
+        "@radix-ui/react-use-controllable-state": "1.2.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-toast": {
+      "version": "1.2.15",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-toast/-/react-toast-1.2.15.tgz",
+      "integrity": "sha512-3OSz3TacUWy4WtOXV38DggwxoqJK4+eDkNMl5Z/MJZaoUPaP4/9lf81xXMe1I2ReTAptverZUpbPY4wWwWyL5g==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-collection": "1.1.7",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-dismissable-layer": "1.1.11",
+        "@radix-ui/react-portal": "1.1.9",
+        "@radix-ui/react-presence": "1.1.5",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-callback-ref": "1.1.1",
+        "@radix-ui/react-use-controllable-state": "1.2.2",
+        "@radix-ui/react-use-layout-effect": "1.1.1",
+        "@radix-ui/react-visually-hidden": "1.2.3"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-toggle": {
+      "version": "1.1.10",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-toggle/-/react-toggle-1.1.10.tgz",
+      "integrity": "sha512-lS1odchhFTeZv3xwHH31YPObmJn8gOg7Lq12inrr0+BH/l3Tsq32VfjqH1oh80ARM3mlkfMic15n0kg4sD1poQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-use-controllable-state": "1.2.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-toggle-group": {
+      "version": "1.1.11",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-toggle-group/-/react-toggle-group-1.1.11.tgz",
+      "integrity": "sha512-5umnS0T8JQzQT6HbPyO7Hh9dgd82NmS36DQr+X/YJ9ctFNCiiQd6IJAYYZ33LUwm8M+taCz5t2ui29fHZc4Y6Q==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-direction": "1.1.1",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-roving-focus": "1.1.11",
+        "@radix-ui/react-toggle": "1.1.10",
+        "@radix-ui/react-use-controllable-state": "1.2.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-toolbar": {
+      "version": "1.1.11",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-toolbar/-/react-toolbar-1.1.11.tgz",
+      "integrity": "sha512-4ol06/1bLoFu1nwUqzdD4Y5RZ9oDdKeiHIsntug54Hcr1pgaHiPqHFEaXI1IFP/EsOfROQZ8Mig9VTIRza6Tjg==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-direction": "1.1.1",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-roving-focus": "1.1.11",
+        "@radix-ui/react-separator": "1.1.7",
+        "@radix-ui/react-toggle-group": "1.1.11"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-toolbar/node_modules/@radix-ui/react-separator": {
+      "version": "1.1.7",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-separator/-/react-separator-1.1.7.tgz",
+      "integrity": "sha512-0HEb8R9E8A+jZjvmFCy/J4xhbXy3TV+9XSnGJ3KvTtjlIUy/YQ/p6UYZvi7YbeoeXdyU9+Y3scizK6hkY37baA==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-primitive": "2.1.3"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-tooltip": {
+      "version": "1.2.8",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-tooltip/-/react-tooltip-1.2.8.tgz",
+      "integrity": "sha512-tY7sVt1yL9ozIxvmbtN5qtmH2krXcBCfjEiCgKGLqunJHvgvZG2Pcl2oQ3kbcZARb1BGEHdkLzcYGO8ynVlieg==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/primitive": "1.1.3",
+        "@radix-ui/react-compose-refs": "1.1.2",
+        "@radix-ui/react-context": "1.1.2",
+        "@radix-ui/react-dismissable-layer": "1.1.11",
+        "@radix-ui/react-id": "1.1.1",
+        "@radix-ui/react-popper": "1.2.8",
+        "@radix-ui/react-portal": "1.1.9",
+        "@radix-ui/react-presence": "1.1.5",
+        "@radix-ui/react-primitive": "2.1.3",
+        "@radix-ui/react-slot": "1.2.3",
+        "@radix-ui/react-use-controllable-state": "1.2.2",
+        "@radix-ui/react-visually-hidden": "1.2.3"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-tooltip/node_modules/@radix-ui/react-slot": {
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-slot/-/react-slot-1.2.3.tgz",
+      "integrity": "sha512-aeNmHnBxbi2St0au6VBVC7JXFlhLlOnvIIlePNniyUNAClzmtAUEY8/pBiK3iHjufOlwA+c20/8jngo7xcrg8A==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-compose-refs": "1.1.2"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-use-callback-ref": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-use-callback-ref/-/react-use-callback-ref-1.1.1.tgz",
+      "integrity": "sha512-FkBMwD+qbGQeMu1cOHnuGB6x4yzPjho8ap5WtbEJ26umhgqVXbhekKUQO+hZEL1vU92a3wHwdp0HAcqAUF5iDg==",
+      "license": "MIT",
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-use-controllable-state": {
+      "version": "1.2.2",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-use-controllable-state/-/react-use-controllable-state-1.2.2.tgz",
+      "integrity": "sha512-BjasUjixPFdS+NKkypcyyN5Pmg83Olst0+c6vGov0diwTEo6mgdqVR6hxcEgFuh4QrAs7Rc+9KuGJ9TVCj0Zzg==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-use-effect-event": "0.0.2",
+        "@radix-ui/react-use-layout-effect": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-use-effect-event": {
+      "version": "0.0.2",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-use-effect-event/-/react-use-effect-event-0.0.2.tgz",
+      "integrity": "sha512-Qp8WbZOBe+blgpuUT+lw2xheLP8q0oatc9UpmiemEICxGvFLYmHm9QowVZGHtJlGbS6A6yJ3iViad/2cVjnOiA==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-use-layout-effect": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-use-escape-keydown": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-use-escape-keydown/-/react-use-escape-keydown-1.1.1.tgz",
+      "integrity": "sha512-Il0+boE7w/XebUHyBjroE+DbByORGR9KKmITzbR7MyQ4akpORYP/ZmbhAr0DG7RmmBqoOnZdy2QlvajJ2QA59g==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-use-callback-ref": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-use-is-hydrated": {
+      "version": "0.1.0",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-use-is-hydrated/-/react-use-is-hydrated-0.1.0.tgz",
+      "integrity": "sha512-U+UORVEq+cTnRIaostJv9AGdV3G6Y+zbVd+12e18jQ5A3c0xL03IhnHuiU4UV69wolOQp5GfR58NW/EgdQhwOA==",
+      "license": "MIT",
+      "dependencies": {
+        "use-sync-external-store": "^1.5.0"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-use-layout-effect": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-use-layout-effect/-/react-use-layout-effect-1.1.1.tgz",
+      "integrity": "sha512-RbJRS4UWQFkzHTTwVymMTUv8EqYhOp8dOOviLj2ugtTiXRaRQS7GLGxZTLL1jWhMeoSCf5zmcZkqTl9IiYfXcQ==",
+      "license": "MIT",
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-use-previous": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-use-previous/-/react-use-previous-1.1.1.tgz",
+      "integrity": "sha512-2dHfToCj/pzca2Ck724OZ5L0EVrr3eHRNsG/b3xQJLA2hZpVCS99bLAX+hm1IHXDEnzU6by5z/5MIY794/a8NQ==",
+      "license": "MIT",
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-use-rect": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-use-rect/-/react-use-rect-1.1.1.tgz",
+      "integrity": "sha512-QTYuDesS0VtuHNNvMh+CjlKJ4LJickCMUAqjlE3+j8w+RlRpwyX3apEQKGFzbZGdo7XNG1tXa+bQqIE7HIXT2w==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/rect": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-use-size": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-use-size/-/react-use-size-1.1.1.tgz",
+      "integrity": "sha512-ewrXRDTAqAXlkl6t/fkXWNAhFX9I+CkKlw6zjEwk86RSPKwZr3xpBRso655aqYafwtnbpHLj6toFzmd6xdVptQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-use-layout-effect": "1.1.1"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/react-visually-hidden": {
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/@radix-ui/react-visually-hidden/-/react-visually-hidden-1.2.3.tgz",
+      "integrity": "sha512-pzJq12tEaaIhqjbzpCuv/OypJY/BPavOofm+dbab+MHLajy277+1lLm6JFcGgF5eskJ6mquGirhXY2GD/8u8Ug==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-primitive": "2.1.3"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@radix-ui/rect": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@radix-ui/rect/-/rect-1.1.1.tgz",
+      "integrity": "sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==",
+      "license": "MIT"
+    },
+    "node_modules/@react-hook/intersection-observer": {
+      "version": "3.1.2",
+      "resolved": "https://registry.npmjs.org/@react-hook/intersection-observer/-/intersection-observer-3.1.2.tgz",
+      "integrity": "sha512-mWU3BMkmmzyYMSuhO9wu3eJVP21N8TcgYm9bZnTrMwuM818bEk+0NRM3hP+c/TqA9Ln5C7qE53p1H0QMtzYdvQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@react-hook/passive-layout-effect": "^1.2.0",
+        "intersection-observer": "^0.10.0"
+      },
+      "peerDependencies": {
+        "react": ">=16.8"
+      }
+    },
+    "node_modules/@react-hook/passive-layout-effect": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/@react-hook/passive-layout-effect/-/passive-layout-effect-1.2.1.tgz",
+      "integrity": "sha512-IwEphTD75liO8g+6taS+4oqz+nnroocNfWVHWz7j+N+ZO2vYrc6PV1q7GQhuahL0IOR7JccFTsFKQ/mb6iZWAg==",
+      "license": "MIT",
+      "peerDependencies": {
+        "react": ">=16.8"
+      }
+    },
+    "node_modules/@reactuses/core": {
+      "version": "6.1.6",
+      "resolved": "https://registry.npmjs.org/@reactuses/core/-/core-6.1.6.tgz",
+      "integrity": "sha512-nRv/jNsv1MwYw6CMYNuYORgcHKzzcOe2JU6iizT039NoshJxvauPVjiTK9hZH1zUvdhj2/lfDqcucPlOQ72G8Q==",
+      "license": "Unlicense",
+      "dependencies": {
+        "@microsoft/fetch-event-source": "^2.0.1",
+        "@testing-library/dom": "^10.4.0",
+        "js-cookie": "^3.0.5",
+        "lodash-es": "^4.17.21",
+        "screenfull": "^5.0.0",
+        "use-sync-external-store": "^1.2.0"
+      },
+      "peerDependencies": {
+        "qrcode": "^1.5",
+        "react": "^16.8.0  || ^17.0.0 || ^18.0.0 || ^19.0.0"
+      },
+      "peerDependenciesMeta": {
+        "qrcode": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@rtsao/scc": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/@rtsao/scc/-/scc-1.1.0.tgz",
+      "integrity": "sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/@rushstack/eslint-patch": {
+      "version": "1.15.0",
+      "resolved": "https://registry.npmjs.org/@rushstack/eslint-patch/-/eslint-patch-1.15.0.tgz",
+      "integrity": "sha512-ojSshQPKwVvSMR8yT2L/QtUkV5SXi/IfDiJ4/8d6UbTPjiHVmxZzUAzGD8Tzks1b9+qQkZa0isUOvYObedITaw==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/@schummar/icu-type-parser": {
+      "version": "1.21.5",
+      "resolved": "https://registry.npmjs.org/@schummar/icu-type-parser/-/icu-type-parser-1.21.5.tgz",
+      "integrity": "sha512-bXHSaW5jRTmke9Vd0h5P7BtWZG9Znqb8gSDxZnxaGSJnGwPLDPfS+3g0BKzeWqzgZPsIVZkM7m2tbo18cm5HBw==",
+      "license": "MIT"
+    },
+    "node_modules/@standard-schema/spec": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/@standard-schema/spec/-/spec-1.0.0.tgz",
+      "integrity": "sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==",
+      "license": "MIT"
+    },
+    "node_modules/@standard-schema/utils": {
+      "version": "0.3.0",
+      "resolved": "https://registry.npmjs.org/@standard-schema/utils/-/utils-0.3.0.tgz",
+      "integrity": "sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==",
+      "license": "MIT"
+    },
+    "node_modules/@stitches/core": {
+      "version": "1.2.8",
+      "resolved": "https://registry.npmjs.org/@stitches/core/-/core-1.2.8.tgz",
+      "integrity": "sha512-Gfkvwk9o9kE9r9XNBmJRfV8zONvXThnm1tcuojL04Uy5uRyqg93DC83lDebl0rocZCfKSjUv+fWYtMQmEDJldg==",
+      "license": "MIT"
+    },
+    "node_modules/@swc/core": {
+      "version": "1.15.3",
+      "resolved": "https://registry.npmjs.org/@swc/core/-/core-1.15.3.tgz",
+      "integrity": "sha512-Qd8eBPkUFL4eAONgGjycZXj1jFCBW8Fd+xF0PzdTlBCWQIV1xnUT7B93wUANtW3KGjl3TRcOyxwSx/u/jyKw/Q==",
+      "hasInstallScript": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@swc/counter": "^0.1.3",
+        "@swc/types": "^0.1.25"
+      },
+      "engines": {
+        "node": ">=10"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/swc"
+      },
+      "optionalDependencies": {
+        "@swc/core-darwin-arm64": "1.15.3",
+        "@swc/core-darwin-x64": "1.15.3",
+        "@swc/core-linux-arm-gnueabihf": "1.15.3",
+        "@swc/core-linux-arm64-gnu": "1.15.3",
+        "@swc/core-linux-arm64-musl": "1.15.3",
+        "@swc/core-linux-x64-gnu": "1.15.3",
+        "@swc/core-linux-x64-musl": "1.15.3",
+        "@swc/core-win32-arm64-msvc": "1.15.3",
+        "@swc/core-win32-ia32-msvc": "1.15.3",
+        "@swc/core-win32-x64-msvc": "1.15.3"
+      },
+      "peerDependencies": {
+        "@swc/helpers": ">=0.5.17"
+      },
+      "peerDependenciesMeta": {
+        "@swc/helpers": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@swc/core-darwin-arm64": {
+      "version": "1.15.3",
+      "resolved": "https://registry.npmjs.org/@swc/core-darwin-arm64/-/core-darwin-arm64-1.15.3.tgz",
+      "integrity": "sha512-AXfeQn0CvcQ4cndlIshETx6jrAM45oeUrK8YeEY6oUZU/qzz0Id0CyvlEywxkWVC81Ajpd8TQQ1fW5yx6zQWkQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "Apache-2.0 AND MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/@swc/core-darwin-x64": {
+      "version": "1.15.3",
+      "resolved": "https://registry.npmjs.org/@swc/core-darwin-x64/-/core-darwin-x64-1.15.3.tgz",
+      "integrity": "sha512-p68OeCz1ui+MZYG4wmfJGvcsAcFYb6Sl25H9TxWl+GkBgmNimIiRdnypK9nBGlqMZAcxngNPtnG3kEMNnvoJ2A==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "Apache-2.0 AND MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/@swc/core-linux-arm-gnueabihf": {
+      "version": "1.15.3",
+      "resolved": "https://registry.npmjs.org/@swc/core-linux-arm-gnueabihf/-/core-linux-arm-gnueabihf-1.15.3.tgz",
+      "integrity": "sha512-Nuj5iF4JteFgwrai97mUX+xUOl+rQRHqTvnvHMATL/l9xE6/TJfPBpd3hk/PVpClMXG3Uvk1MxUFOEzM1JrMYg==",
+      "cpu": [
+        "arm"
+      ],
+      "license": "Apache-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/@swc/core-linux-arm64-gnu": {
+      "version": "1.15.3",
+      "resolved": "https://registry.npmjs.org/@swc/core-linux-arm64-gnu/-/core-linux-arm64-gnu-1.15.3.tgz",
+      "integrity": "sha512-2Nc/s8jE6mW2EjXWxO/lyQuLKShcmTrym2LRf5Ayp3ICEMX6HwFqB1EzDhwoMa2DcUgmnZIalesq2lG3krrUNw==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "Apache-2.0 AND MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/@swc/core-linux-arm64-musl": {
+      "version": "1.15.3",
+      "resolved": "https://registry.npmjs.org/@swc/core-linux-arm64-musl/-/core-linux-arm64-musl-1.15.3.tgz",
+      "integrity": "sha512-j4SJniZ/qaZ5g8op+p1G9K1z22s/EYGg1UXIb3+Cg4nsxEpF5uSIGEE4mHUfA70L0BR9wKT2QF/zv3vkhfpX4g==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "Apache-2.0 AND MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/@swc/core-linux-x64-gnu": {
+      "version": "1.15.3",
+      "resolved": "https://registry.npmjs.org/@swc/core-linux-x64-gnu/-/core-linux-x64-gnu-1.15.3.tgz",
+      "integrity": "sha512-aKttAZnz8YB1VJwPQZtyU8Uk0BfMP63iDMkvjhJzRZVgySmqt/apWSdnoIcZlUoGheBrcqbMC17GGUmur7OT5A==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "Apache-2.0 AND MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/@swc/core-linux-x64-musl": {
+      "version": "1.15.3",
+      "resolved": "https://registry.npmjs.org/@swc/core-linux-x64-musl/-/core-linux-x64-musl-1.15.3.tgz",
+      "integrity": "sha512-oe8FctPu1gnUsdtGJRO2rvOUIkkIIaHqsO9xxN0bTR7dFTlPTGi2Fhk1tnvXeyAvCPxLIcwD8phzKg6wLv9yug==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "Apache-2.0 AND MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/@swc/core-win32-arm64-msvc": {
+      "version": "1.15.3",
+      "resolved": "https://registry.npmjs.org/@swc/core-win32-arm64-msvc/-/core-win32-arm64-msvc-1.15.3.tgz",
+      "integrity": "sha512-L9AjzP2ZQ/Xh58e0lTRMLvEDrcJpR7GwZqAtIeNLcTK7JVE+QineSyHp0kLkO1rttCHyCy0U74kDTj0dRz6raA==",
+      "cpu": [
+        "arm64"
+      ],
+      "license": "Apache-2.0 AND MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/@swc/core-win32-ia32-msvc": {
+      "version": "1.15.3",
+      "resolved": "https://registry.npmjs.org/@swc/core-win32-ia32-msvc/-/core-win32-ia32-msvc-1.15.3.tgz",
+      "integrity": "sha512-B8UtogMzErUPDWUoKONSVBdsgKYd58rRyv2sHJWKOIMCHfZ22FVXICR4O/VwIYtlnZ7ahERcjayBHDlBZpR0aw==",
+      "cpu": [
+        "ia32"
+      ],
+      "license": "Apache-2.0 AND MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/@swc/core-win32-x64-msvc": {
+      "version": "1.15.3",
+      "resolved": "https://registry.npmjs.org/@swc/core-win32-x64-msvc/-/core-win32-x64-msvc-1.15.3.tgz",
+      "integrity": "sha512-SpZKMR9QBTecHeqpzJdYEfgw30Oo8b/Xl6rjSzBt1g0ZsXyy60KLXrp6IagQyfTYqNYE/caDvwtF2FPn7pomog==",
+      "cpu": [
+        "x64"
+      ],
+      "license": "Apache-2.0 AND MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/@swc/counter": {
+      "version": "0.1.3",
+      "resolved": "https://registry.npmjs.org/@swc/counter/-/counter-0.1.3.tgz",
+      "integrity": "sha512-e2BR4lsJkkRlKZ/qCHPw9ZaSxc0MVUd7gtbtaB7aMvHeJVYe8sOB8DBZkP2DtISHGSku9sCK6T6cnY0CtXrOCQ==",
+      "license": "Apache-2.0"
+    },
+    "node_modules/@swc/types": {
+      "version": "0.1.25",
+      "resolved": "https://registry.npmjs.org/@swc/types/-/types-0.1.25.tgz",
+      "integrity": "sha512-iAoY/qRhNH8a/hBvm3zKj9qQ4oc2+3w1unPJa2XvTK3XjeLXtzcCingVPw/9e5mn1+0yPqxcBGp9Jf0pkfMb1g==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@swc/counter": "^0.1.3"
+      }
+    },
+    "node_modules/@tailwindcss/node": {
+      "version": "4.1.17",
+      "resolved": "https://registry.npmjs.org/@tailwindcss/node/-/node-4.1.17.tgz",
+      "integrity": "sha512-csIkHIgLb3JisEFQ0vxr2Y57GUNYh447C8xzwj89U/8fdW8LhProdxvnVH6U8M2Y73QKiTIH+LWbK3V2BBZsAg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/remapping": "^2.3.4",
+        "enhanced-resolve": "^5.18.3",
+        "jiti": "^2.6.1",
+        "lightningcss": "1.30.2",
+        "magic-string": "^0.30.21",
+        "source-map-js": "^1.2.1",
+        "tailwindcss": "4.1.17"
+      }
+    },
+    "node_modules/@tailwindcss/oxide": {
+      "version": "4.1.17",
+      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide/-/oxide-4.1.17.tgz",
+      "integrity": "sha512-F0F7d01fmkQhsTjXezGBLdrl1KresJTcI3DB8EkScCldyKp3Msz4hub4uyYaVnk88BAS1g5DQjjF6F5qczheLA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 10"
+      },
+      "optionalDependencies": {
+        "@tailwindcss/oxide-android-arm64": "4.1.17",
+        "@tailwindcss/oxide-darwin-arm64": "4.1.17",
+        "@tailwindcss/oxide-darwin-x64": "4.1.17",
+        "@tailwindcss/oxide-freebsd-x64": "4.1.17",
+        "@tailwindcss/oxide-linux-arm-gnueabihf": "4.1.17",
+        "@tailwindcss/oxide-linux-arm64-gnu": "4.1.17",
+        "@tailwindcss/oxide-linux-arm64-musl": "4.1.17",
+        "@tailwindcss/oxide-linux-x64-gnu": "4.1.17",
+        "@tailwindcss/oxide-linux-x64-musl": "4.1.17",
+        "@tailwindcss/oxide-wasm32-wasi": "4.1.17",
+        "@tailwindcss/oxide-win32-arm64-msvc": "4.1.17",
+        "@tailwindcss/oxide-win32-x64-msvc": "4.1.17"
+      }
+    },
+    "node_modules/@tailwindcss/oxide-android-arm64": {
+      "version": "4.1.17",
+      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-android-arm64/-/oxide-android-arm64-4.1.17.tgz",
+      "integrity": "sha512-BMqpkJHgOZ5z78qqiGE6ZIRExyaHyuxjgrJ6eBO5+hfrfGkuya0lYfw8fRHG77gdTjWkNWEEm+qeG2cDMxArLQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@tailwindcss/oxide-darwin-arm64": {
+      "version": "4.1.17",
+      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-darwin-arm64/-/oxide-darwin-arm64-4.1.17.tgz",
+      "integrity": "sha512-EquyumkQweUBNk1zGEU/wfZo2qkp/nQKRZM8bUYO0J+Lums5+wl2CcG1f9BgAjn/u9pJzdYddHWBiFXJTcxmOg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@tailwindcss/oxide-darwin-x64": {
+      "version": "4.1.17",
+      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-darwin-x64/-/oxide-darwin-x64-4.1.17.tgz",
+      "integrity": "sha512-gdhEPLzke2Pog8s12oADwYu0IAw04Y2tlmgVzIN0+046ytcgx8uZmCzEg4VcQh+AHKiS7xaL8kGo/QTiNEGRog==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@tailwindcss/oxide-freebsd-x64": {
+      "version": "4.1.17",
+      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-freebsd-x64/-/oxide-freebsd-x64-4.1.17.tgz",
+      "integrity": "sha512-hxGS81KskMxML9DXsaXT1H0DyA+ZBIbyG/sSAjWNe2EDl7TkPOBI42GBV3u38itzGUOmFfCzk1iAjDXds8Oh0g==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@tailwindcss/oxide-linux-arm-gnueabihf": {
+      "version": "4.1.17",
+      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-arm-gnueabihf/-/oxide-linux-arm-gnueabihf-4.1.17.tgz",
+      "integrity": "sha512-k7jWk5E3ldAdw0cNglhjSgv501u7yrMf8oeZ0cElhxU6Y2o7f8yqelOp3fhf7evjIS6ujTI3U8pKUXV2I4iXHQ==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@tailwindcss/oxide-linux-arm64-gnu": {
+      "version": "4.1.17",
+      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-arm64-gnu/-/oxide-linux-arm64-gnu-4.1.17.tgz",
+      "integrity": "sha512-HVDOm/mxK6+TbARwdW17WrgDYEGzmoYayrCgmLEw7FxTPLcp/glBisuyWkFz/jb7ZfiAXAXUACfyItn+nTgsdQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@tailwindcss/oxide-linux-arm64-musl": {
+      "version": "4.1.17",
+      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-arm64-musl/-/oxide-linux-arm64-musl-4.1.17.tgz",
+      "integrity": "sha512-HvZLfGr42i5anKtIeQzxdkw/wPqIbpeZqe7vd3V9vI3RQxe3xU1fLjss0TjyhxWcBaipk7NYwSrwTwK1hJARMg==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@tailwindcss/oxide-linux-x64-gnu": {
+      "version": "4.1.17",
+      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-x64-gnu/-/oxide-linux-x64-gnu-4.1.17.tgz",
+      "integrity": "sha512-M3XZuORCGB7VPOEDH+nzpJ21XPvK5PyjlkSFkFziNHGLc5d6g3di2McAAblmaSUNl8IOmzYwLx9NsE7bplNkwQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@tailwindcss/oxide-linux-x64-musl": {
+      "version": "4.1.17",
+      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-x64-musl/-/oxide-linux-x64-musl-4.1.17.tgz",
+      "integrity": "sha512-k7f+pf9eXLEey4pBlw+8dgfJHY4PZ5qOUFDyNf7SI6lHjQ9Zt7+NcscjpwdCEbYi6FI5c2KDTDWyf2iHcCSyyQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@tailwindcss/oxide-wasm32-wasi": {
+      "version": "4.1.17",
+      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-wasm32-wasi/-/oxide-wasm32-wasi-4.1.17.tgz",
+      "integrity": "sha512-cEytGqSSoy7zK4JRWiTCx43FsKP/zGr0CsuMawhH67ONlH+T79VteQeJQRO/X7L0juEUA8ZyuYikcRBf0vsxhg==",
+      "bundleDependencies": [
+        "@napi-rs/wasm-runtime",
+        "@emnapi/core",
+        "@emnapi/runtime",
+        "@tybys/wasm-util",
+        "@emnapi/wasi-threads",
+        "tslib"
+      ],
+      "cpu": [
+        "wasm32"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "@emnapi/core": "^1.6.0",
+        "@emnapi/runtime": "^1.6.0",
+        "@emnapi/wasi-threads": "^1.1.0",
+        "@napi-rs/wasm-runtime": "^1.0.7",
+        "@tybys/wasm-util": "^0.10.1",
+        "tslib": "^2.4.0"
+      },
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/@tailwindcss/oxide-win32-arm64-msvc": {
+      "version": "4.1.17",
+      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-win32-arm64-msvc/-/oxide-win32-arm64-msvc-4.1.17.tgz",
+      "integrity": "sha512-JU5AHr7gKbZlOGvMdb4722/0aYbU+tN6lv1kONx0JK2cGsh7g148zVWLM0IKR3NeKLv+L90chBVYcJ8uJWbC9A==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@tailwindcss/oxide-win32-x64-msvc": {
+      "version": "4.1.17",
+      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-win32-x64-msvc/-/oxide-win32-x64-msvc-4.1.17.tgz",
+      "integrity": "sha512-SKWM4waLuqx0IH+FMDUw6R66Hu4OuTALFgnleKbqhgGU30DY20NORZMZUKgLRjQXNN2TLzKvh48QXTig4h4bGw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 10"
+      }
+    },
+    "node_modules/@tailwindcss/postcss": {
+      "version": "4.1.17",
+      "resolved": "https://registry.npmjs.org/@tailwindcss/postcss/-/postcss-4.1.17.tgz",
+      "integrity": "sha512-+nKl9N9mN5uJ+M7dBOOCzINw94MPstNR/GtIhz1fpZysxL/4a+No64jCBD6CPN+bIHWFx3KWuu8XJRrj/572Dw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@alloc/quick-lru": "^5.2.0",
+        "@tailwindcss/node": "4.1.17",
+        "@tailwindcss/oxide": "4.1.17",
+        "postcss": "^8.4.41",
+        "tailwindcss": "4.1.17"
+      }
+    },
+    "node_modules/@tanstack/query-core": {
+      "version": "5.90.10",
+      "resolved": "https://registry.npmjs.org/@tanstack/query-core/-/query-core-5.90.10.tgz",
+      "integrity": "sha512-EhZVFu9rl7GfRNuJLJ3Y7wtbTnENsvzp+YpcAV7kCYiXni1v8qZh++lpw4ch4rrwC0u/EZRnBHIehzCGzwXDSQ==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/tannerlinsley"
+      }
+    },
+    "node_modules/@tanstack/react-query": {
+      "version": "5.90.10",
+      "resolved": "https://registry.npmjs.org/@tanstack/react-query/-/react-query-5.90.10.tgz",
+      "integrity": "sha512-BKLss9Y8PQ9IUjPYQiv3/Zmlx92uxffUOX8ZZNoQlCIZBJPT5M+GOMQj7xislvVQ6l1BstBjcX0XB/aHfFYVNw==",
+      "license": "MIT",
+      "dependencies": {
+        "@tanstack/query-core": "5.90.10"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/tannerlinsley"
+      },
+      "peerDependencies": {
+        "react": "^18 || ^19"
+      }
+    },
+    "node_modules/@tanstack/react-table": {
+      "version": "8.21.3",
+      "resolved": "https://registry.npmjs.org/@tanstack/react-table/-/react-table-8.21.3.tgz",
+      "integrity": "sha512-5nNMTSETP4ykGegmVkhjcS8tTLW6Vl4axfEGQN3v0zdHYbK4UfoqfPChclTrJ4EoK9QynqAu9oUf8VEmrpZ5Ww==",
+      "license": "MIT",
+      "dependencies": {
+        "@tanstack/table-core": "8.21.3"
+      },
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/tannerlinsley"
+      },
+      "peerDependencies": {
+        "react": ">=16.8",
+        "react-dom": ">=16.8"
+      }
+    },
+    "node_modules/@tanstack/table-core": {
+      "version": "8.21.3",
+      "resolved": "https://registry.npmjs.org/@tanstack/table-core/-/table-core-8.21.3.tgz",
+      "integrity": "sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/tannerlinsley"
+      }
+    },
+    "node_modules/@testing-library/dom": {
+      "version": "10.4.1",
+      "resolved": "https://registry.npmjs.org/@testing-library/dom/-/dom-10.4.1.tgz",
+      "integrity": "sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg==",
+      "license": "MIT",
+      "dependencies": {
+        "@babel/code-frame": "^7.10.4",
+        "@babel/runtime": "^7.12.5",
+        "@types/aria-query": "^5.0.1",
+        "aria-query": "5.3.0",
+        "dom-accessibility-api": "^0.5.9",
+        "lz-string": "^1.5.0",
+        "picocolors": "1.1.1",
+        "pretty-format": "^27.0.2"
+      },
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@tybys/wasm-util": {
+      "version": "0.10.1",
+      "resolved": "https://registry.npmjs.org/@tybys/wasm-util/-/wasm-util-0.10.1.tgz",
+      "integrity": "sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==",
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "tslib": "^2.4.0"
+      }
+    },
+    "node_modules/@types/aria-query": {
+      "version": "5.0.4",
+      "resolved": "https://registry.npmjs.org/@types/aria-query/-/aria-query-5.0.4.tgz",
+      "integrity": "sha512-rfT93uj5s0PRL7EzccGMs3brplhcrghnDoV26NqKhCAS1hVo+WdNsPvE/yb6ilfr5hi2MEk6d5EWJTKdxg8jVw==",
+      "license": "MIT"
+    },
+    "node_modules/@types/d3-array": {
+      "version": "3.2.2",
+      "resolved": "https://registry.npmjs.org/@types/d3-array/-/d3-array-3.2.2.tgz",
+      "integrity": "sha512-hOLWVbm7uRza0BYXpIIW5pxfrKe0W+D5lrFiAEYR+pb6w3N2SwSMaJbXdUfSEv+dT4MfHBLtn5js0LAWaO6otw==",
+      "license": "MIT"
+    },
+    "node_modules/@types/d3-color": {
+      "version": "3.1.3",
+      "resolved": "https://registry.npmjs.org/@types/d3-color/-/d3-color-3.1.3.tgz",
+      "integrity": "sha512-iO90scth9WAbmgv7ogoq57O9YpKmFBbmoEoCHDB2xMBY0+/KVrqAaCDyCE16dUspeOvIxFFRI+0sEtqDqy2b4A==",
+      "license": "MIT"
+    },
+    "node_modules/@types/d3-ease": {
+      "version": "3.0.2",
+      "resolved": "https://registry.npmjs.org/@types/d3-ease/-/d3-ease-3.0.2.tgz",
+      "integrity": "sha512-NcV1JjO5oDzoK26oMzbILE6HW7uVXOHLQvHshBUW4UMdZGfiY6v5BeQwh9a9tCzv+CeefZQHJt5SRgK154RtiA==",
+      "license": "MIT"
+    },
+    "node_modules/@types/d3-interpolate": {
+      "version": "3.0.4",
+      "resolved": "https://registry.npmjs.org/@types/d3-interpolate/-/d3-interpolate-3.0.4.tgz",
+      "integrity": "sha512-mgLPETlrpVV1YRJIglr4Ez47g7Yxjl1lj7YKsiMCb27VJH9W8NVM6Bb9d8kkpG/uAQS5AmbA48q2IAolKKo1MA==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/d3-color": "*"
+      }
+    },
+    "node_modules/@types/d3-path": {
+      "version": "3.1.1",
+      "resolved": "https://registry.npmjs.org/@types/d3-path/-/d3-path-3.1.1.tgz",
+      "integrity": "sha512-VMZBYyQvbGmWyWVea0EHs/BwLgxc+MKi1zLDCONksozI4YJMcTt8ZEuIR4Sb1MMTE8MMW49v0IwI5+b7RmfWlg==",
+      "license": "MIT"
+    },
+    "node_modules/@types/d3-scale": {
+      "version": "4.0.9",
+      "resolved": "https://registry.npmjs.org/@types/d3-scale/-/d3-scale-4.0.9.tgz",
+      "integrity": "sha512-dLmtwB8zkAeO/juAMfnV+sItKjlsw2lKdZVVy6LRr0cBmegxSABiLEpGVmSJJ8O08i4+sGR6qQtb6WtuwJdvVw==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/d3-time": "*"
+      }
+    },
+    "node_modules/@types/d3-shape": {
+      "version": "3.1.7",
+      "resolved": "https://registry.npmjs.org/@types/d3-shape/-/d3-shape-3.1.7.tgz",
+      "integrity": "sha512-VLvUQ33C+3J+8p+Daf+nYSOsjB4GXp19/S/aGo60m9h1v6XaxjiT82lKVWJCfzhtuZ3yD7i/TPeC/fuKLLOSmg==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/d3-path": "*"
+      }
+    },
+    "node_modules/@types/d3-time": {
+      "version": "3.0.4",
+      "resolved": "https://registry.npmjs.org/@types/d3-time/-/d3-time-3.0.4.tgz",
+      "integrity": "sha512-yuzZug1nkAAaBlBBikKZTgzCeA+k1uy4ZFwWANOfKw5z5LRhV0gNA7gNkKm7HoK+HRN0wX3EkxGk0fpbWhmB7g==",
+      "license": "MIT"
+    },
+    "node_modules/@types/d3-timer": {
+      "version": "3.0.2",
+      "resolved": "https://registry.npmjs.org/@types/d3-timer/-/d3-timer-3.0.2.tgz",
+      "integrity": "sha512-Ps3T8E8dZDam6fUyNiMkekK3XUsaUEik+idO9/YjPtfj2qruF8tFBXS7XhtE4iIXBLxhmLjP3SXpLhVf21I9Lw==",
+      "license": "MIT"
+    },
+    "node_modules/@types/debug": {
+      "version": "4.1.12",
+      "resolved": "https://registry.npmjs.org/@types/debug/-/debug-4.1.12.tgz",
+      "integrity": "sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/ms": "*"
+      }
+    },
+    "node_modules/@types/estree": {
+      "version": "1.0.8",
+      "resolved": "https://registry.npmjs.org/@types/estree/-/estree-1.0.8.tgz",
+      "integrity": "sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==",
+      "license": "MIT"
+    },
+    "node_modules/@types/estree-jsx": {
+      "version": "1.0.5",
+      "resolved": "https://registry.npmjs.org/@types/estree-jsx/-/estree-jsx-1.0.5.tgz",
+      "integrity": "sha512-52CcUVNFyfb1A2ALocQw/Dd1BQFNmSdkuC3BkZ6iqhdMfQz7JWOFRuJFloOzjk+6WijU56m9oKXFAXc7o3Towg==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/estree": "*"
+      }
+    },
+    "node_modules/@types/hast": {
+      "version": "3.0.4",
+      "resolved": "https://registry.npmjs.org/@types/hast/-/hast-3.0.4.tgz",
+      "integrity": "sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/unist": "*"
+      }
+    },
+    "node_modules/@types/json-schema": {
+      "version": "7.0.15",
+      "resolved": "https://registry.npmjs.org/@types/json-schema/-/json-schema-7.0.15.tgz",
+      "integrity": "sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/@types/json5": {
+      "version": "0.0.29",
+      "resolved": "https://registry.npmjs.org/@types/json5/-/json5-0.0.29.tgz",
+      "integrity": "sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/@types/mdast": {
+      "version": "4.0.4",
+      "resolved": "https://registry.npmjs.org/@types/mdast/-/mdast-4.0.4.tgz",
+      "integrity": "sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/unist": "*"
+      }
+    },
+    "node_modules/@types/ms": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/@types/ms/-/ms-2.1.0.tgz",
+      "integrity": "sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==",
+      "license": "MIT"
+    },
+    "node_modules/@types/node": {
+      "version": "20.19.25",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-20.19.25.tgz",
+      "integrity": "sha512-ZsJzA5thDQMSQO788d7IocwwQbI8B5OPzmqNvpf3NY/+MHDAS759Wo0gd2WQeXYt5AAAQjzcrTVC6SKCuYgoCQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "undici-types": "~6.21.0"
+      }
+    },
+    "node_modules/@types/react": {
+      "version": "19.2.7",
+      "resolved": "https://registry.npmjs.org/@types/react/-/react-19.2.7.tgz",
+      "integrity": "sha512-MWtvHrGZLFttgeEj28VXHxpmwYbor/ATPYbBfSFZEIRK0ecCFLl2Qo55z52Hss+UV9CRN7trSeq1zbgx7YDWWg==",
+      "license": "MIT",
+      "dependencies": {
+        "csstype": "^3.2.2"
+      }
+    },
+    "node_modules/@types/react-dom": {
+      "version": "19.2.3",
+      "resolved": "https://registry.npmjs.org/@types/react-dom/-/react-dom-19.2.3.tgz",
+      "integrity": "sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==",
+      "devOptional": true,
+      "license": "MIT",
+      "peerDependencies": {
+        "@types/react": "^19.2.0"
+      }
+    },
+    "node_modules/@types/unist": {
+      "version": "3.0.3",
+      "resolved": "https://registry.npmjs.org/@types/unist/-/unist-3.0.3.tgz",
+      "integrity": "sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==",
+      "license": "MIT"
+    },
+    "node_modules/@typescript-eslint/eslint-plugin": {
+      "version": "8.48.0",
+      "resolved": "https://registry.npmjs.org/@typescript-eslint/eslint-plugin/-/eslint-plugin-8.48.0.tgz",
+      "integrity": "sha512-XxXP5tL1txl13YFtrECECQYeZjBZad4fyd3cFV4a19LkAY/bIp9fev3US4S5fDVV2JaYFiKAZ/GRTOLer+mbyQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@eslint-community/regexpp": "^4.10.0",
+        "@typescript-eslint/scope-manager": "8.48.0",
+        "@typescript-eslint/type-utils": "8.48.0",
+        "@typescript-eslint/utils": "8.48.0",
+        "@typescript-eslint/visitor-keys": "8.48.0",
+        "graphemer": "^1.4.0",
+        "ignore": "^7.0.0",
+        "natural-compare": "^1.4.0",
+        "ts-api-utils": "^2.1.0"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/typescript-eslint"
+      },
+      "peerDependencies": {
+        "@typescript-eslint/parser": "^8.48.0",
+        "eslint": "^8.57.0 || ^9.0.0",
+        "typescript": ">=4.8.4 <6.0.0"
+      }
+    },
+    "node_modules/@typescript-eslint/eslint-plugin/node_modules/ignore": {
+      "version": "7.0.5",
+      "resolved": "https://registry.npmjs.org/ignore/-/ignore-7.0.5.tgz",
+      "integrity": "sha512-Hs59xBNfUIunMFgWAbGX5cq6893IbWg4KnrjbYwX3tx0ztorVgTDA6B2sxf8ejHJ4wz8BqGUMYlnzNBer5NvGg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 4"
+      }
+    },
+    "node_modules/@typescript-eslint/parser": {
+      "version": "8.48.0",
+      "resolved": "https://registry.npmjs.org/@typescript-eslint/parser/-/parser-8.48.0.tgz",
+      "integrity": "sha512-jCzKdm/QK0Kg4V4IK/oMlRZlY+QOcdjv89U2NgKHZk1CYTj82/RVSx1mV/0gqCVMJ/DA+Zf/S4NBWNF8GQ+eqQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@typescript-eslint/scope-manager": "8.48.0",
+        "@typescript-eslint/types": "8.48.0",
+        "@typescript-eslint/typescript-estree": "8.48.0",
+        "@typescript-eslint/visitor-keys": "8.48.0",
+        "debug": "^4.3.4"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/typescript-eslint"
+      },
+      "peerDependencies": {
+        "eslint": "^8.57.0 || ^9.0.0",
+        "typescript": ">=4.8.4 <6.0.0"
+      }
+    },
+    "node_modules/@typescript-eslint/project-service": {
+      "version": "8.48.0",
+      "resolved": "https://registry.npmjs.org/@typescript-eslint/project-service/-/project-service-8.48.0.tgz",
+      "integrity": "sha512-Ne4CTZyRh1BecBf84siv42wv5vQvVmgtk8AuiEffKTUo3DrBaGYZueJSxxBZ8fjk/N3DrgChH4TOdIOwOwiqqw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@typescript-eslint/tsconfig-utils": "^8.48.0",
+        "@typescript-eslint/types": "^8.48.0",
+        "debug": "^4.3.4"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/typescript-eslint"
+      },
+      "peerDependencies": {
+        "typescript": ">=4.8.4 <6.0.0"
+      }
+    },
+    "node_modules/@typescript-eslint/scope-manager": {
+      "version": "8.48.0",
+      "resolved": "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-8.48.0.tgz",
+      "integrity": "sha512-uGSSsbrtJrLduti0Q1Q9+BF1/iFKaxGoQwjWOIVNJv0o6omrdyR8ct37m4xIl5Zzpkp69Kkmvom7QFTtue89YQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@typescript-eslint/types": "8.48.0",
+        "@typescript-eslint/visitor-keys": "8.48.0"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/typescript-eslint"
+      }
+    },
+    "node_modules/@typescript-eslint/tsconfig-utils": {
+      "version": "8.48.0",
+      "resolved": "https://registry.npmjs.org/@typescript-eslint/tsconfig-utils/-/tsconfig-utils-8.48.0.tgz",
+      "integrity": "sha512-WNebjBdFdyu10sR1M4OXTt2OkMd5KWIL+LLfeH9KhgP+jzfDV/LI3eXzwJ1s9+Yc0Kzo2fQCdY/OpdusCMmh6w==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/typescript-eslint"
+      },
+      "peerDependencies": {
+        "typescript": ">=4.8.4 <6.0.0"
+      }
+    },
+    "node_modules/@typescript-eslint/type-utils": {
+      "version": "8.48.0",
+      "resolved": "https://registry.npmjs.org/@typescript-eslint/type-utils/-/type-utils-8.48.0.tgz",
+      "integrity": "sha512-zbeVaVqeXhhab6QNEKfK96Xyc7UQuoFWERhEnj3mLVnUWrQnv15cJNseUni7f3g557gm0e46LZ6IJ4NJVOgOpw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@typescript-eslint/types": "8.48.0",
+        "@typescript-eslint/typescript-estree": "8.48.0",
+        "@typescript-eslint/utils": "8.48.0",
+        "debug": "^4.3.4",
+        "ts-api-utils": "^2.1.0"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/typescript-eslint"
+      },
+      "peerDependencies": {
+        "eslint": "^8.57.0 || ^9.0.0",
+        "typescript": ">=4.8.4 <6.0.0"
+      }
+    },
+    "node_modules/@typescript-eslint/types": {
+      "version": "8.48.0",
+      "resolved": "https://registry.npmjs.org/@typescript-eslint/types/-/types-8.48.0.tgz",
+      "integrity": "sha512-cQMcGQQH7kwKoVswD1xdOytxQR60MWKM1di26xSUtxehaDs/32Zpqsu5WJlXTtTTqyAVK8R7hvsUnIXRS+bjvA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/typescript-eslint"
+      }
+    },
+    "node_modules/@typescript-eslint/typescript-estree": {
+      "version": "8.48.0",
+      "resolved": "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-8.48.0.tgz",
+      "integrity": "sha512-ljHab1CSO4rGrQIAyizUS6UGHHCiAYhbfcIZ1zVJr5nMryxlXMVWS3duFPSKvSUbFPwkXMFk1k0EMIjub4sRRQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@typescript-eslint/project-service": "8.48.0",
+        "@typescript-eslint/tsconfig-utils": "8.48.0",
+        "@typescript-eslint/types": "8.48.0",
+        "@typescript-eslint/visitor-keys": "8.48.0",
+        "debug": "^4.3.4",
+        "minimatch": "^9.0.4",
+        "semver": "^7.6.0",
+        "tinyglobby": "^0.2.15",
+        "ts-api-utils": "^2.1.0"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/typescript-eslint"
+      },
+      "peerDependencies": {
+        "typescript": ">=4.8.4 <6.0.0"
+      }
+    },
+    "node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-2.0.2.tgz",
+      "integrity": "sha512-Jt0vHyM+jmUBqojB7E1NIYadt0vI0Qxjxd2TErW94wDz+E2LAm5vKMXXwg6ZZBTHPuUlDgQHKXvjGBdfcF1ZDQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "balanced-match": "^1.0.0"
+      }
+    },
+    "node_modules/@typescript-eslint/typescript-estree/node_modules/minimatch": {
+      "version": "9.0.5",
+      "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-9.0.5.tgz",
+      "integrity": "sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow==",
+      "dev": true,
+      "license": "ISC",
+      "dependencies": {
+        "brace-expansion": "^2.0.1"
+      },
+      "engines": {
+        "node": ">=16 || 14 >=14.17"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/isaacs"
+      }
+    },
+    "node_modules/@typescript-eslint/utils": {
+      "version": "8.48.0",
+      "resolved": "https://registry.npmjs.org/@typescript-eslint/utils/-/utils-8.48.0.tgz",
+      "integrity": "sha512-yTJO1XuGxCsSfIVt1+1UrLHtue8xz16V8apzPYI06W0HbEbEWHxHXgZaAgavIkoh+GeV6hKKd5jm0sS6OYxWXQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@eslint-community/eslint-utils": "^4.7.0",
+        "@typescript-eslint/scope-manager": "8.48.0",
+        "@typescript-eslint/types": "8.48.0",
+        "@typescript-eslint/typescript-estree": "8.48.0"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/typescript-eslint"
+      },
+      "peerDependencies": {
+        "eslint": "^8.57.0 || ^9.0.0",
+        "typescript": ">=4.8.4 <6.0.0"
+      }
+    },
+    "node_modules/@typescript-eslint/visitor-keys": {
+      "version": "8.48.0",
+      "resolved": "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-8.48.0.tgz",
+      "integrity": "sha512-T0XJMaRPOH3+LBbAfzR2jalckP1MSG/L9eUtY0DEzUyVaXJ/t6zN0nR7co5kz0Jko/nkSYCBRkz1djvjajVTTg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@typescript-eslint/types": "8.48.0",
+        "eslint-visitor-keys": "^4.2.1"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/typescript-eslint"
+      }
+    },
+    "node_modules/@ungap/structured-clone": {
+      "version": "1.3.0",
+      "resolved": "https://registry.npmjs.org/@ungap/structured-clone/-/structured-clone-1.3.0.tgz",
+      "integrity": "sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==",
+      "license": "ISC"
+    },
+    "node_modules/@unrs/resolver-binding-android-arm-eabi": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-android-arm-eabi/-/resolver-binding-android-arm-eabi-1.11.1.tgz",
+      "integrity": "sha512-ppLRUgHVaGRWUx0R0Ut06Mjo9gBaBkg3v/8AxusGLhsIotbBLuRk51rAzqLC8gq6NyyAojEXglNjzf6R948DNw==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-android-arm64": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-android-arm64/-/resolver-binding-android-arm64-1.11.1.tgz",
+      "integrity": "sha512-lCxkVtb4wp1v+EoN+HjIG9cIIzPkX5OtM03pQYkG+U5O/wL53LC4QbIeazgiKqluGeVEeBlZahHalCaBvU1a2g==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-darwin-arm64": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-darwin-arm64/-/resolver-binding-darwin-arm64-1.11.1.tgz",
+      "integrity": "sha512-gPVA1UjRu1Y/IsB/dQEsp2V1pm44Of6+LWvbLc9SDk1c2KhhDRDBUkQCYVWe6f26uJb3fOK8saWMgtX8IrMk3g==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-darwin-x64": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-darwin-x64/-/resolver-binding-darwin-x64-1.11.1.tgz",
+      "integrity": "sha512-cFzP7rWKd3lZaCsDze07QX1SC24lO8mPty9vdP+YVa3MGdVgPmFc59317b2ioXtgCMKGiCLxJ4HQs62oz6GfRQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-freebsd-x64": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-freebsd-x64/-/resolver-binding-freebsd-x64-1.11.1.tgz",
+      "integrity": "sha512-fqtGgak3zX4DCB6PFpsH5+Kmt/8CIi4Bry4rb1ho6Av2QHTREM+47y282Uqiu3ZRF5IQioJQ5qWRV6jduA+iGw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-linux-arm-gnueabihf": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-linux-arm-gnueabihf/-/resolver-binding-linux-arm-gnueabihf-1.11.1.tgz",
+      "integrity": "sha512-u92mvlcYtp9MRKmP+ZvMmtPN34+/3lMHlyMj7wXJDeXxuM0Vgzz0+PPJNsro1m3IZPYChIkn944wW8TYgGKFHw==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-linux-arm-musleabihf": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-linux-arm-musleabihf/-/resolver-binding-linux-arm-musleabihf-1.11.1.tgz",
+      "integrity": "sha512-cINaoY2z7LVCrfHkIcmvj7osTOtm6VVT16b5oQdS4beibX2SYBwgYLmqhBjA1t51CarSaBuX5YNsWLjsqfW5Cw==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-linux-arm64-gnu": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-linux-arm64-gnu/-/resolver-binding-linux-arm64-gnu-1.11.1.tgz",
+      "integrity": "sha512-34gw7PjDGB9JgePJEmhEqBhWvCiiWCuXsL9hYphDF7crW7UgI05gyBAi6MF58uGcMOiOqSJ2ybEeCvHcq0BCmQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-linux-arm64-musl": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-linux-arm64-musl/-/resolver-binding-linux-arm64-musl-1.11.1.tgz",
+      "integrity": "sha512-RyMIx6Uf53hhOtJDIamSbTskA99sPHS96wxVE/bJtePJJtpdKGXO1wY90oRdXuYOGOTuqjT8ACccMc4K6QmT3w==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-linux-ppc64-gnu": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-linux-ppc64-gnu/-/resolver-binding-linux-ppc64-gnu-1.11.1.tgz",
+      "integrity": "sha512-D8Vae74A4/a+mZH0FbOkFJL9DSK2R6TFPC9M+jCWYia/q2einCubX10pecpDiTmkJVUH+y8K3BZClycD8nCShA==",
+      "cpu": [
+        "ppc64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-linux-riscv64-gnu": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-linux-riscv64-gnu/-/resolver-binding-linux-riscv64-gnu-1.11.1.tgz",
+      "integrity": "sha512-frxL4OrzOWVVsOc96+V3aqTIQl1O2TjgExV4EKgRY09AJ9leZpEg8Ak9phadbuX0BA4k8U5qtvMSQQGGmaJqcQ==",
+      "cpu": [
+        "riscv64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-linux-riscv64-musl": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-linux-riscv64-musl/-/resolver-binding-linux-riscv64-musl-1.11.1.tgz",
+      "integrity": "sha512-mJ5vuDaIZ+l/acv01sHoXfpnyrNKOk/3aDoEdLO/Xtn9HuZlDD6jKxHlkN8ZhWyLJsRBxfv9GYM2utQ1SChKew==",
+      "cpu": [
+        "riscv64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-linux-s390x-gnu": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-linux-s390x-gnu/-/resolver-binding-linux-s390x-gnu-1.11.1.tgz",
+      "integrity": "sha512-kELo8ebBVtb9sA7rMe1Cph4QHreByhaZ2QEADd9NzIQsYNQpt9UkM9iqr2lhGr5afh885d/cB5QeTXSbZHTYPg==",
+      "cpu": [
+        "s390x"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-linux-x64-gnu": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-linux-x64-gnu/-/resolver-binding-linux-x64-gnu-1.11.1.tgz",
+      "integrity": "sha512-C3ZAHugKgovV5YvAMsxhq0gtXuwESUKc5MhEtjBpLoHPLYM+iuwSj3lflFwK3DPm68660rZ7G8BMcwSro7hD5w==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-linux-x64-musl": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-linux-x64-musl/-/resolver-binding-linux-x64-musl-1.11.1.tgz",
+      "integrity": "sha512-rV0YSoyhK2nZ4vEswT/QwqzqQXw5I6CjoaYMOX0TqBlWhojUf8P94mvI7nuJTeaCkkds3QE4+zS8Ko+GdXuZtA==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-wasm32-wasi": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-wasm32-wasi/-/resolver-binding-wasm32-wasi-1.11.1.tgz",
+      "integrity": "sha512-5u4RkfxJm+Ng7IWgkzi3qrFOvLvQYnPBmjmZQ8+szTK/b31fQCnleNl1GgEt7nIsZRIf5PLhPwT0WM+q45x/UQ==",
+      "cpu": [
+        "wasm32"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "dependencies": {
+        "@napi-rs/wasm-runtime": "^0.2.11"
+      },
+      "engines": {
+        "node": ">=14.0.0"
+      }
+    },
+    "node_modules/@unrs/resolver-binding-win32-arm64-msvc": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-win32-arm64-msvc/-/resolver-binding-win32-arm64-msvc-1.11.1.tgz",
+      "integrity": "sha512-nRcz5Il4ln0kMhfL8S3hLkxI85BXs3o8EYoattsJNdsX4YUU89iOkVn7g0VHSRxFuVMdM4Q1jEpIId1Ihim/Uw==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-win32-ia32-msvc": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-win32-ia32-msvc/-/resolver-binding-win32-ia32-msvc-1.11.1.tgz",
+      "integrity": "sha512-DCEI6t5i1NmAZp6pFonpD5m7i6aFrpofcp4LA2i8IIq60Jyo28hamKBxNrZcyOwVOZkgsRp9O2sXWBWP8MnvIQ==",
+      "cpu": [
+        "ia32"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ]
+    },
+    "node_modules/@unrs/resolver-binding-win32-x64-msvc": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/@unrs/resolver-binding-win32-x64-msvc/-/resolver-binding-win32-x64-msvc-1.11.1.tgz",
+      "integrity": "sha512-lrW200hZdbfRtztbygyaq/6jP6AKE8qQN2KvPcJ+x7wiD038YtnYtZ82IMNJ69GJibV7bwL3y9FgK+5w/pYt6g==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ]
+    },
+    "node_modules/acorn": {
+      "version": "8.15.0",
+      "resolved": "https://registry.npmjs.org/acorn/-/acorn-8.15.0.tgz",
+      "integrity": "sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==",
+      "license": "MIT",
+      "bin": {
+        "acorn": "bin/acorn"
+      },
+      "engines": {
+        "node": ">=0.4.0"
+      }
+    },
+    "node_modules/acorn-jsx": {
+      "version": "5.3.2",
+      "resolved": "https://registry.npmjs.org/acorn-jsx/-/acorn-jsx-5.3.2.tgz",
+      "integrity": "sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==",
+      "license": "MIT",
+      "peerDependencies": {
+        "acorn": "^6.0.0 || ^7.0.0 || ^8.0.0"
+      }
+    },
+    "node_modules/ajv": {
+      "version": "6.12.6",
+      "resolved": "https://registry.npmjs.org/ajv/-/ajv-6.12.6.tgz",
+      "integrity": "sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "fast-deep-equal": "^3.1.1",
+        "fast-json-stable-stringify": "^2.0.0",
+        "json-schema-traverse": "^0.4.1",
+        "uri-js": "^4.2.2"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/epoberezkin"
+      }
+    },
+    "node_modules/anser": {
+      "version": "2.3.3",
+      "resolved": "https://registry.npmjs.org/anser/-/anser-2.3.3.tgz",
+      "integrity": "sha512-QGY1oxYE7/kkeNmbtY/2ZjQ07BCG3zYdz+k/+sf69kMzEIxb93guHkPnIXITQ+BYi61oQwG74twMOX1tD4aesg==",
+      "license": "MIT"
+    },
+    "node_modules/ansi-regex": {
+      "version": "5.0.1",
+      "resolved": "https://registry.npmjs.org/ansi-regex/-/ansi-regex-5.0.1.tgz",
+      "integrity": "sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/ansi-styles": {
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/ansi-styles/-/ansi-styles-4.3.0.tgz",
+      "integrity": "sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "color-convert": "^2.0.1"
+      },
+      "engines": {
+        "node": ">=8"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/ansi-styles?sponsor=1"
+      }
+    },
+    "node_modules/anymatch": {
+      "version": "3.1.3",
+      "resolved": "https://registry.npmjs.org/anymatch/-/anymatch-3.1.3.tgz",
+      "integrity": "sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==",
+      "license": "ISC",
+      "dependencies": {
+        "normalize-path": "^3.0.0",
+        "picomatch": "^2.0.4"
+      },
+      "engines": {
+        "node": ">= 8"
+      }
+    },
+    "node_modules/anymatch/node_modules/picomatch": {
+      "version": "2.3.1",
+      "resolved": "https://registry.npmjs.org/picomatch/-/picomatch-2.3.1.tgz",
+      "integrity": "sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=8.6"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/jonschlinkert"
+      }
+    },
+    "node_modules/argparse": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/argparse/-/argparse-2.0.1.tgz",
+      "integrity": "sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==",
+      "license": "Python-2.0"
+    },
+    "node_modules/aria-hidden": {
+      "version": "1.2.6",
+      "resolved": "https://registry.npmjs.org/aria-hidden/-/aria-hidden-1.2.6.tgz",
+      "integrity": "sha512-ik3ZgC9dY/lYVVM++OISsaYDeg1tb0VtP5uL3ouh1koGOaUMDPpbFIei4JkFimWUFPn90sbMNMXQAIVOlnYKJA==",
+      "license": "MIT",
+      "dependencies": {
+        "tslib": "^2.0.0"
+      },
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/aria-query": {
+      "version": "5.3.0",
+      "resolved": "https://registry.npmjs.org/aria-query/-/aria-query-5.3.0.tgz",
+      "integrity": "sha512-b0P0sZPKtyu8HkeRAfCq0IfURZK+SuwMjY1UXGBU27wpAiTwQAIlq56IbIO+ytk/JjS1fMR14ee5WBBfKi5J6A==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "dequal": "^2.0.3"
+      }
+    },
+    "node_modules/array-buffer-byte-length": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/array-buffer-byte-length/-/array-buffer-byte-length-1.0.2.tgz",
+      "integrity": "sha512-LHE+8BuR7RYGDKvnrmcuSq3tDcKv9OFEXQt/HpbZhY7V6h0zlUXutnAD82GiFx9rdieCMjkvtcsPqBwgUl1Iiw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.3",
+        "is-array-buffer": "^3.0.5"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/array-includes": {
+      "version": "3.1.9",
+      "resolved": "https://registry.npmjs.org/array-includes/-/array-includes-3.1.9.tgz",
+      "integrity": "sha512-FmeCCAenzH0KH381SPT5FZmiA/TmpndpcaShhfgEN9eCVjnFBqq3l1xrI42y8+PPLI6hypzou4GXw00WHmPBLQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "call-bound": "^1.0.4",
+        "define-properties": "^1.2.1",
+        "es-abstract": "^1.24.0",
+        "es-object-atoms": "^1.1.1",
+        "get-intrinsic": "^1.3.0",
+        "is-string": "^1.1.1",
+        "math-intrinsics": "^1.1.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/array.prototype.findlast": {
+      "version": "1.2.5",
+      "resolved": "https://registry.npmjs.org/array.prototype.findlast/-/array.prototype.findlast-1.2.5.tgz",
+      "integrity": "sha512-CVvd6FHg1Z3POpBLxO6E6zr+rSKEQ9L6rZHAaY7lLfhKsWYUBBOuMs0e9o24oopj6H+geRCX0YJ+TJLBK2eHyQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.7",
+        "define-properties": "^1.2.1",
+        "es-abstract": "^1.23.2",
+        "es-errors": "^1.3.0",
+        "es-object-atoms": "^1.0.0",
+        "es-shim-unscopables": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/array.prototype.findlastindex": {
+      "version": "1.2.6",
+      "resolved": "https://registry.npmjs.org/array.prototype.findlastindex/-/array.prototype.findlastindex-1.2.6.tgz",
+      "integrity": "sha512-F/TKATkzseUExPlfvmwQKGITM3DGTK+vkAsCZoDc5daVygbJBnjEUCbgkAvVFsgfXfX4YIqZ/27G3k3tdXrTxQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "call-bound": "^1.0.4",
+        "define-properties": "^1.2.1",
+        "es-abstract": "^1.23.9",
+        "es-errors": "^1.3.0",
+        "es-object-atoms": "^1.1.1",
+        "es-shim-unscopables": "^1.1.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/array.prototype.flat": {
+      "version": "1.3.3",
+      "resolved": "https://registry.npmjs.org/array.prototype.flat/-/array.prototype.flat-1.3.3.tgz",
+      "integrity": "sha512-rwG/ja1neyLqCuGZ5YYrznA62D4mZXg0i1cIskIUKSiqF3Cje9/wXAls9B9s1Wa2fomMsIv8czB8jZcPmxCXFg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "define-properties": "^1.2.1",
+        "es-abstract": "^1.23.5",
+        "es-shim-unscopables": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/array.prototype.flatmap": {
+      "version": "1.3.3",
+      "resolved": "https://registry.npmjs.org/array.prototype.flatmap/-/array.prototype.flatmap-1.3.3.tgz",
+      "integrity": "sha512-Y7Wt51eKJSyi80hFrJCePGGNo5ktJCslFuboqJsbf57CCPcm5zztluPlc4/aD8sWsKvlwatezpV4U1efk8kpjg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "define-properties": "^1.2.1",
+        "es-abstract": "^1.23.5",
+        "es-shim-unscopables": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/array.prototype.tosorted": {
+      "version": "1.1.4",
+      "resolved": "https://registry.npmjs.org/array.prototype.tosorted/-/array.prototype.tosorted-1.1.4.tgz",
+      "integrity": "sha512-p6Fx8B7b7ZhL/gmUsAy0D15WhvDccw3mnGNbZpi3pmeJdxtWsj2jEaI4Y6oo3XiHfzuSgPwKc04MYt6KgvC/wA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.7",
+        "define-properties": "^1.2.1",
+        "es-abstract": "^1.23.3",
+        "es-errors": "^1.3.0",
+        "es-shim-unscopables": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/arraybuffer.prototype.slice": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/arraybuffer.prototype.slice/-/arraybuffer.prototype.slice-1.0.4.tgz",
+      "integrity": "sha512-BNoCY6SXXPQ7gF2opIP4GBE+Xw7U+pHMYKuzjgCN3GwiaIR09UUeKfheyIry77QtrCBlC0KK0q5/TER/tYh3PQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "array-buffer-byte-length": "^1.0.1",
+        "call-bind": "^1.0.8",
+        "define-properties": "^1.2.1",
+        "es-abstract": "^1.23.5",
+        "es-errors": "^1.3.0",
+        "get-intrinsic": "^1.2.6",
+        "is-array-buffer": "^3.0.4"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/ast-types-flow": {
+      "version": "0.0.8",
+      "resolved": "https://registry.npmjs.org/ast-types-flow/-/ast-types-flow-0.0.8.tgz",
+      "integrity": "sha512-OH/2E5Fg20h2aPrbe+QL8JZQFko0YZaF+j4mnQ7BGhfavO7OpSLa8a0y9sBwomHdSbkhTS8TQNayBfnW5DwbvQ==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/async-function": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/async-function/-/async-function-1.0.0.tgz",
+      "integrity": "sha512-hsU18Ae8CDTR6Kgu9DYf0EbCr/a5iGL0rytQDobUcdpYOKokk8LEjVphnXkDkgpi0wYVsqrXuP0bZxJaTqdgoA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/asynckit": {
+      "version": "0.4.0",
+      "resolved": "https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz",
+      "integrity": "sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==",
+      "license": "MIT"
+    },
+    "node_modules/available-typed-arrays": {
+      "version": "1.0.7",
+      "resolved": "https://registry.npmjs.org/available-typed-arrays/-/available-typed-arrays-1.0.7.tgz",
+      "integrity": "sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "possible-typed-array-names": "^1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/axe-core": {
+      "version": "4.11.0",
+      "resolved": "https://registry.npmjs.org/axe-core/-/axe-core-4.11.0.tgz",
+      "integrity": "sha512-ilYanEU8vxxBexpJd8cWM4ElSQq4QctCLKih0TSfjIfCQTeyH/6zVrmIJfLPrKTKJRbiG+cfnZbQIjAlJmF1jQ==",
+      "dev": true,
+      "license": "MPL-2.0",
+      "engines": {
+        "node": ">=4"
+      }
+    },
+    "node_modules/axios": {
+      "version": "1.13.2",
+      "resolved": "https://registry.npmjs.org/axios/-/axios-1.13.2.tgz",
+      "integrity": "sha512-VPk9ebNqPcy5lRGuSlKx752IlDatOjT9paPlm8A7yOuW2Fbvp4X3JznJtT4f0GzGLLiWE9W8onz51SqLYwzGaA==",
+      "license": "MIT",
+      "dependencies": {
+        "follow-redirects": "^1.15.6",
+        "form-data": "^4.0.4",
+        "proxy-from-env": "^1.1.0"
+      }
+    },
+    "node_modules/axobject-query": {
+      "version": "4.1.0",
+      "resolved": "https://registry.npmjs.org/axobject-query/-/axobject-query-4.1.0.tgz",
+      "integrity": "sha512-qIj0G9wZbMGNLjLmg1PT6v2mE9AH2zlnADJD/2tC6E00hgmhUOfEB6greHPAfLRSufHqROIUTkw6E+M3lH0PTQ==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/bail": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/bail/-/bail-2.0.2.tgz",
+      "integrity": "sha512-0xO6mYd7JB2YesxDKplafRpsiOzPt9V02ddPCLbY1xYGPOX24NTyN50qnUxgCPcSoYMhKpAuBTjQoRZCAkUDRw==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/balanced-match": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.2.tgz",
+      "integrity": "sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==",
+      "license": "MIT"
+    },
+    "node_modules/base64-js": {
+      "version": "1.5.1",
+      "resolved": "https://registry.npmjs.org/base64-js/-/base64-js-1.5.1.tgz",
+      "integrity": "sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==",
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/feross"
+        },
+        {
+          "type": "patreon",
+          "url": "https://www.patreon.com/feross"
+        },
+        {
+          "type": "consulting",
+          "url": "https://feross.org/support"
+        }
+      ],
+      "license": "MIT"
+    },
+    "node_modules/binary-extensions": {
+      "version": "2.3.0",
+      "resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-2.3.0.tgz",
+      "integrity": "sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=8"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/brace-expansion": {
+      "version": "1.1.12",
+      "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.12.tgz",
+      "integrity": "sha512-9T9UjW3r0UW5c1Q7GTwllptXwhvYmEzFhzMfZ9H7FQWt+uZePjZPjBP/W1ZEyZ1twGWom5/56TF4lPcqjnDHcg==",
+      "license": "MIT",
+      "dependencies": {
+        "balanced-match": "^1.0.0",
+        "concat-map": "0.0.1"
+      }
+    },
+    "node_modules/braces": {
+      "version": "3.0.3",
+      "resolved": "https://registry.npmjs.org/braces/-/braces-3.0.3.tgz",
+      "integrity": "sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==",
+      "license": "MIT",
+      "dependencies": {
+        "fill-range": "^7.1.1"
+      },
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/buffer": {
+      "version": "6.0.3",
+      "resolved": "https://registry.npmjs.org/buffer/-/buffer-6.0.3.tgz",
+      "integrity": "sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==",
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/feross"
+        },
+        {
+          "type": "patreon",
+          "url": "https://www.patreon.com/feross"
+        },
+        {
+          "type": "consulting",
+          "url": "https://feross.org/support"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "base64-js": "^1.3.1",
+        "ieee754": "^1.2.1"
+      }
+    },
+    "node_modules/busboy": {
+      "version": "1.6.0",
+      "resolved": "https://registry.npmjs.org/busboy/-/busboy-1.6.0.tgz",
+      "integrity": "sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA==",
+      "dependencies": {
+        "streamsearch": "^1.1.0"
+      },
+      "engines": {
+        "node": ">=10.16.0"
+      }
+    },
+    "node_modules/c12": {
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/c12/-/c12-3.1.0.tgz",
+      "integrity": "sha512-uWoS8OU1MEIsOv8p/5a82c3H31LsWVR5qiyXVfBNOzfffjUWtPnhAb4BYI2uG2HfGmZmFjCtui5XNWaps+iFuw==",
+      "license": "MIT",
+      "dependencies": {
+        "chokidar": "^4.0.3",
+        "confbox": "^0.2.2",
+        "defu": "^6.1.4",
+        "dotenv": "^16.6.1",
+        "exsolve": "^1.0.7",
+        "giget": "^2.0.0",
+        "jiti": "^2.4.2",
+        "ohash": "^2.0.11",
+        "pathe": "^2.0.3",
+        "perfect-debounce": "^1.0.0",
+        "pkg-types": "^2.2.0",
+        "rc9": "^2.1.2"
+      },
+      "peerDependencies": {
+        "magicast": "^0.3.5"
+      },
+      "peerDependenciesMeta": {
+        "magicast": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/c12/node_modules/chokidar": {
+      "version": "4.0.3",
+      "resolved": "https://registry.npmjs.org/chokidar/-/chokidar-4.0.3.tgz",
+      "integrity": "sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==",
+      "license": "MIT",
+      "dependencies": {
+        "readdirp": "^4.0.1"
+      },
+      "engines": {
+        "node": ">= 14.16.0"
+      },
+      "funding": {
+        "url": "https://paulmillr.com/funding/"
+      }
+    },
+    "node_modules/c12/node_modules/readdirp": {
+      "version": "4.1.2",
+      "resolved": "https://registry.npmjs.org/readdirp/-/readdirp-4.1.2.tgz",
+      "integrity": "sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 14.18.0"
+      },
+      "funding": {
+        "type": "individual",
+        "url": "https://paulmillr.com/funding/"
+      }
+    },
+    "node_modules/call-bind": {
+      "version": "1.0.8",
+      "resolved": "https://registry.npmjs.org/call-bind/-/call-bind-1.0.8.tgz",
+      "integrity": "sha512-oKlSFMcMwpUg2ednkhQ454wfWiU/ul3CkJe/PEHcTKuiX6RpbehUiFMXu13HalGZxfUwCQzZG747YXBn1im9ww==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind-apply-helpers": "^1.0.0",
+        "es-define-property": "^1.0.0",
+        "get-intrinsic": "^1.2.4",
+        "set-function-length": "^1.2.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/call-bind-apply-helpers": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/call-bind-apply-helpers/-/call-bind-apply-helpers-1.0.2.tgz",
+      "integrity": "sha512-Sp1ablJ0ivDkSzjcaJdxEunN5/XvksFJ2sMBFfq6x0ryhQV/2b/KwFe21cMpmHtPOSij8K99/wSfoEuTObmuMQ==",
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "function-bind": "^1.1.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/call-bound": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/call-bound/-/call-bound-1.0.4.tgz",
+      "integrity": "sha512-+ys997U96po4Kx/ABpBCqhA9EuxJaQWDQg7295H4hBphv3IZg0boBKuwYpt4YXp6MZ5AmZQnU/tyMTlRpaSejg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind-apply-helpers": "^1.0.2",
+        "get-intrinsic": "^1.3.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/callsites": {
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/callsites/-/callsites-3.1.0.tgz",
+      "integrity": "sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/caniuse-lite": {
+      "version": "1.0.30001757",
+      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001757.tgz",
+      "integrity": "sha512-r0nnL/I28Zi/yjk1el6ilj27tKcdjLsNqAOZr0yVjWPrSQyHgKI2INaEWw21bAQSv2LXRt1XuCS/GomNpWOxsQ==",
+      "funding": [
+        {
+          "type": "opencollective",
+          "url": "https://opencollective.com/browserslist"
+        },
+        {
+          "type": "tidelift",
+          "url": "https://tidelift.com/funding/github/npm/caniuse-lite"
+        },
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/ai"
+        }
+      ],
+      "license": "CC-BY-4.0"
+    },
+    "node_modules/ccount": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/ccount/-/ccount-2.0.1.tgz",
+      "integrity": "sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/chalk": {
+      "version": "4.1.2",
+      "resolved": "https://registry.npmjs.org/chalk/-/chalk-4.1.2.tgz",
+      "integrity": "sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ansi-styles": "^4.1.0",
+        "supports-color": "^7.1.0"
+      },
+      "engines": {
+        "node": ">=10"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/chalk?sponsor=1"
+      }
+    },
+    "node_modules/character-entities": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/character-entities/-/character-entities-2.0.2.tgz",
+      "integrity": "sha512-shx7oQ0Awen/BRIdkjkvz54PnEEI/EjwXDSIZp86/KKdbafHh1Df/RYGBhn4hbe2+uKC9FnT5UCEdyPz3ai9hQ==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/character-entities-html4": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/character-entities-html4/-/character-entities-html4-2.1.0.tgz",
+      "integrity": "sha512-1v7fgQRj6hnSwFpq1Eu0ynr/CDEw0rXo2B61qXrLNdHZmPKgb7fqS1a2JwF0rISo9q77jDI8VMEHoApn8qDoZA==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/character-entities-legacy": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/character-entities-legacy/-/character-entities-legacy-3.0.0.tgz",
+      "integrity": "sha512-RpPp0asT/6ufRm//AJVwpViZbGM/MkjQFxJccQRHmISF/22NBtsHqAWmL+/pmkPWoIUJdWyeVleTl1wydHATVQ==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/character-reference-invalid": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/character-reference-invalid/-/character-reference-invalid-2.0.1.tgz",
+      "integrity": "sha512-iBZ4F4wRbyORVsu0jPV7gXkOsGYjGHPmAyv+HiHG8gi5PtC9KI2j1+v8/tlibRvjoWX027ypmG/n0HtO5t7unw==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/chokidar": {
+      "version": "3.6.0",
+      "resolved": "https://registry.npmjs.org/chokidar/-/chokidar-3.6.0.tgz",
+      "integrity": "sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==",
+      "license": "MIT",
+      "dependencies": {
+        "anymatch": "~3.1.2",
+        "braces": "~3.0.2",
+        "glob-parent": "~5.1.2",
+        "is-binary-path": "~2.1.0",
+        "is-glob": "~4.0.1",
+        "normalize-path": "~3.0.0",
+        "readdirp": "~3.6.0"
+      },
+      "engines": {
+        "node": ">= 8.10.0"
+      },
+      "funding": {
+        "url": "https://paulmillr.com/funding/"
+      },
+      "optionalDependencies": {
+        "fsevents": "~2.3.2"
+      }
+    },
+    "node_modules/chokidar/node_modules/glob-parent": {
+      "version": "5.1.2",
+      "resolved": "https://registry.npmjs.org/glob-parent/-/glob-parent-5.1.2.tgz",
+      "integrity": "sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==",
+      "license": "ISC",
+      "dependencies": {
+        "is-glob": "^4.0.1"
+      },
+      "engines": {
+        "node": ">= 6"
+      }
+    },
+    "node_modules/citty": {
+      "version": "0.1.6",
+      "resolved": "https://registry.npmjs.org/citty/-/citty-0.1.6.tgz",
+      "integrity": "sha512-tskPPKEs8D2KPafUypv2gxwJP8h/OaJmC82QQGGDQcHvXX43xF2VDACcJVmZ0EuSxkpO9Kc4MlrA3q0+FG58AQ==",
+      "license": "MIT",
+      "dependencies": {
+        "consola": "^3.2.3"
+      }
+    },
+    "node_modules/class-variance-authority": {
+      "version": "0.7.1",
+      "resolved": "https://registry.npmjs.org/class-variance-authority/-/class-variance-authority-0.7.1.tgz",
+      "integrity": "sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "clsx": "^2.1.1"
+      },
+      "funding": {
+        "url": "https://polar.sh/cva"
+      }
+    },
+    "node_modules/classnames": {
+      "version": "2.5.1",
+      "resolved": "https://registry.npmjs.org/classnames/-/classnames-2.5.1.tgz",
+      "integrity": "sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==",
+      "license": "MIT"
+    },
+    "node_modules/clean-set": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/clean-set/-/clean-set-1.1.2.tgz",
+      "integrity": "sha512-cA8uCj0qSoG9e0kevyOWXwPaELRPVg5Pxp6WskLMwerx257Zfnh8Nl0JBH59d7wQzij2CK7qEfJQK3RjuKKIug==",
+      "license": "MIT"
+    },
+    "node_modules/client-only": {
+      "version": "0.0.1",
+      "resolved": "https://registry.npmjs.org/client-only/-/client-only-0.0.1.tgz",
+      "integrity": "sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==",
+      "license": "MIT"
+    },
+    "node_modules/clsx": {
+      "version": "2.1.1",
+      "resolved": "https://registry.npmjs.org/clsx/-/clsx-2.1.1.tgz",
+      "integrity": "sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/cm6-theme-basic-light": {
+      "version": "0.2.0",
+      "resolved": "https://registry.npmjs.org/cm6-theme-basic-light/-/cm6-theme-basic-light-0.2.0.tgz",
+      "integrity": "sha512-1prg2gv44sYfpHscP26uLT/ePrh0mlmVwMSoSd3zYKQ92Ab3jPRLzyCnpyOCQLJbK+YdNs4HvMRqMNYdy4pMhA==",
+      "license": "MIT",
+      "peerDependencies": {
+        "@codemirror/language": "^6.0.0",
+        "@codemirror/state": "^6.0.0",
+        "@codemirror/view": "^6.0.0",
+        "@lezer/highlight": "^1.0.0"
+      }
+    },
+    "node_modules/cmdk": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/cmdk/-/cmdk-1.1.1.tgz",
+      "integrity": "sha512-Vsv7kFaXm+ptHDMZ7izaRsP70GgrW9NBNGswt9OZaVBLlE0SNpDq8eu/VGXyF9r7M0azK3Wy7OlYXsuyYLFzHg==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-compose-refs": "^1.1.1",
+        "@radix-ui/react-dialog": "^1.1.6",
+        "@radix-ui/react-id": "^1.1.0",
+        "@radix-ui/react-primitive": "^2.0.2"
+      },
+      "peerDependencies": {
+        "react": "^18 || ^19 || ^19.0.0-rc",
+        "react-dom": "^18 || ^19 || ^19.0.0-rc"
+      }
+    },
+    "node_modules/codemirror": {
+      "version": "6.0.2",
+      "resolved": "https://registry.npmjs.org/codemirror/-/codemirror-6.0.2.tgz",
+      "integrity": "sha512-VhydHotNW5w1UGK0Qj96BwSk/Zqbp9WbnyK2W/eVMv4QyF41INRGpjUhFJY7/uDNuudSc33a/PKr4iDqRduvHw==",
+      "license": "MIT",
+      "dependencies": {
+        "@codemirror/autocomplete": "^6.0.0",
+        "@codemirror/commands": "^6.0.0",
+        "@codemirror/language": "^6.0.0",
+        "@codemirror/lint": "^6.0.0",
+        "@codemirror/search": "^6.0.0",
+        "@codemirror/state": "^6.0.0",
+        "@codemirror/view": "^6.0.0"
+      }
+    },
+    "node_modules/color-convert": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/color-convert/-/color-convert-2.0.1.tgz",
+      "integrity": "sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "color-name": "~1.1.4"
+      },
+      "engines": {
+        "node": ">=7.0.0"
+      }
+    },
+    "node_modules/color-name": {
+      "version": "1.1.4",
+      "resolved": "https://registry.npmjs.org/color-name/-/color-name-1.1.4.tgz",
+      "integrity": "sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/combined-stream": {
+      "version": "1.0.8",
+      "resolved": "https://registry.npmjs.org/combined-stream/-/combined-stream-1.0.8.tgz",
+      "integrity": "sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==",
+      "license": "MIT",
+      "dependencies": {
+        "delayed-stream": "~1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/comma-separated-tokens": {
+      "version": "2.0.3",
+      "resolved": "https://registry.npmjs.org/comma-separated-tokens/-/comma-separated-tokens-2.0.3.tgz",
+      "integrity": "sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/compute-scroll-into-view": {
+      "version": "2.0.4",
+      "resolved": "https://registry.npmjs.org/compute-scroll-into-view/-/compute-scroll-into-view-2.0.4.tgz",
+      "integrity": "sha512-y/ZA3BGnxoM/QHHQ2Uy49CLtnWPbt4tTPpEEZiEmmiWBFKjej7nEyH8Ryz54jH0MLXflUYA3Er2zUxPSJu5R+g==",
+      "license": "MIT"
+    },
+    "node_modules/concat-map": {
+      "version": "0.0.1",
+      "resolved": "https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz",
+      "integrity": "sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==",
+      "license": "MIT"
+    },
+    "node_modules/confbox": {
+      "version": "0.2.2",
+      "resolved": "https://registry.npmjs.org/confbox/-/confbox-0.2.2.tgz",
+      "integrity": "sha512-1NB+BKqhtNipMsov4xI/NnhCKp9XG9NamYp5PVm9klAT0fsrNPjaFICsCFhNhwZJKNh7zB/3q8qXz0E9oaMNtQ==",
+      "license": "MIT"
+    },
+    "node_modules/consola": {
+      "version": "3.4.2",
+      "resolved": "https://registry.npmjs.org/consola/-/consola-3.4.2.tgz",
+      "integrity": "sha512-5IKcdX0nnYavi6G7TtOhwkYzyjfJlatbjMjuLSfE2kYT5pMDOilZ4OvMhi637CcDICTmz3wARPoyhqyX1Y+XvA==",
+      "license": "MIT",
+      "engines": {
+        "node": "^14.18.0 || >=16.10.0"
+      }
+    },
+    "node_modules/cookie": {
+      "version": "0.7.2",
+      "resolved": "https://registry.npmjs.org/cookie/-/cookie-0.7.2.tgz",
+      "integrity": "sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/crelt": {
+      "version": "1.0.6",
+      "resolved": "https://registry.npmjs.org/crelt/-/crelt-1.0.6.tgz",
+      "integrity": "sha512-VQ2MBenTq1fWZUH9DJNGti7kKv6EeAuYr3cLwxUWhIu1baTaXh4Ib5W2CqHVqib4/MqbYGJqiL3Zb8GJZr3l4g==",
+      "license": "MIT"
+    },
+    "node_modules/cross-spawn": {
+      "version": "7.0.6",
+      "resolved": "https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.6.tgz",
+      "integrity": "sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "path-key": "^3.1.0",
+        "shebang-command": "^2.0.0",
+        "which": "^2.0.1"
+      },
+      "engines": {
+        "node": ">= 8"
+      }
+    },
+    "node_modules/csstype": {
+      "version": "3.2.3",
+      "resolved": "https://registry.npmjs.org/csstype/-/csstype-3.2.3.tgz",
+      "integrity": "sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==",
+      "license": "MIT"
+    },
+    "node_modules/d": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/d/-/d-1.0.2.tgz",
+      "integrity": "sha512-MOqHvMWF9/9MX6nza0KgvFH4HpMU0EF5uUDXqX/BtxtU8NfB0QzRtJ8Oe/6SuS4kbhyzVJwjd97EA4PKrzJ8bw==",
+      "license": "ISC",
+      "dependencies": {
+        "es5-ext": "^0.10.64",
+        "type": "^2.7.2"
+      },
+      "engines": {
+        "node": ">=0.12"
+      }
+    },
+    "node_modules/d3-array": {
+      "version": "3.2.4",
+      "resolved": "https://registry.npmjs.org/d3-array/-/d3-array-3.2.4.tgz",
+      "integrity": "sha512-tdQAmyA18i4J7wprpYq8ClcxZy3SC31QMeByyCFyRt7BVHdREQZ5lpzoe5mFEYZUWe+oq8HBvk9JjpibyEV4Jg==",
+      "license": "ISC",
+      "dependencies": {
+        "internmap": "1 - 2"
+      },
+      "engines": {
+        "node": ">=12"
+      }
+    },
+    "node_modules/d3-color": {
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/d3-color/-/d3-color-3.1.0.tgz",
+      "integrity": "sha512-zg/chbXyeBtMQ1LbD/WSoW2DpC3I0mpmPdW+ynRTj/x2DAWYrIY7qeZIHidozwV24m4iavr15lNwIwLxRmOxhA==",
+      "license": "ISC",
+      "engines": {
+        "node": ">=12"
+      }
+    },
+    "node_modules/d3-ease": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/d3-ease/-/d3-ease-3.0.1.tgz",
+      "integrity": "sha512-wR/XK3D3XcLIZwpbvQwQ5fK+8Ykds1ip7A2Txe0yxncXSdq1L9skcG7blcedkOX+ZcgxGAmLX1FrRGbADwzi0w==",
+      "license": "BSD-3-Clause",
+      "engines": {
+        "node": ">=12"
+      }
+    },
+    "node_modules/d3-format": {
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/d3-format/-/d3-format-3.1.0.tgz",
+      "integrity": "sha512-YyUI6AEuY/Wpt8KWLgZHsIU86atmikuoOmCfommt0LYHiQSPjvX2AcFc38PX0CBpr2RCyZhjex+NS/LPOv6YqA==",
+      "license": "ISC",
+      "engines": {
+        "node": ">=12"
+      }
+    },
+    "node_modules/d3-interpolate": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-3.0.1.tgz",
+      "integrity": "sha512-3bYs1rOD33uo8aqJfKP3JWPAibgw8Zm2+L9vBKEHJ2Rg+viTR7o5Mmv5mZcieN+FRYaAOWX5SJATX6k1PWz72g==",
+      "license": "ISC",
+      "dependencies": {
+        "d3-color": "1 - 3"
+      },
+      "engines": {
+        "node": ">=12"
+      }
+    },
+    "node_modules/d3-path": {
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/d3-path/-/d3-path-3.1.0.tgz",
+      "integrity": "sha512-p3KP5HCf/bvjBSSKuXid6Zqijx7wIfNW+J/maPs+iwR35at5JCbLUT0LzF1cnjbCHWhqzQTIN2Jpe8pRebIEFQ==",
+      "license": "ISC",
+      "engines": {
+        "node": ">=12"
+      }
+    },
+    "node_modules/d3-scale": {
+      "version": "4.0.2",
+      "resolved": "https://registry.npmjs.org/d3-scale/-/d3-scale-4.0.2.tgz",
+      "integrity": "sha512-GZW464g1SH7ag3Y7hXjf8RoUuAFIqklOAq3MRl4OaWabTFJY9PN/E1YklhXLh+OQ3fM9yS2nOkCoS+WLZ6kvxQ==",
+      "license": "ISC",
+      "dependencies": {
+        "d3-array": "2.10.0 - 3",
+        "d3-format": "1 - 3",
+        "d3-interpolate": "1.2.0 - 3",
+        "d3-time": "2.1.1 - 3",
+        "d3-time-format": "2 - 4"
+      },
+      "engines": {
+        "node": ">=12"
+      }
+    },
+    "node_modules/d3-shape": {
+      "version": "3.2.0",
+      "resolved": "https://registry.npmjs.org/d3-shape/-/d3-shape-3.2.0.tgz",
+      "integrity": "sha512-SaLBuwGm3MOViRq2ABk3eLoxwZELpH6zhl3FbAoJ7Vm1gofKx6El1Ib5z23NUEhF9AsGl7y+dzLe5Cw2AArGTA==",
+      "license": "ISC",
+      "dependencies": {
+        "d3-path": "^3.1.0"
+      },
+      "engines": {
+        "node": ">=12"
+      }
+    },
+    "node_modules/d3-time": {
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/d3-time/-/d3-time-3.1.0.tgz",
+      "integrity": "sha512-VqKjzBLejbSMT4IgbmVgDjpkYrNWUYJnbCGo874u7MMKIWsILRX+OpX/gTk8MqjpT1A/c6HY2dCA77ZN0lkQ2Q==",
+      "license": "ISC",
+      "dependencies": {
+        "d3-array": "2 - 3"
+      },
+      "engines": {
+        "node": ">=12"
+      }
+    },
+    "node_modules/d3-time-format": {
+      "version": "4.1.0",
+      "resolved": "https://registry.npmjs.org/d3-time-format/-/d3-time-format-4.1.0.tgz",
+      "integrity": "sha512-dJxPBlzC7NugB2PDLwo9Q8JiTR3M3e4/XANkreKSUxF8vvXKqm1Yfq4Q5dl8budlunRVlUUaDUgFt7eA8D6NLg==",
+      "license": "ISC",
+      "dependencies": {
+        "d3-time": "1 - 3"
+      },
+      "engines": {
+        "node": ">=12"
+      }
+    },
+    "node_modules/d3-timer": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/d3-timer/-/d3-timer-3.0.1.tgz",
+      "integrity": "sha512-ndfJ/JxxMd3nw31uyKoY2naivF+r29V+Lc0svZxe1JvvIRmi8hUsrMvdOwgS1o6uBHmiz91geQ0ylPP0aj1VUA==",
+      "license": "ISC",
+      "engines": {
+        "node": ">=12"
+      }
+    },
+    "node_modules/damerau-levenshtein": {
+      "version": "1.0.8",
+      "resolved": "https://registry.npmjs.org/damerau-levenshtein/-/damerau-levenshtein-1.0.8.tgz",
+      "integrity": "sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==",
+      "dev": true,
+      "license": "BSD-2-Clause"
+    },
+    "node_modules/data-view-buffer": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/data-view-buffer/-/data-view-buffer-1.0.2.tgz",
+      "integrity": "sha512-EmKO5V3OLXh1rtK2wgXRansaK1/mtVdTUEiEI0W8RkvgT05kfxaH29PliLnpLP73yYO6142Q72QNa8Wx/A5CqQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.3",
+        "es-errors": "^1.3.0",
+        "is-data-view": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/data-view-byte-length": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/data-view-byte-length/-/data-view-byte-length-1.0.2.tgz",
+      "integrity": "sha512-tuhGbE6CfTM9+5ANGf+oQb72Ky/0+s3xKUpHvShfiz2RxMFgFPjsXuRLBVMtvMs15awe45SRb83D6wH4ew6wlQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.3",
+        "es-errors": "^1.3.0",
+        "is-data-view": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/inspect-js"
+      }
+    },
+    "node_modules/data-view-byte-offset": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/data-view-byte-offset/-/data-view-byte-offset-1.0.1.tgz",
+      "integrity": "sha512-BS8PfmtDGnrgYdOonGZQdLZslWIeCGFP9tpan0hi1Co2Zr2NKADsvGYA8XxuG/4UWgJ6Cjtv+YJnB6MM69QGlQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.2",
+        "es-errors": "^1.3.0",
+        "is-data-view": "^1.0.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/date-fns": {
+      "version": "4.1.0",
+      "resolved": "https://registry.npmjs.org/date-fns/-/date-fns-4.1.0.tgz",
+      "integrity": "sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/kossnocorp"
+      }
+    },
+    "node_modules/date-fns-jalali": {
+      "version": "4.1.0-0",
+      "resolved": "https://registry.npmjs.org/date-fns-jalali/-/date-fns-jalali-4.1.0-0.tgz",
+      "integrity": "sha512-hTIP/z+t+qKwBDcmmsnmjWTduxCg+5KfdqWQvb2X/8C9+knYY6epN/pfxdDuyVlSVeFz0sM5eEfwIUQ70U4ckg==",
+      "license": "MIT"
+    },
+    "node_modules/debug": {
+      "version": "4.4.3",
+      "resolved": "https://registry.npmjs.org/debug/-/debug-4.4.3.tgz",
+      "integrity": "sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==",
+      "license": "MIT",
+      "dependencies": {
+        "ms": "^2.1.3"
+      },
+      "engines": {
+        "node": ">=6.0"
+      },
+      "peerDependenciesMeta": {
+        "supports-color": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/decimal.js": {
+      "version": "10.6.0",
+      "resolved": "https://registry.npmjs.org/decimal.js/-/decimal.js-10.6.0.tgz",
+      "integrity": "sha512-YpgQiITW3JXGntzdUmyUR1V812Hn8T1YVXhCu+wO3OpS4eU9l4YdD3qjyiKdV6mvV29zapkMeD390UVEf2lkUg==",
+      "license": "MIT"
+    },
+    "node_modules/decimal.js-light": {
+      "version": "2.5.1",
+      "resolved": "https://registry.npmjs.org/decimal.js-light/-/decimal.js-light-2.5.1.tgz",
+      "integrity": "sha512-qIMFpTMZmny+MMIitAB6D7iVPEorVw6YQRWkvarTkT4tBeSLLiHzcwj6q0MmYSFCiVpiqPJTJEYIrpcPzVEIvg==",
+      "license": "MIT"
+    },
+    "node_modules/decode-named-character-reference": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/decode-named-character-reference/-/decode-named-character-reference-1.2.0.tgz",
+      "integrity": "sha512-c6fcElNV6ShtZXmsgNgFFV5tVX2PaV4g+MOAkb8eXHvn6sryJBrZa9r0zV6+dtTyoCKxtDy5tyQ5ZwQuidtd+Q==",
+      "license": "MIT",
+      "dependencies": {
+        "character-entities": "^2.0.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/deep-is": {
+      "version": "0.1.4",
+      "resolved": "https://registry.npmjs.org/deep-is/-/deep-is-0.1.4.tgz",
+      "integrity": "sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/deepmerge-ts": {
+      "version": "7.1.5",
+      "resolved": "https://registry.npmjs.org/deepmerge-ts/-/deepmerge-ts-7.1.5.tgz",
+      "integrity": "sha512-HOJkrhaYsweh+W+e74Yn7YStZOilkoPb6fycpwNLKzSPtruFs48nYis0zy5yJz1+ktUhHxoRDJ27RQAWLIJVJw==",
+      "license": "BSD-3-Clause",
+      "engines": {
+        "node": ">=16.0.0"
+      }
+    },
+    "node_modules/define-data-property": {
+      "version": "1.1.4",
+      "resolved": "https://registry.npmjs.org/define-data-property/-/define-data-property-1.1.4.tgz",
+      "integrity": "sha512-rBMvIzlpA8v6E+SJZoo++HAYqsLrkg7MSfIinMPFhmkorw7X+dOXVJQs+QT69zGkzMyfDnIMN2Wid1+NbL3T+A==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "es-define-property": "^1.0.0",
+        "es-errors": "^1.3.0",
+        "gopd": "^1.0.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/define-properties": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/define-properties/-/define-properties-1.2.1.tgz",
+      "integrity": "sha512-8QmQKqEASLd5nx0U1B1okLElbUuuttJ/AnYmRXbbbGDWh6uS208EjD4Xqq/I9wK7u0v6O08XhTWnt5XtEbR6Dg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "define-data-property": "^1.0.1",
+        "has-property-descriptors": "^1.0.0",
+        "object-keys": "^1.1.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/defu": {
+      "version": "6.1.4",
+      "resolved": "https://registry.npmjs.org/defu/-/defu-6.1.4.tgz",
+      "integrity": "sha512-mEQCMmwJu317oSz8CwdIOdwf3xMif1ttiM8LTufzc3g6kR+9Pe236twL8j3IYT1F7GfRgGcW6MWxzZjLIkuHIg==",
+      "license": "MIT"
+    },
+    "node_modules/delayed-stream": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/delayed-stream/-/delayed-stream-1.0.0.tgz",
+      "integrity": "sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.4.0"
+      }
+    },
+    "node_modules/dequal": {
+      "version": "2.0.3",
+      "resolved": "https://registry.npmjs.org/dequal/-/dequal-2.0.3.tgz",
+      "integrity": "sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/destr": {
+      "version": "2.0.5",
+      "resolved": "https://registry.npmjs.org/destr/-/destr-2.0.5.tgz",
+      "integrity": "sha512-ugFTXCtDZunbzasqBxrK93Ik/DRYsO6S/fedkWEMKqt04xZ4csmnmwGDBAb07QWNaGMAmnTIemsYZCksjATwsA==",
+      "license": "MIT"
+    },
+    "node_modules/detect-libc": {
+      "version": "2.1.2",
+      "resolved": "https://registry.npmjs.org/detect-libc/-/detect-libc-2.1.2.tgz",
+      "integrity": "sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==",
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/detect-node-es": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/detect-node-es/-/detect-node-es-1.1.0.tgz",
+      "integrity": "sha512-ypdmJU/TbBby2Dxibuv7ZLW3Bs1QEmM7nHjEANfohJLvE0XVujisn1qPJcZxg+qDucsr+bP6fLD1rPS3AhJ7EQ==",
+      "license": "MIT"
+    },
+    "node_modules/devlop": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/devlop/-/devlop-1.1.0.tgz",
+      "integrity": "sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==",
+      "license": "MIT",
+      "dependencies": {
+        "dequal": "^2.0.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/diff": {
+      "version": "5.2.0",
+      "resolved": "https://registry.npmjs.org/diff/-/diff-5.2.0.tgz",
+      "integrity": "sha512-uIFDxqpRZGZ6ThOk84hEfqWoHx2devRFvpTZcTHur85vImfaxUbTW9Ryh4CpCuDnToOP1CEtXKIgytHBPVff5A==",
+      "license": "BSD-3-Clause",
+      "engines": {
+        "node": ">=0.3.1"
+      }
+    },
+    "node_modules/doctrine": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/doctrine/-/doctrine-2.1.0.tgz",
+      "integrity": "sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "esutils": "^2.0.2"
+      },
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/dom-accessibility-api": {
+      "version": "0.5.16",
+      "resolved": "https://registry.npmjs.org/dom-accessibility-api/-/dom-accessibility-api-0.5.16.tgz",
+      "integrity": "sha512-X7BJ2yElsnOJ30pZF4uIIDfBEVgF4XEBxL9Bxhy6dnrm5hkzqmsWHGTiHqRiITNhMyFLyAiWndIJP7Z1NTteDg==",
+      "license": "MIT"
+    },
+    "node_modules/dom-helpers": {
+      "version": "5.2.1",
+      "resolved": "https://registry.npmjs.org/dom-helpers/-/dom-helpers-5.2.1.tgz",
+      "integrity": "sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==",
+      "license": "MIT",
+      "dependencies": {
+        "@babel/runtime": "^7.8.7",
+        "csstype": "^3.0.2"
+      }
+    },
+    "node_modules/dotenv": {
+      "version": "16.6.1",
+      "resolved": "https://registry.npmjs.org/dotenv/-/dotenv-16.6.1.tgz",
+      "integrity": "sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==",
+      "license": "BSD-2-Clause",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://dotenvx.com"
+      }
+    },
+    "node_modules/downshift": {
+      "version": "7.6.2",
+      "resolved": "https://registry.npmjs.org/downshift/-/downshift-7.6.2.tgz",
+      "integrity": "sha512-iOv+E1Hyt3JDdL9yYcOgW7nZ7GQ2Uz6YbggwXvKUSleetYhU2nXD482Rz6CzvM4lvI1At34BYruKAL4swRGxaA==",
+      "license": "MIT",
+      "dependencies": {
+        "@babel/runtime": "^7.14.8",
+        "compute-scroll-into-view": "^2.0.4",
+        "prop-types": "^15.7.2",
+        "react-is": "^17.0.2",
+        "tslib": "^2.3.0"
+      },
+      "peerDependencies": {
+        "react": ">=16.12.0"
+      }
+    },
+    "node_modules/dunder-proto": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/dunder-proto/-/dunder-proto-1.0.1.tgz",
+      "integrity": "sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bind-apply-helpers": "^1.0.1",
+        "es-errors": "^1.3.0",
+        "gopd": "^1.2.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/effect": {
+      "version": "3.18.4",
+      "resolved": "https://registry.npmjs.org/effect/-/effect-3.18.4.tgz",
+      "integrity": "sha512-b1LXQJLe9D11wfnOKAk3PKxuqYshQ0Heez+y5pnkd3jLj1yx9QhM72zZ9uUrOQyNvrs2GZZd/3maL0ZV18YuDA==",
+      "license": "MIT",
+      "dependencies": {
+        "@standard-schema/spec": "^1.0.0",
+        "fast-check": "^3.23.1"
+      }
+    },
+    "node_modules/embla-carousel": {
+      "version": "8.6.0",
+      "resolved": "https://registry.npmjs.org/embla-carousel/-/embla-carousel-8.6.0.tgz",
+      "integrity": "sha512-SjWyZBHJPbqxHOzckOfo8lHisEaJWmwd23XppYFYVh10bU66/Pn5tkVkbkCMZVdbUE5eTCI2nD8OyIP4Z+uwkA==",
+      "license": "MIT"
+    },
+    "node_modules/embla-carousel-react": {
+      "version": "8.6.0",
+      "resolved": "https://registry.npmjs.org/embla-carousel-react/-/embla-carousel-react-8.6.0.tgz",
+      "integrity": "sha512-0/PjqU7geVmo6F734pmPqpyHqiM99olvyecY7zdweCw+6tKEXnrE90pBiBbMMU8s5tICemzpQ3hi5EpxzGW+JA==",
+      "license": "MIT",
+      "dependencies": {
+        "embla-carousel": "8.6.0",
+        "embla-carousel-reactive-utils": "8.6.0"
+      },
+      "peerDependencies": {
+        "react": "^16.8.0 || ^17.0.1 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc"
+      }
+    },
+    "node_modules/embla-carousel-reactive-utils": {
+      "version": "8.6.0",
+      "resolved": "https://registry.npmjs.org/embla-carousel-reactive-utils/-/embla-carousel-reactive-utils-8.6.0.tgz",
+      "integrity": "sha512-fMVUDUEx0/uIEDM0Mz3dHznDhfX+znCCDCeIophYb1QGVM7YThSWX+wz11zlYwWFOr74b4QLGg0hrGPJeG2s4A==",
+      "license": "MIT",
+      "peerDependencies": {
+        "embla-carousel": "8.6.0"
+      }
+    },
+    "node_modules/emoji-regex": {
+      "version": "9.2.2",
+      "resolved": "https://registry.npmjs.org/emoji-regex/-/emoji-regex-9.2.2.tgz",
+      "integrity": "sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/empathic": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/empathic/-/empathic-2.0.0.tgz",
+      "integrity": "sha512-i6UzDscO/XfAcNYD75CfICkmfLedpyPDdozrLMmQc5ORaQcdMoc21OnlEylMIqI7U8eniKrPMxxtj8k0vhmJhA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=14"
+      }
+    },
+    "node_modules/enhanced-resolve": {
+      "version": "5.18.3",
+      "resolved": "https://registry.npmjs.org/enhanced-resolve/-/enhanced-resolve-5.18.3.tgz",
+      "integrity": "sha512-d4lC8xfavMeBjzGr2vECC3fsGXziXZQyJxD868h2M/mBI3PwAuODxAkLkq5HYuvrPYcUtiLzsTo8U3PgX3Ocww==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "graceful-fs": "^4.2.4",
+        "tapable": "^2.2.0"
+      },
+      "engines": {
+        "node": ">=10.13.0"
+      }
+    },
+    "node_modules/es-abstract": {
+      "version": "1.24.0",
+      "resolved": "https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.0.tgz",
+      "integrity": "sha512-WSzPgsdLtTcQwm4CROfS5ju2Wa1QQcVeT37jFjYzdFz1r9ahadC8B8/a4qxJxM+09F18iumCdRmlr96ZYkQvEg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "array-buffer-byte-length": "^1.0.2",
+        "arraybuffer.prototype.slice": "^1.0.4",
+        "available-typed-arrays": "^1.0.7",
+        "call-bind": "^1.0.8",
+        "call-bound": "^1.0.4",
+        "data-view-buffer": "^1.0.2",
+        "data-view-byte-length": "^1.0.2",
+        "data-view-byte-offset": "^1.0.1",
+        "es-define-property": "^1.0.1",
+        "es-errors": "^1.3.0",
+        "es-object-atoms": "^1.1.1",
+        "es-set-tostringtag": "^2.1.0",
+        "es-to-primitive": "^1.3.0",
+        "function.prototype.name": "^1.1.8",
+        "get-intrinsic": "^1.3.0",
+        "get-proto": "^1.0.1",
+        "get-symbol-description": "^1.1.0",
+        "globalthis": "^1.0.4",
+        "gopd": "^1.2.0",
+        "has-property-descriptors": "^1.0.2",
+        "has-proto": "^1.2.0",
+        "has-symbols": "^1.1.0",
+        "hasown": "^2.0.2",
+        "internal-slot": "^1.1.0",
+        "is-array-buffer": "^3.0.5",
+        "is-callable": "^1.2.7",
+        "is-data-view": "^1.0.2",
+        "is-negative-zero": "^2.0.3",
+        "is-regex": "^1.2.1",
+        "is-set": "^2.0.3",
+        "is-shared-array-buffer": "^1.0.4",
+        "is-string": "^1.1.1",
+        "is-typed-array": "^1.1.15",
+        "is-weakref": "^1.1.1",
+        "math-intrinsics": "^1.1.0",
+        "object-inspect": "^1.13.4",
+        "object-keys": "^1.1.1",
+        "object.assign": "^4.1.7",
+        "own-keys": "^1.0.1",
+        "regexp.prototype.flags": "^1.5.4",
+        "safe-array-concat": "^1.1.3",
+        "safe-push-apply": "^1.0.0",
+        "safe-regex-test": "^1.1.0",
+        "set-proto": "^1.0.0",
+        "stop-iteration-iterator": "^1.1.0",
+        "string.prototype.trim": "^1.2.10",
+        "string.prototype.trimend": "^1.0.9",
+        "string.prototype.trimstart": "^1.0.8",
+        "typed-array-buffer": "^1.0.3",
+        "typed-array-byte-length": "^1.0.3",
+        "typed-array-byte-offset": "^1.0.4",
+        "typed-array-length": "^1.0.7",
+        "unbox-primitive": "^1.1.0",
+        "which-typed-array": "^1.1.19"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/es-define-property": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/es-define-property/-/es-define-property-1.0.1.tgz",
+      "integrity": "sha512-e3nRfgfUZ4rNGL232gUgX06QNyyez04KdjFrF+LTRoOXmrOgFKDg4BCdsjW8EnT69eqdYGmRpJwiPVYNrCaW3g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/es-errors": {
+      "version": "1.3.0",
+      "resolved": "https://registry.npmjs.org/es-errors/-/es-errors-1.3.0.tgz",
+      "integrity": "sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/es-iterator-helpers": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/es-iterator-helpers/-/es-iterator-helpers-1.2.1.tgz",
+      "integrity": "sha512-uDn+FE1yrDzyC0pCo961B2IHbdM8y/ACZsKD4dG6WqrjV53BADjwa7D+1aom2rsNVfLyDgU/eigvlJGJ08OQ4w==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "call-bound": "^1.0.3",
+        "define-properties": "^1.2.1",
+        "es-abstract": "^1.23.6",
+        "es-errors": "^1.3.0",
+        "es-set-tostringtag": "^2.0.3",
+        "function-bind": "^1.1.2",
+        "get-intrinsic": "^1.2.6",
+        "globalthis": "^1.0.4",
+        "gopd": "^1.2.0",
+        "has-property-descriptors": "^1.0.2",
+        "has-proto": "^1.2.0",
+        "has-symbols": "^1.1.0",
+        "internal-slot": "^1.1.0",
+        "iterator.prototype": "^1.1.4",
+        "safe-array-concat": "^1.1.3"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/es-object-atoms": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/es-object-atoms/-/es-object-atoms-1.1.1.tgz",
+      "integrity": "sha512-FGgH2h8zKNim9ljj7dankFPcICIK9Cp5bm+c2gQSYePhpaG5+esrLODihIorn+Pe6FGJzWhXQotPv73jTaldXA==",
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/es-set-tostringtag": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/es-set-tostringtag/-/es-set-tostringtag-2.1.0.tgz",
+      "integrity": "sha512-j6vWzfrGVfyXxge+O0x5sh6cvxAog0a/4Rdd2K36zCMV5eJ+/+tOAngRO8cODMNWbVRdVlmGZQL2YS3yR8bIUA==",
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "get-intrinsic": "^1.2.6",
+        "has-tostringtag": "^1.0.2",
+        "hasown": "^2.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/es-shim-unscopables": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/es-shim-unscopables/-/es-shim-unscopables-1.1.0.tgz",
+      "integrity": "sha512-d9T8ucsEhh8Bi1woXCf+TIKDIROLG5WCkxg8geBCbvk22kzwC5G2OnXVMO6FUsvQlgUUXQ2itephWDLqDzbeCw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "hasown": "^2.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/es-to-primitive": {
+      "version": "1.3.0",
+      "resolved": "https://registry.npmjs.org/es-to-primitive/-/es-to-primitive-1.3.0.tgz",
+      "integrity": "sha512-w+5mJ3GuFL+NjVtJlvydShqE1eN3h3PbI7/5LAsYJP/2qtuMXjfL2LpHSRqo4b4eSF5K/DH1JXKUAHSB2UW50g==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "is-callable": "^1.2.7",
+        "is-date-object": "^1.0.5",
+        "is-symbol": "^1.0.4"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/es5-ext": {
+      "version": "0.10.64",
+      "resolved": "https://registry.npmjs.org/es5-ext/-/es5-ext-0.10.64.tgz",
+      "integrity": "sha512-p2snDhiLaXe6dahss1LddxqEm+SkuDvV8dnIQG0MWjyHpcMNfXKPE+/Cc0y+PhxJX3A4xGNeFCj5oc0BUh6deg==",
+      "hasInstallScript": true,
+      "license": "ISC",
+      "dependencies": {
+        "es6-iterator": "^2.0.3",
+        "es6-symbol": "^3.1.3",
+        "esniff": "^2.0.1",
+        "next-tick": "^1.1.0"
+      },
+      "engines": {
+        "node": ">=0.10"
+      }
+    },
+    "node_modules/es6-iterator": {
+      "version": "2.0.3",
+      "resolved": "https://registry.npmjs.org/es6-iterator/-/es6-iterator-2.0.3.tgz",
+      "integrity": "sha512-zw4SRzoUkd+cl+ZoE15A9o1oQd920Bb0iOJMQkQhl3jNc03YqVjAhG7scf9C5KWRU/R13Orf588uCC6525o02g==",
+      "license": "MIT",
+      "dependencies": {
+        "d": "1",
+        "es5-ext": "^0.10.35",
+        "es6-symbol": "^3.1.1"
+      }
+    },
+    "node_modules/es6-symbol": {
+      "version": "3.1.4",
+      "resolved": "https://registry.npmjs.org/es6-symbol/-/es6-symbol-3.1.4.tgz",
+      "integrity": "sha512-U9bFFjX8tFiATgtkJ1zg25+KviIXpgRvRHS8sau3GfhVzThRQrOeksPeT0BWW2MNZs1OEWJ1DPXOQMn0KKRkvg==",
+      "license": "ISC",
+      "dependencies": {
+        "d": "^1.0.2",
+        "ext": "^1.7.0"
+      },
+      "engines": {
+        "node": ">=0.12"
+      }
+    },
+    "node_modules/esbuild": {
+      "version": "0.25.12",
+      "resolved": "https://registry.npmjs.org/esbuild/-/esbuild-0.25.12.tgz",
+      "integrity": "sha512-bbPBYYrtZbkt6Os6FiTLCTFxvq4tt3JKall1vRwshA3fdVztsLAatFaZobhkBC8/BrPetoa0oksYoKXoG4ryJg==",
+      "hasInstallScript": true,
+      "license": "MIT",
+      "bin": {
+        "esbuild": "bin/esbuild"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "optionalDependencies": {
+        "@esbuild/aix-ppc64": "0.25.12",
+        "@esbuild/android-arm": "0.25.12",
+        "@esbuild/android-arm64": "0.25.12",
+        "@esbuild/android-x64": "0.25.12",
+        "@esbuild/darwin-arm64": "0.25.12",
+        "@esbuild/darwin-x64": "0.25.12",
+        "@esbuild/freebsd-arm64": "0.25.12",
+        "@esbuild/freebsd-x64": "0.25.12",
+        "@esbuild/linux-arm": "0.25.12",
+        "@esbuild/linux-arm64": "0.25.12",
+        "@esbuild/linux-ia32": "0.25.12",
+        "@esbuild/linux-loong64": "0.25.12",
+        "@esbuild/linux-mips64el": "0.25.12",
+        "@esbuild/linux-ppc64": "0.25.12",
+        "@esbuild/linux-riscv64": "0.25.12",
+        "@esbuild/linux-s390x": "0.25.12",
+        "@esbuild/linux-x64": "0.25.12",
+        "@esbuild/netbsd-arm64": "0.25.12",
+        "@esbuild/netbsd-x64": "0.25.12",
+        "@esbuild/openbsd-arm64": "0.25.12",
+        "@esbuild/openbsd-x64": "0.25.12",
+        "@esbuild/openharmony-arm64": "0.25.12",
+        "@esbuild/sunos-x64": "0.25.12",
+        "@esbuild/win32-arm64": "0.25.12",
+        "@esbuild/win32-ia32": "0.25.12",
+        "@esbuild/win32-x64": "0.25.12"
+      }
+    },
+    "node_modules/escape-carriage": {
+      "version": "1.3.1",
+      "resolved": "https://registry.npmjs.org/escape-carriage/-/escape-carriage-1.3.1.tgz",
+      "integrity": "sha512-GwBr6yViW3ttx1kb7/Oh+gKQ1/TrhYwxKqVmg5gS+BK+Qe2KrOa/Vh7w3HPBvgGf0LfcDGoY9I6NHKoA5Hozhw==",
+      "license": "MIT"
+    },
+    "node_modules/escape-string-regexp": {
+      "version": "4.0.0",
+      "resolved": "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz",
+      "integrity": "sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=10"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/eslint": {
+      "version": "9.39.1",
+      "resolved": "https://registry.npmjs.org/eslint/-/eslint-9.39.1.tgz",
+      "integrity": "sha512-BhHmn2yNOFA9H9JmmIVKJmd288g9hrVRDkdoIgRCRuSySRUHH7r/DI6aAXW9T1WwUuY3DFgrcaqB+deURBLR5g==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@eslint-community/eslint-utils": "^4.8.0",
+        "@eslint-community/regexpp": "^4.12.1",
+        "@eslint/config-array": "^0.21.1",
+        "@eslint/config-helpers": "^0.4.2",
+        "@eslint/core": "^0.17.0",
+        "@eslint/eslintrc": "^3.3.1",
+        "@eslint/js": "9.39.1",
+        "@eslint/plugin-kit": "^0.4.1",
+        "@humanfs/node": "^0.16.6",
+        "@humanwhocodes/module-importer": "^1.0.1",
+        "@humanwhocodes/retry": "^0.4.2",
+        "@types/estree": "^1.0.6",
+        "ajv": "^6.12.4",
+        "chalk": "^4.0.0",
+        "cross-spawn": "^7.0.6",
+        "debug": "^4.3.2",
+        "escape-string-regexp": "^4.0.0",
+        "eslint-scope": "^8.4.0",
+        "eslint-visitor-keys": "^4.2.1",
+        "espree": "^10.4.0",
+        "esquery": "^1.5.0",
+        "esutils": "^2.0.2",
+        "fast-deep-equal": "^3.1.3",
+        "file-entry-cache": "^8.0.0",
+        "find-up": "^5.0.0",
+        "glob-parent": "^6.0.2",
+        "ignore": "^5.2.0",
+        "imurmurhash": "^0.1.4",
+        "is-glob": "^4.0.0",
+        "json-stable-stringify-without-jsonify": "^1.0.1",
+        "lodash.merge": "^4.6.2",
+        "minimatch": "^3.1.2",
+        "natural-compare": "^1.4.0",
+        "optionator": "^0.9.3"
+      },
+      "bin": {
+        "eslint": "bin/eslint.js"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      },
+      "funding": {
+        "url": "https://eslint.org/donate"
+      },
+      "peerDependencies": {
+        "jiti": "*"
+      },
+      "peerDependenciesMeta": {
+        "jiti": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/eslint-config-next": {
+      "version": "15.3.5",
+      "resolved": "https://registry.npmjs.org/eslint-config-next/-/eslint-config-next-15.3.5.tgz",
+      "integrity": "sha512-oQdvnIgP68wh2RlR3MdQpvaJ94R6qEFl+lnu8ZKxPj5fsAHrSF/HlAOZcsimLw3DT6bnEQIUdbZC2Ab6sWyptg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@next/eslint-plugin-next": "15.3.5",
+        "@rushstack/eslint-patch": "^1.10.3",
+        "@typescript-eslint/eslint-plugin": "^5.4.2 || ^6.0.0 || ^7.0.0 || ^8.0.0",
+        "@typescript-eslint/parser": "^5.4.2 || ^6.0.0 || ^7.0.0 || ^8.0.0",
+        "eslint-import-resolver-node": "^0.3.6",
+        "eslint-import-resolver-typescript": "^3.5.2",
+        "eslint-plugin-import": "^2.31.0",
+        "eslint-plugin-jsx-a11y": "^6.10.0",
+        "eslint-plugin-react": "^7.37.0",
+        "eslint-plugin-react-hooks": "^5.0.0"
+      },
+      "peerDependencies": {
+        "eslint": "^7.23.0 || ^8.0.0 || ^9.0.0",
+        "typescript": ">=3.3.1"
+      },
+      "peerDependenciesMeta": {
+        "typescript": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/eslint-import-resolver-node": {
+      "version": "0.3.9",
+      "resolved": "https://registry.npmjs.org/eslint-import-resolver-node/-/eslint-import-resolver-node-0.3.9.tgz",
+      "integrity": "sha512-WFj2isz22JahUv+B788TlO3N6zL3nNJGU8CcZbPZvVEkBPaJdCV4vy5wyghty5ROFbCRnm132v8BScu5/1BQ8g==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "debug": "^3.2.7",
+        "is-core-module": "^2.13.0",
+        "resolve": "^1.22.4"
+      }
+    },
+    "node_modules/eslint-import-resolver-node/node_modules/debug": {
+      "version": "3.2.7",
+      "resolved": "https://registry.npmjs.org/debug/-/debug-3.2.7.tgz",
+      "integrity": "sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ms": "^2.1.1"
+      }
+    },
+    "node_modules/eslint-import-resolver-typescript": {
+      "version": "3.10.1",
+      "resolved": "https://registry.npmjs.org/eslint-import-resolver-typescript/-/eslint-import-resolver-typescript-3.10.1.tgz",
+      "integrity": "sha512-A1rHYb06zjMGAxdLSkN2fXPBwuSaQ0iO5M/hdyS0Ajj1VBaRp0sPD3dn1FhME3c/JluGFbwSxyCfqdSbtQLAHQ==",
+      "dev": true,
+      "license": "ISC",
+      "dependencies": {
+        "@nolyfill/is-core-module": "1.0.39",
+        "debug": "^4.4.0",
+        "get-tsconfig": "^4.10.0",
+        "is-bun-module": "^2.0.0",
+        "stable-hash": "^0.0.5",
+        "tinyglobby": "^0.2.13",
+        "unrs-resolver": "^1.6.2"
+      },
+      "engines": {
+        "node": "^14.18.0 || >=16.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/eslint-import-resolver-typescript"
+      },
+      "peerDependencies": {
+        "eslint": "*",
+        "eslint-plugin-import": "*",
+        "eslint-plugin-import-x": "*"
+      },
+      "peerDependenciesMeta": {
+        "eslint-plugin-import": {
+          "optional": true
+        },
+        "eslint-plugin-import-x": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/eslint-module-utils": {
+      "version": "2.12.1",
+      "resolved": "https://registry.npmjs.org/eslint-module-utils/-/eslint-module-utils-2.12.1.tgz",
+      "integrity": "sha512-L8jSWTze7K2mTg0vos/RuLRS5soomksDPoJLXIslC7c8Wmut3bx7CPpJijDcBZtxQ5lrbUdM+s0OlNbz0DCDNw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "debug": "^3.2.7"
+      },
+      "engines": {
+        "node": ">=4"
+      },
+      "peerDependenciesMeta": {
+        "eslint": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/eslint-module-utils/node_modules/debug": {
+      "version": "3.2.7",
+      "resolved": "https://registry.npmjs.org/debug/-/debug-3.2.7.tgz",
+      "integrity": "sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ms": "^2.1.1"
+      }
+    },
+    "node_modules/eslint-plugin-import": {
+      "version": "2.32.0",
+      "resolved": "https://registry.npmjs.org/eslint-plugin-import/-/eslint-plugin-import-2.32.0.tgz",
+      "integrity": "sha512-whOE1HFo/qJDyX4SnXzP4N6zOWn79WhnCUY/iDR0mPfQZO8wcYE4JClzI2oZrhBnnMUCBCHZhO6VQyoBU95mZA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@rtsao/scc": "^1.1.0",
+        "array-includes": "^3.1.9",
+        "array.prototype.findlastindex": "^1.2.6",
+        "array.prototype.flat": "^1.3.3",
+        "array.prototype.flatmap": "^1.3.3",
+        "debug": "^3.2.7",
+        "doctrine": "^2.1.0",
+        "eslint-import-resolver-node": "^0.3.9",
+        "eslint-module-utils": "^2.12.1",
+        "hasown": "^2.0.2",
+        "is-core-module": "^2.16.1",
+        "is-glob": "^4.0.3",
+        "minimatch": "^3.1.2",
+        "object.fromentries": "^2.0.8",
+        "object.groupby": "^1.0.3",
+        "object.values": "^1.2.1",
+        "semver": "^6.3.1",
+        "string.prototype.trimend": "^1.0.9",
+        "tsconfig-paths": "^3.15.0"
+      },
+      "engines": {
+        "node": ">=4"
+      },
+      "peerDependencies": {
+        "eslint": "^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9"
+      }
+    },
+    "node_modules/eslint-plugin-import/node_modules/debug": {
+      "version": "3.2.7",
+      "resolved": "https://registry.npmjs.org/debug/-/debug-3.2.7.tgz",
+      "integrity": "sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ms": "^2.1.1"
+      }
+    },
+    "node_modules/eslint-plugin-import/node_modules/semver": {
+      "version": "6.3.1",
+      "resolved": "https://registry.npmjs.org/semver/-/semver-6.3.1.tgz",
+      "integrity": "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==",
+      "dev": true,
+      "license": "ISC",
+      "bin": {
+        "semver": "bin/semver.js"
+      }
+    },
+    "node_modules/eslint-plugin-jsx-a11y": {
+      "version": "6.10.2",
+      "resolved": "https://registry.npmjs.org/eslint-plugin-jsx-a11y/-/eslint-plugin-jsx-a11y-6.10.2.tgz",
+      "integrity": "sha512-scB3nz4WmG75pV8+3eRUQOHZlNSUhFNq37xnpgRkCCELU3XMvXAxLk1eqWWyE22Ki4Q01Fnsw9BA3cJHDPgn2Q==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "aria-query": "^5.3.2",
+        "array-includes": "^3.1.8",
+        "array.prototype.flatmap": "^1.3.2",
+        "ast-types-flow": "^0.0.8",
+        "axe-core": "^4.10.0",
+        "axobject-query": "^4.1.0",
+        "damerau-levenshtein": "^1.0.8",
+        "emoji-regex": "^9.2.2",
+        "hasown": "^2.0.2",
+        "jsx-ast-utils": "^3.3.5",
+        "language-tags": "^1.0.9",
+        "minimatch": "^3.1.2",
+        "object.fromentries": "^2.0.8",
+        "safe-regex-test": "^1.0.3",
+        "string.prototype.includes": "^2.0.1"
+      },
+      "engines": {
+        "node": ">=4.0"
+      },
+      "peerDependencies": {
+        "eslint": "^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9"
+      }
+    },
+    "node_modules/eslint-plugin-jsx-a11y/node_modules/aria-query": {
+      "version": "5.3.2",
+      "resolved": "https://registry.npmjs.org/aria-query/-/aria-query-5.3.2.tgz",
+      "integrity": "sha512-COROpnaoap1E2F000S62r6A60uHZnmlvomhfyT2DlTcrY1OrBKn2UhH7qn5wTC9zMvD0AY7csdPSNwKP+7WiQw==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/eslint-plugin-react": {
+      "version": "7.37.5",
+      "resolved": "https://registry.npmjs.org/eslint-plugin-react/-/eslint-plugin-react-7.37.5.tgz",
+      "integrity": "sha512-Qteup0SqU15kdocexFNAJMvCJEfa2xUKNV4CC1xsVMrIIqEy3SQ/rqyxCWNzfrd3/ldy6HMlD2e0JDVpDg2qIA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "array-includes": "^3.1.8",
+        "array.prototype.findlast": "^1.2.5",
+        "array.prototype.flatmap": "^1.3.3",
+        "array.prototype.tosorted": "^1.1.4",
+        "doctrine": "^2.1.0",
+        "es-iterator-helpers": "^1.2.1",
+        "estraverse": "^5.3.0",
+        "hasown": "^2.0.2",
+        "jsx-ast-utils": "^2.4.1 || ^3.0.0",
+        "minimatch": "^3.1.2",
+        "object.entries": "^1.1.9",
+        "object.fromentries": "^2.0.8",
+        "object.values": "^1.2.1",
+        "prop-types": "^15.8.1",
+        "resolve": "^2.0.0-next.5",
+        "semver": "^6.3.1",
+        "string.prototype.matchall": "^4.0.12",
+        "string.prototype.repeat": "^1.0.0"
+      },
+      "engines": {
+        "node": ">=4"
+      },
+      "peerDependencies": {
+        "eslint": "^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9.7"
+      }
+    },
+    "node_modules/eslint-plugin-react-hooks": {
+      "version": "5.2.0",
+      "resolved": "https://registry.npmjs.org/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-5.2.0.tgz",
+      "integrity": "sha512-+f15FfK64YQwZdJNELETdn5ibXEUQmW1DZL6KXhNnc2heoy/sg9VJJeT7n8TlMWouzWqSWavFkIhHyIbIAEapg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=10"
+      },
+      "peerDependencies": {
+        "eslint": "^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0"
+      }
+    },
+    "node_modules/eslint-plugin-react/node_modules/resolve": {
+      "version": "2.0.0-next.5",
+      "resolved": "https://registry.npmjs.org/resolve/-/resolve-2.0.0-next.5.tgz",
+      "integrity": "sha512-U7WjGVG9sH8tvjW5SmGbQuui75FiyjAX72HX15DwBBwF9dNiQZRQAg9nnPhYy+TUnE0+VcrttuvNI8oSxZcocA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "is-core-module": "^2.13.0",
+        "path-parse": "^1.0.7",
+        "supports-preserve-symlinks-flag": "^1.0.0"
+      },
+      "bin": {
+        "resolve": "bin/resolve"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/eslint-plugin-react/node_modules/semver": {
+      "version": "6.3.1",
+      "resolved": "https://registry.npmjs.org/semver/-/semver-6.3.1.tgz",
+      "integrity": "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==",
+      "dev": true,
+      "license": "ISC",
+      "bin": {
+        "semver": "bin/semver.js"
+      }
+    },
+    "node_modules/eslint-scope": {
+      "version": "8.4.0",
+      "resolved": "https://registry.npmjs.org/eslint-scope/-/eslint-scope-8.4.0.tgz",
+      "integrity": "sha512-sNXOfKCn74rt8RICKMvJS7XKV/Xk9kA7DyJr8mJik3S7Cwgy3qlkkmyS2uQB3jiJg6VNdZd/pDBJu0nvG2NlTg==",
+      "dev": true,
+      "license": "BSD-2-Clause",
+      "dependencies": {
+        "esrecurse": "^4.3.0",
+        "estraverse": "^5.2.0"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/eslint"
+      }
+    },
+    "node_modules/eslint-visitor-keys": {
+      "version": "4.2.1",
+      "resolved": "https://registry.npmjs.org/eslint-visitor-keys/-/eslint-visitor-keys-4.2.1.tgz",
+      "integrity": "sha512-Uhdk5sfqcee/9H/rCOJikYz67o0a2Tw2hGRPOG2Y1R2dg7brRe1uG0yaNQDHu+TO/uQPF/5eCapvYSmHUjt7JQ==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/eslint"
+      }
+    },
+    "node_modules/esniff": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/esniff/-/esniff-2.0.1.tgz",
+      "integrity": "sha512-kTUIGKQ/mDPFoJ0oVfcmyJn4iBDRptjNVIzwIFR7tqWXdVI9xfA2RMwY/gbSpJG3lkdWNEjLap/NqVHZiJsdfg==",
+      "license": "ISC",
+      "dependencies": {
+        "d": "^1.0.1",
+        "es5-ext": "^0.10.62",
+        "event-emitter": "^0.3.5",
+        "type": "^2.7.2"
+      },
+      "engines": {
+        "node": ">=0.10"
+      }
+    },
+    "node_modules/espree": {
+      "version": "10.4.0",
+      "resolved": "https://registry.npmjs.org/espree/-/espree-10.4.0.tgz",
+      "integrity": "sha512-j6PAQ2uUr79PZhBjP5C5fhl8e39FmRnOjsD5lGnWrFU8i2G776tBK7+nP8KuQUTTyAZUwfQqXAgrVH5MbH9CYQ==",
+      "dev": true,
+      "license": "BSD-2-Clause",
+      "dependencies": {
+        "acorn": "^8.15.0",
+        "acorn-jsx": "^5.3.2",
+        "eslint-visitor-keys": "^4.2.1"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/eslint"
+      }
+    },
+    "node_modules/esquery": {
+      "version": "1.6.0",
+      "resolved": "https://registry.npmjs.org/esquery/-/esquery-1.6.0.tgz",
+      "integrity": "sha512-ca9pw9fomFcKPvFLXhBKUK90ZvGibiGOvRJNbjljY7s7uq/5YO4BOzcYtJqExdx99rF6aAcnRxHmcUHcz6sQsg==",
+      "dev": true,
+      "license": "BSD-3-Clause",
+      "dependencies": {
+        "estraverse": "^5.1.0"
+      },
+      "engines": {
+        "node": ">=0.10"
+      }
+    },
+    "node_modules/esrecurse": {
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/esrecurse/-/esrecurse-4.3.0.tgz",
+      "integrity": "sha512-KmfKL3b6G+RXvP8N1vr3Tq1kL/oCFgn2NYXEtqP8/L3pKapUA4G8cFVaoF3SU323CD4XypR/ffioHmkti6/Tag==",
+      "dev": true,
+      "license": "BSD-2-Clause",
+      "dependencies": {
+        "estraverse": "^5.2.0"
+      },
+      "engines": {
+        "node": ">=4.0"
+      }
+    },
+    "node_modules/estraverse": {
+      "version": "5.3.0",
+      "resolved": "https://registry.npmjs.org/estraverse/-/estraverse-5.3.0.tgz",
+      "integrity": "sha512-MMdARuVEQziNTeJD8DgMqmhwR11BRQ/cBP+pLtYdSTnf3MIO8fFeiINEbX36ZdNlfU/7A9f3gUw49B3oQsvwBA==",
+      "dev": true,
+      "license": "BSD-2-Clause",
+      "engines": {
+        "node": ">=4.0"
+      }
+    },
+    "node_modules/estree-util-is-identifier-name": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/estree-util-is-identifier-name/-/estree-util-is-identifier-name-3.0.0.tgz",
+      "integrity": "sha512-hFtqIDZTIUZ9BXLb8y4pYGyk6+wekIivNVTcmvk8NoOh+VeRn5y6cEHzbURrWbfp1fIqdVipilzj+lfaadNZmg==",
+      "license": "MIT",
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/estree-util-visit": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/estree-util-visit/-/estree-util-visit-2.0.0.tgz",
+      "integrity": "sha512-m5KgiH85xAhhW8Wta0vShLcUvOsh3LLPI2YVwcbio1l7E09NTLL1EyMZFM1OyWowoH0skScNbhOPl4kcBgzTww==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/estree-jsx": "^1.0.0",
+        "@types/unist": "^3.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/esutils": {
+      "version": "2.0.3",
+      "resolved": "https://registry.npmjs.org/esutils/-/esutils-2.0.3.tgz",
+      "integrity": "sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==",
+      "dev": true,
+      "license": "BSD-2-Clause",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/event-emitter": {
+      "version": "0.3.5",
+      "resolved": "https://registry.npmjs.org/event-emitter/-/event-emitter-0.3.5.tgz",
+      "integrity": "sha512-D9rRn9y7kLPnJ+hMq7S/nhvoKwwvVJahBi2BPmx3bvbsEdK3W9ii8cBSGjP+72/LnM4n6fo3+dkCX5FeTQruXA==",
+      "license": "MIT",
+      "dependencies": {
+        "d": "1",
+        "es5-ext": "~0.10.14"
+      }
+    },
+    "node_modules/eventemitter3": {
+      "version": "4.0.7",
+      "resolved": "https://registry.npmjs.org/eventemitter3/-/eventemitter3-4.0.7.tgz",
+      "integrity": "sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==",
+      "license": "MIT"
+    },
+    "node_modules/exsolve": {
+      "version": "1.0.8",
+      "resolved": "https://registry.npmjs.org/exsolve/-/exsolve-1.0.8.tgz",
+      "integrity": "sha512-LmDxfWXwcTArk8fUEnOfSZpHOJ6zOMUJKOtFLFqJLoKJetuQG874Uc7/Kki7zFLzYybmZhp1M7+98pfMqeX8yA==",
+      "license": "MIT"
+    },
+    "node_modules/ext": {
+      "version": "1.7.0",
+      "resolved": "https://registry.npmjs.org/ext/-/ext-1.7.0.tgz",
+      "integrity": "sha512-6hxeJYaL110a9b5TEJSj0gojyHQAmA2ch5Os+ySCiA1QGdS697XWY1pzsrSjqA9LDEEgdB/KypIlR59RcLuHYw==",
+      "license": "ISC",
+      "dependencies": {
+        "type": "^2.7.2"
+      }
+    },
+    "node_modules/extend": {
+      "version": "3.0.2",
+      "resolved": "https://registry.npmjs.org/extend/-/extend-3.0.2.tgz",
+      "integrity": "sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==",
+      "license": "MIT"
+    },
+    "node_modules/fast-check": {
+      "version": "3.23.2",
+      "resolved": "https://registry.npmjs.org/fast-check/-/fast-check-3.23.2.tgz",
+      "integrity": "sha512-h5+1OzzfCC3Ef7VbtKdcv7zsstUQwUDlYpUTvjeUsJAssPgLn7QzbboPtL5ro04Mq0rPOsMzl7q5hIbRs2wD1A==",
+      "funding": [
+        {
+          "type": "individual",
+          "url": "https://github.com/sponsors/dubzzz"
+        },
+        {
+          "type": "opencollective",
+          "url": "https://opencollective.com/fast-check"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "pure-rand": "^6.1.0"
+      },
+      "engines": {
+        "node": ">=8.0.0"
+      }
+    },
+    "node_modules/fast-deep-equal": {
+      "version": "3.1.3",
+      "resolved": "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz",
+      "integrity": "sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/fast-equals": {
+      "version": "5.3.3",
+      "resolved": "https://registry.npmjs.org/fast-equals/-/fast-equals-5.3.3.tgz",
+      "integrity": "sha512-/boTcHZeIAQ2r/tL11voclBHDeP9WPxLt+tyAbVSyyXuUFyh0Tne7gJZTqGbxnvj79TjLdCXLOY7UIPhyG5MTw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=6.0.0"
+      }
+    },
+    "node_modules/fast-glob": {
+      "version": "3.3.1",
+      "resolved": "https://registry.npmjs.org/fast-glob/-/fast-glob-3.3.1.tgz",
+      "integrity": "sha512-kNFPyjhh5cKjrUltxs+wFx+ZkbRaxxmZ+X0ZU31SOsxCEtP9VPgtq2teZw1DebupL5GmDaNQ6yKMMVcM41iqDg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@nodelib/fs.stat": "^2.0.2",
+        "@nodelib/fs.walk": "^1.2.3",
+        "glob-parent": "^5.1.2",
+        "merge2": "^1.3.0",
+        "micromatch": "^4.0.4"
+      },
+      "engines": {
+        "node": ">=8.6.0"
+      }
+    },
+    "node_modules/fast-glob/node_modules/glob-parent": {
+      "version": "5.1.2",
+      "resolved": "https://registry.npmjs.org/glob-parent/-/glob-parent-5.1.2.tgz",
+      "integrity": "sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==",
+      "dev": true,
+      "license": "ISC",
+      "dependencies": {
+        "is-glob": "^4.0.1"
+      },
+      "engines": {
+        "node": ">= 6"
+      }
+    },
+    "node_modules/fast-json-stable-stringify": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/fast-json-stable-stringify/-/fast-json-stable-stringify-2.1.0.tgz",
+      "integrity": "sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/fast-levenshtein": {
+      "version": "2.0.6",
+      "resolved": "https://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz",
+      "integrity": "sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/fastq": {
+      "version": "1.19.1",
+      "resolved": "https://registry.npmjs.org/fastq/-/fastq-1.19.1.tgz",
+      "integrity": "sha512-GwLTyxkCXjXbxqIhTsMI2Nui8huMPtnxg7krajPJAjnEG/iiOS7i+zCtWGZR9G0NBKbXKh6X9m9UIsYX/N6vvQ==",
+      "dev": true,
+      "license": "ISC",
+      "dependencies": {
+        "reusify": "^1.0.4"
+      }
+    },
+    "node_modules/fault": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/fault/-/fault-2.0.1.tgz",
+      "integrity": "sha512-WtySTkS4OKev5JtpHXnib4Gxiurzh5NCGvWrFaZ34m6JehfTUhKZvn9njTfw48t6JumVQOmrKqpmGcdwxnhqBQ==",
+      "license": "MIT",
+      "dependencies": {
+        "format": "^0.2.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/fdir": {
+      "version": "6.5.0",
+      "resolved": "https://registry.npmjs.org/fdir/-/fdir-6.5.0.tgz",
+      "integrity": "sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=12.0.0"
+      },
+      "peerDependencies": {
+        "picomatch": "^3 || ^4"
+      },
+      "peerDependenciesMeta": {
+        "picomatch": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/file-entry-cache": {
+      "version": "8.0.0",
+      "resolved": "https://registry.npmjs.org/file-entry-cache/-/file-entry-cache-8.0.0.tgz",
+      "integrity": "sha512-XXTUwCvisa5oacNGRP9SfNtYBNAMi+RPwBFmblZEF7N7swHYQS6/Zfk7SRwx4D5j3CH211YNRco1DEMNVfZCnQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "flat-cache": "^4.0.0"
+      },
+      "engines": {
+        "node": ">=16.0.0"
+      }
+    },
+    "node_modules/fill-range": {
+      "version": "7.1.1",
+      "resolved": "https://registry.npmjs.org/fill-range/-/fill-range-7.1.1.tgz",
+      "integrity": "sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==",
+      "license": "MIT",
+      "dependencies": {
+        "to-regex-range": "^5.0.1"
+      },
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/find-up": {
+      "version": "5.0.0",
+      "resolved": "https://registry.npmjs.org/find-up/-/find-up-5.0.0.tgz",
+      "integrity": "sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "locate-path": "^6.0.0",
+        "path-exists": "^4.0.0"
+      },
+      "engines": {
+        "node": ">=10"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/flat-cache": {
+      "version": "4.0.1",
+      "resolved": "https://registry.npmjs.org/flat-cache/-/flat-cache-4.0.1.tgz",
+      "integrity": "sha512-f7ccFPK3SXFHpx15UIGyRJ/FJQctuKZ0zVuN3frBo4HnK3cay9VEW0R6yPYFHC0AgqhukPzKjq22t5DmAyqGyw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "flatted": "^3.2.9",
+        "keyv": "^4.5.4"
+      },
+      "engines": {
+        "node": ">=16"
+      }
+    },
+    "node_modules/flatted": {
+      "version": "3.3.3",
+      "resolved": "https://registry.npmjs.org/flatted/-/flatted-3.3.3.tgz",
+      "integrity": "sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==",
+      "dev": true,
+      "license": "ISC"
+    },
+    "node_modules/follow-redirects": {
+      "version": "1.15.11",
+      "resolved": "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.11.tgz",
+      "integrity": "sha512-deG2P0JfjrTxl50XGCDyfI97ZGVCxIpfKYmfyrQ54n5FO/0gfIES8C/Psl6kWVDolizcaaxZJnTS0QSMxvnsBQ==",
+      "funding": [
+        {
+          "type": "individual",
+          "url": "https://github.com/sponsors/RubenVerborgh"
+        }
+      ],
+      "license": "MIT",
+      "engines": {
+        "node": ">=4.0"
+      },
+      "peerDependenciesMeta": {
+        "debug": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/for-each": {
+      "version": "0.3.5",
+      "resolved": "https://registry.npmjs.org/for-each/-/for-each-0.3.5.tgz",
+      "integrity": "sha512-dKx12eRCVIzqCxFGplyFKJMPvLEWgmNtUrpTiJIR5u97zEhRG8ySrtboPHZXx7daLxQVrl643cTzbab2tkQjxg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "is-callable": "^1.2.7"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/form-data": {
+      "version": "4.0.5",
+      "resolved": "https://registry.npmjs.org/form-data/-/form-data-4.0.5.tgz",
+      "integrity": "sha512-8RipRLol37bNs2bhoV67fiTEvdTrbMUYcFTiy3+wuuOnUog2QBHCZWXDRijWQfAkhBj2Uf5UnVaiWwA5vdd82w==",
+      "license": "MIT",
+      "dependencies": {
+        "asynckit": "^0.4.0",
+        "combined-stream": "^1.0.8",
+        "es-set-tostringtag": "^2.1.0",
+        "hasown": "^2.0.2",
+        "mime-types": "^2.1.12"
+      },
+      "engines": {
+        "node": ">= 6"
+      }
+    },
+    "node_modules/format": {
+      "version": "0.2.2",
+      "resolved": "https://registry.npmjs.org/format/-/format-0.2.2.tgz",
+      "integrity": "sha512-wzsgA6WOq+09wrU1tsJ09udeR/YZRaeArL9e1wPbFg3GG2yDnC2ldKpxs4xunpFF9DgqCqOIra3bc1HWrJ37Ww==",
+      "engines": {
+        "node": ">=0.4.x"
+      }
+    },
+    "node_modules/framer-motion": {
+      "version": "12.23.24",
+      "resolved": "https://registry.npmjs.org/framer-motion/-/framer-motion-12.23.24.tgz",
+      "integrity": "sha512-HMi5HRoRCTou+3fb3h9oTLyJGBxHfW+HnNE25tAXOvVx/IvwMHK0cx7IR4a2ZU6sh3IX1Z+4ts32PcYBOqka8w==",
+      "license": "MIT",
+      "dependencies": {
+        "motion-dom": "^12.23.23",
+        "motion-utils": "^12.23.6",
+        "tslib": "^2.4.0"
+      },
+      "peerDependencies": {
+        "@emotion/is-prop-valid": "*",
+        "react": "^18.0.0 || ^19.0.0",
+        "react-dom": "^18.0.0 || ^19.0.0"
+      },
+      "peerDependenciesMeta": {
+        "@emotion/is-prop-valid": {
+          "optional": true
+        },
+        "react": {
+          "optional": true
+        },
+        "react-dom": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/fsevents": {
+      "version": "2.3.3",
+      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz",
+      "integrity": "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==",
+      "hasInstallScript": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": "^8.16.0 || ^10.6.0 || >=11.0.0"
+      }
+    },
+    "node_modules/function-bind": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/function-bind/-/function-bind-1.1.2.tgz",
+      "integrity": "sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==",
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/function.prototype.name": {
+      "version": "1.1.8",
+      "resolved": "https://registry.npmjs.org/function.prototype.name/-/function.prototype.name-1.1.8.tgz",
+      "integrity": "sha512-e5iwyodOHhbMr/yNrc7fDYG4qlbIvI5gajyzPnb5TCwyhjApznQh1BMFou9b30SevY43gCJKXycoCBjMbsuW0Q==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "call-bound": "^1.0.3",
+        "define-properties": "^1.2.1",
+        "functions-have-names": "^1.2.3",
+        "hasown": "^2.0.2",
+        "is-callable": "^1.2.7"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/functions-have-names": {
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/functions-have-names/-/functions-have-names-1.2.3.tgz",
+      "integrity": "sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==",
+      "dev": true,
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/generator-function": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/generator-function/-/generator-function-2.0.1.tgz",
+      "integrity": "sha512-SFdFmIJi+ybC0vjlHN0ZGVGHc3lgE0DxPAT0djjVg+kjOnSqclqmj0KQ7ykTOLP6YxoqOvuAODGdcHJn+43q3g==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/get-intrinsic": {
+      "version": "1.3.0",
+      "resolved": "https://registry.npmjs.org/get-intrinsic/-/get-intrinsic-1.3.0.tgz",
+      "integrity": "sha512-9fSjSaos/fRIVIp+xSJlE6lfwhES7LNtKaCBIamHsjr2na1BiABJPo0mOjjz8GJDURarmCPGqaiVg5mfjb98CQ==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bind-apply-helpers": "^1.0.2",
+        "es-define-property": "^1.0.1",
+        "es-errors": "^1.3.0",
+        "es-object-atoms": "^1.1.1",
+        "function-bind": "^1.1.2",
+        "get-proto": "^1.0.1",
+        "gopd": "^1.2.0",
+        "has-symbols": "^1.1.0",
+        "hasown": "^2.0.2",
+        "math-intrinsics": "^1.1.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/get-nonce": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/get-nonce/-/get-nonce-1.0.1.tgz",
+      "integrity": "sha512-FJhYRoDaiatfEkUK8HKlicmu/3SGFD51q3itKDGoSTysQJBnfOcxU5GxnhE1E6soB76MbT0MBtnKJuXyAx+96Q==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/get-proto": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/get-proto/-/get-proto-1.0.1.tgz",
+      "integrity": "sha512-sTSfBjoXBp89JvIKIefqw7U2CCebsc74kiY6awiGogKtoSGbgjYE/G/+l9sF3MWFPNc9IcoOC4ODfKHfxFmp0g==",
+      "license": "MIT",
+      "dependencies": {
+        "dunder-proto": "^1.0.1",
+        "es-object-atoms": "^1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/get-symbol-description": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/get-symbol-description/-/get-symbol-description-1.1.0.tgz",
+      "integrity": "sha512-w9UMqWwJxHNOvoNzSJ2oPF5wvYcvP7jUvYzhp67yEhTi17ZDBBC1z9pTdGuzjD+EFIqLSYRweZjqfiPzQ06Ebg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.3",
+        "es-errors": "^1.3.0",
+        "get-intrinsic": "^1.2.6"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/get-tsconfig": {
+      "version": "4.13.0",
+      "resolved": "https://registry.npmjs.org/get-tsconfig/-/get-tsconfig-4.13.0.tgz",
+      "integrity": "sha512-1VKTZJCwBrvbd+Wn3AOgQP/2Av+TfTCOlE4AcRJE72W1ksZXbAx8PPBR9RzgTeSPzlPMHrbANMH3LbltH73wxQ==",
+      "license": "MIT",
+      "dependencies": {
+        "resolve-pkg-maps": "^1.0.0"
+      },
+      "funding": {
+        "url": "https://github.com/privatenumber/get-tsconfig?sponsor=1"
+      }
+    },
+    "node_modules/giget": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/giget/-/giget-2.0.0.tgz",
+      "integrity": "sha512-L5bGsVkxJbJgdnwyuheIunkGatUF/zssUoxxjACCseZYAVbaqdh9Tsmmlkl8vYan09H7sbvKt4pS8GqKLBrEzA==",
+      "license": "MIT",
+      "dependencies": {
+        "citty": "^0.1.6",
+        "consola": "^3.4.0",
+        "defu": "^6.1.4",
+        "node-fetch-native": "^1.6.6",
+        "nypm": "^0.6.0",
+        "pathe": "^2.0.3"
+      },
+      "bin": {
+        "giget": "dist/cli.mjs"
+      }
+    },
+    "node_modules/glob-parent": {
+      "version": "6.0.2",
+      "resolved": "https://registry.npmjs.org/glob-parent/-/glob-parent-6.0.2.tgz",
+      "integrity": "sha512-XxwI8EOhVQgWp6iDL+3b0r86f4d6AX6zSU55HfB4ydCEuXLXc5FcYeOu+nnGftS4TEju/11rt4KJPTMgbfmv4A==",
+      "dev": true,
+      "license": "ISC",
+      "dependencies": {
+        "is-glob": "^4.0.3"
+      },
+      "engines": {
+        "node": ">=10.13.0"
+      }
+    },
+    "node_modules/globals": {
+      "version": "14.0.0",
+      "resolved": "https://registry.npmjs.org/globals/-/globals-14.0.0.tgz",
+      "integrity": "sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/globalthis": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/globalthis/-/globalthis-1.0.4.tgz",
+      "integrity": "sha512-DpLKbNU4WylpxJykQujfCcwYWiV/Jhm50Goo0wrVILAv5jOr9d+H+UR3PhSCD2rCCEIg0uc+G+muBTwD54JhDQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "define-properties": "^1.2.1",
+        "gopd": "^1.0.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/gopd": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/gopd/-/gopd-1.2.0.tgz",
+      "integrity": "sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/graceful-fs": {
+      "version": "4.2.11",
+      "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz",
+      "integrity": "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==",
+      "dev": true,
+      "license": "ISC"
+    },
+    "node_modules/graphemer": {
+      "version": "1.4.0",
+      "resolved": "https://registry.npmjs.org/graphemer/-/graphemer-1.4.0.tgz",
+      "integrity": "sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/has-bigints": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/has-bigints/-/has-bigints-1.1.0.tgz",
+      "integrity": "sha512-R3pbpkcIqv2Pm3dUwgjclDRVmWpTJW2DcMzcIhEXEx1oh/CEMObMm3KLmRJOdvhM7o4uQBnwr8pzRK2sJWIqfg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/has-flag": {
+      "version": "4.0.0",
+      "resolved": "https://registry.npmjs.org/has-flag/-/has-flag-4.0.0.tgz",
+      "integrity": "sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/has-property-descriptors": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/has-property-descriptors/-/has-property-descriptors-1.0.2.tgz",
+      "integrity": "sha512-55JNKuIW+vq4Ke1BjOTjM2YctQIvCT7GFzHwmfZPGo5wnrgkid0YQtnAleFSqumZm4az3n2BS+erby5ipJdgrg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "es-define-property": "^1.0.0"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/has-proto": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/has-proto/-/has-proto-1.2.0.tgz",
+      "integrity": "sha512-KIL7eQPfHQRC8+XluaIw7BHUwwqL19bQn4hzNgdr+1wXoU0KKj6rufu47lhY7KbJR2C6T6+PfyN0Ea7wkSS+qQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "dunder-proto": "^1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/has-symbols": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/has-symbols/-/has-symbols-1.1.0.tgz",
+      "integrity": "sha512-1cDNdwJ2Jaohmb3sg4OmKaMBwuC48sYni5HUw2DvsC8LjGTLK9h+eb1X6RyuOHe4hT0ULCW68iomhjUoKUqlPQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/has-tostringtag": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/has-tostringtag/-/has-tostringtag-1.0.2.tgz",
+      "integrity": "sha512-NqADB8VjPFLM2V0VvHUewwwsw0ZWBaIdgo+ieHtK3hasLz4qeCRjYcqfB6AQrBggRKppKF8L52/VqdVsO47Dlw==",
+      "license": "MIT",
+      "dependencies": {
+        "has-symbols": "^1.0.3"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/hasown": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/hasown/-/hasown-2.0.2.tgz",
+      "integrity": "sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==",
+      "license": "MIT",
+      "dependencies": {
+        "function-bind": "^1.1.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/hast-util-parse-selector": {
+      "version": "2.2.5",
+      "resolved": "https://registry.npmjs.org/hast-util-parse-selector/-/hast-util-parse-selector-2.2.5.tgz",
+      "integrity": "sha512-7j6mrk/qqkSehsM92wQjdIgWM2/BW61u/53G6xmC8i1OmEdKLHbk419QKQUjz6LglWsfqoiHmyMRkP1BGjecNQ==",
+      "license": "MIT",
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/hast-util-to-jsx-runtime": {
+      "version": "2.3.6",
+      "resolved": "https://registry.npmjs.org/hast-util-to-jsx-runtime/-/hast-util-to-jsx-runtime-2.3.6.tgz",
+      "integrity": "sha512-zl6s8LwNyo1P9uw+XJGvZtdFF1GdAkOg8ujOw+4Pyb76874fLps4ueHXDhXWdk6YHQ6OgUtinliG7RsYvCbbBg==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/estree": "^1.0.0",
+        "@types/hast": "^3.0.0",
+        "@types/unist": "^3.0.0",
+        "comma-separated-tokens": "^2.0.0",
+        "devlop": "^1.0.0",
+        "estree-util-is-identifier-name": "^3.0.0",
+        "hast-util-whitespace": "^3.0.0",
+        "mdast-util-mdx-expression": "^2.0.0",
+        "mdast-util-mdx-jsx": "^3.0.0",
+        "mdast-util-mdxjs-esm": "^2.0.0",
+        "property-information": "^7.0.0",
+        "space-separated-tokens": "^2.0.0",
+        "style-to-js": "^1.0.0",
+        "unist-util-position": "^5.0.0",
+        "vfile-message": "^4.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/hast-util-whitespace": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/hast-util-whitespace/-/hast-util-whitespace-3.0.0.tgz",
+      "integrity": "sha512-88JUN06ipLwsnv+dVn+OIYOvAuvBMy/Qoi6O7mQHxdPXpjy+Cd6xRkWwux7DKO+4sYILtLBRIKgsdpS2gQc7qw==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/hast": "^3.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/hastscript": {
+      "version": "6.0.0",
+      "resolved": "https://registry.npmjs.org/hastscript/-/hastscript-6.0.0.tgz",
+      "integrity": "sha512-nDM6bvd7lIqDUiYEiu5Sl/+6ReP0BMk/2f4U/Rooccxkj0P5nm+acM5PrGJ/t5I8qPGiqZSE6hVAwZEdZIvP4w==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/hast": "^2.0.0",
+        "comma-separated-tokens": "^1.0.0",
+        "hast-util-parse-selector": "^2.0.0",
+        "property-information": "^5.0.0",
+        "space-separated-tokens": "^1.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/hastscript/node_modules/@types/hast": {
+      "version": "2.3.10",
+      "resolved": "https://registry.npmjs.org/@types/hast/-/hast-2.3.10.tgz",
+      "integrity": "sha512-McWspRw8xx8J9HurkVBfYj0xKoE25tOFlHGdx4MJ5xORQrMGZNqJhVQWaIbm6Oyla5kYOXtDiopzKRJzEOkwJw==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/unist": "^2"
+      }
+    },
+    "node_modules/hastscript/node_modules/@types/unist": {
+      "version": "2.0.11",
+      "resolved": "https://registry.npmjs.org/@types/unist/-/unist-2.0.11.tgz",
+      "integrity": "sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==",
+      "license": "MIT"
+    },
+    "node_modules/hastscript/node_modules/comma-separated-tokens": {
+      "version": "1.0.8",
+      "resolved": "https://registry.npmjs.org/comma-separated-tokens/-/comma-separated-tokens-1.0.8.tgz",
+      "integrity": "sha512-GHuDRO12Sypu2cV70d1dkA2EUmXHgntrzbpvOB+Qy+49ypNfGgFQIC2fhhXbnyrJRynDCAARsT7Ou0M6hirpfw==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/hastscript/node_modules/property-information": {
+      "version": "5.6.0",
+      "resolved": "https://registry.npmjs.org/property-information/-/property-information-5.6.0.tgz",
+      "integrity": "sha512-YUHSPk+A30YPv+0Qf8i9Mbfe/C0hdPXk1s1jPVToV8pk8BQtpw10ct89Eo7OWkutrwqvT0eicAxlOg3dOAu8JA==",
+      "license": "MIT",
+      "dependencies": {
+        "xtend": "^4.0.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/hastscript/node_modules/space-separated-tokens": {
+      "version": "1.1.5",
+      "resolved": "https://registry.npmjs.org/space-separated-tokens/-/space-separated-tokens-1.1.5.tgz",
+      "integrity": "sha512-q/JSVd1Lptzhf5bkYm4ob4iWPjx0KiRe3sRFBNrVqbJkFaBm5vbbowy1mymoPNLRa52+oadOhJ+K49wsSeSjTA==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/highlight.js": {
+      "version": "10.7.3",
+      "resolved": "https://registry.npmjs.org/highlight.js/-/highlight.js-10.7.3.tgz",
+      "integrity": "sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==",
+      "license": "BSD-3-Clause",
+      "engines": {
+        "node": "*"
+      }
+    },
+    "node_modules/highlightjs-vue": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/highlightjs-vue/-/highlightjs-vue-1.0.0.tgz",
+      "integrity": "sha512-PDEfEF102G23vHmPhLyPboFCD+BkMGu+GuJe2d9/eH4FsCwvgBpnc9n0pGE+ffKdph38s6foEZiEjdgHdzp+IA==",
+      "license": "CC0-1.0"
+    },
+    "node_modules/html-url-attributes": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/html-url-attributes/-/html-url-attributes-3.0.1.tgz",
+      "integrity": "sha512-ol6UPyBWqsrO6EJySPz2O7ZSr856WDrEzM5zMqp+FJJLGMW35cLYmmZnl0vztAZxRUoNZJFTCohfjuIJ8I4QBQ==",
+      "license": "MIT",
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/ieee754": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/ieee754/-/ieee754-1.2.1.tgz",
+      "integrity": "sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==",
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/feross"
+        },
+        {
+          "type": "patreon",
+          "url": "https://www.patreon.com/feross"
+        },
+        {
+          "type": "consulting",
+          "url": "https://feross.org/support"
+        }
+      ],
+      "license": "BSD-3-Clause"
+    },
+    "node_modules/ignore": {
+      "version": "5.3.2",
+      "resolved": "https://registry.npmjs.org/ignore/-/ignore-5.3.2.tgz",
+      "integrity": "sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 4"
+      }
+    },
+    "node_modules/ignore-by-default": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/ignore-by-default/-/ignore-by-default-1.0.1.tgz",
+      "integrity": "sha512-Ius2VYcGNk7T90CppJqcIkS5ooHUZyIQK+ClZfMfMNFEF9VSE73Fq+906u/CWu92x4gzZMWOwfFYckPObzdEbA==",
+      "license": "ISC"
+    },
+    "node_modules/import-fresh": {
+      "version": "3.3.1",
+      "resolved": "https://registry.npmjs.org/import-fresh/-/import-fresh-3.3.1.tgz",
+      "integrity": "sha512-TR3KfrTZTYLPB6jUjfx6MF9WcWrHL9su5TObK4ZkYgBdWKPOFoSoQIdEuTuR82pmtxH2spWG9h6etwfr1pLBqQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "parent-module": "^1.0.0",
+        "resolve-from": "^4.0.0"
+      },
+      "engines": {
+        "node": ">=6"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/imurmurhash": {
+      "version": "0.1.4",
+      "resolved": "https://registry.npmjs.org/imurmurhash/-/imurmurhash-0.1.4.tgz",
+      "integrity": "sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.8.19"
+      }
+    },
+    "node_modules/inline-style-parser": {
+      "version": "0.2.7",
+      "resolved": "https://registry.npmjs.org/inline-style-parser/-/inline-style-parser-0.2.7.tgz",
+      "integrity": "sha512-Nb2ctOyNR8DqQoR0OwRG95uNWIC0C1lCgf5Naz5H6Ji72KZ8OcFZLz2P5sNgwlyoJ8Yif11oMuYs5pBQa86csA==",
+      "license": "MIT"
+    },
+    "node_modules/input-otp": {
+      "version": "1.4.2",
+      "resolved": "https://registry.npmjs.org/input-otp/-/input-otp-1.4.2.tgz",
+      "integrity": "sha512-l3jWwYNvrEa6NTCt7BECfCm48GvwuZzkoeG3gBL2w4CHeOXW3eKFmf9UNYkNfYc3mxMrthMnxjIE07MT0zLBQA==",
+      "license": "MIT",
+      "peerDependencies": {
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0.0 || ^19.0.0-rc"
+      }
+    },
+    "node_modules/internal-slot": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/internal-slot/-/internal-slot-1.1.0.tgz",
+      "integrity": "sha512-4gd7VpWNQNB4UKKCFFVcp1AVv+FMOgs9NKzjHKusc8jTMhd5eL1NqQqOpE0KzMds804/yHlglp3uxgluOqAPLw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "hasown": "^2.0.2",
+        "side-channel": "^1.1.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/internmap": {
+      "version": "2.0.3",
+      "resolved": "https://registry.npmjs.org/internmap/-/internmap-2.0.3.tgz",
+      "integrity": "sha512-5Hh7Y1wQbvY5ooGgPbDaL5iYLAPzMTUrjMulskHLH6wnv/A+1q5rgEaiuqEjB+oxGXIVZs1FF+R/KPN3ZSQYYg==",
+      "license": "ISC",
+      "engines": {
+        "node": ">=12"
+      }
+    },
+    "node_modules/intersection-observer": {
+      "version": "0.10.0",
+      "resolved": "https://registry.npmjs.org/intersection-observer/-/intersection-observer-0.10.0.tgz",
+      "integrity": "sha512-fn4bQ0Xq8FTej09YC/jqKZwtijpvARlRp6wxL5WTA6yPe2YWSJ5RJh7Nm79rK2qB0wr6iDQzH60XGq5V/7u8YQ==",
+      "deprecated": "The Intersection Observer polyfill is no longer needed and can safely be removed. Intersection Observer has been Baseline since 2019.",
+      "license": "W3C-20150513"
+    },
+    "node_modules/intl-messageformat": {
+      "version": "10.7.18",
+      "resolved": "https://registry.npmjs.org/intl-messageformat/-/intl-messageformat-10.7.18.tgz",
+      "integrity": "sha512-m3Ofv/X/tV8Y3tHXLohcuVuhWKo7BBq62cqY15etqmLxg2DZ34AGGgQDeR+SCta2+zICb1NX83af0GJmbQ1++g==",
+      "license": "BSD-3-Clause",
+      "dependencies": {
+        "@formatjs/ecma402-abstract": "2.3.6",
+        "@formatjs/fast-memoize": "2.2.7",
+        "@formatjs/icu-messageformat-parser": "2.11.4",
+        "tslib": "^2.8.0"
+      }
+    },
+    "node_modules/is-alphabetical": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/is-alphabetical/-/is-alphabetical-2.0.1.tgz",
+      "integrity": "sha512-FWyyY60MeTNyeSRpkM2Iry0G9hpr7/9kD40mD/cGQEuilcZYS4okz8SN2Q6rLCJ8gbCt6fN+rC+6tMGS99LaxQ==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/is-alphanumerical": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/is-alphanumerical/-/is-alphanumerical-2.0.1.tgz",
+      "integrity": "sha512-hmbYhX/9MUMF5uh7tOXyK/n0ZvWpad5caBA17GsC6vyuCqaWliRG5K1qS9inmUhEMaOBIW7/whAnSwveW/LtZw==",
+      "license": "MIT",
+      "dependencies": {
+        "is-alphabetical": "^2.0.0",
+        "is-decimal": "^2.0.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/is-array-buffer": {
+      "version": "3.0.5",
+      "resolved": "https://registry.npmjs.org/is-array-buffer/-/is-array-buffer-3.0.5.tgz",
+      "integrity": "sha512-DDfANUiiG2wC1qawP66qlTugJeL5HyzMpfr8lLK+jMQirGzNod0B12cFB/9q838Ru27sBwfw78/rdoU7RERz6A==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "call-bound": "^1.0.3",
+        "get-intrinsic": "^1.2.6"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-async-function": {
+      "version": "2.1.1",
+      "resolved": "https://registry.npmjs.org/is-async-function/-/is-async-function-2.1.1.tgz",
+      "integrity": "sha512-9dgM/cZBnNvjzaMYHVoxxfPj2QXt22Ev7SuuPrs+xav0ukGB0S6d4ydZdEiM48kLx5kDV+QBPrpVnFyefL8kkQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "async-function": "^1.0.0",
+        "call-bound": "^1.0.3",
+        "get-proto": "^1.0.1",
+        "has-tostringtag": "^1.0.2",
+        "safe-regex-test": "^1.1.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-bigint": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/is-bigint/-/is-bigint-1.1.0.tgz",
+      "integrity": "sha512-n4ZT37wG78iz03xPRKJrHTdZbe3IicyucEtdRsV5yglwc3GyUfbAfpSeD0FJ41NbUNSt5wbhqfp1fS+BgnvDFQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "has-bigints": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-binary-path": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/is-binary-path/-/is-binary-path-2.1.0.tgz",
+      "integrity": "sha512-ZMERYes6pDydyuGidse7OsHxtbI7WVeUEozgR/g7rd0xUimYNlvZRE/K2MgZTjWy725IfelLeVcEM97mmtRGXw==",
+      "license": "MIT",
+      "dependencies": {
+        "binary-extensions": "^2.0.0"
+      },
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/is-boolean-object": {
+      "version": "1.2.2",
+      "resolved": "https://registry.npmjs.org/is-boolean-object/-/is-boolean-object-1.2.2.tgz",
+      "integrity": "sha512-wa56o2/ElJMYqjCjGkXri7it5FbebW5usLw/nPmCMs5DeZ7eziSYZhSmPRn0txqeW4LnAmQQU7FgqLpsEFKM4A==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.3",
+        "has-tostringtag": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-bun-module": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/is-bun-module/-/is-bun-module-2.0.0.tgz",
+      "integrity": "sha512-gNCGbnnnnFAUGKeZ9PdbyeGYJqewpmc2aKHUEMO5nQPWU9lOmv7jcmQIv+qHD8fXW6W7qfuCwX4rY9LNRjXrkQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "semver": "^7.7.1"
+      }
+    },
+    "node_modules/is-callable": {
+      "version": "1.2.7",
+      "resolved": "https://registry.npmjs.org/is-callable/-/is-callable-1.2.7.tgz",
+      "integrity": "sha512-1BC0BVFhS/p0qtw6enp8e+8OD0UrK0oFLztSjNzhcKA3WDuJxxAPXzPuPtKkjEY9UUoEWlX/8fgKeu2S8i9JTA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-core-module": {
+      "version": "2.16.1",
+      "resolved": "https://registry.npmjs.org/is-core-module/-/is-core-module-2.16.1.tgz",
+      "integrity": "sha512-UfoeMA6fIJ8wTYFEUjelnaGI67v6+N7qXJEvQuIGa99l4xsCruSYOVSQ0uPANn4dAzm8lkYPaKLrrijLq7x23w==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "hasown": "^2.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-data-view": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/is-data-view/-/is-data-view-1.0.2.tgz",
+      "integrity": "sha512-RKtWF8pGmS87i2D6gqQu/l7EYRlVdfzemCJN/P3UOs//x1QE7mfhvzHIApBTRf7axvT6DMGwSwBXYCT0nfB9xw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.2",
+        "get-intrinsic": "^1.2.6",
+        "is-typed-array": "^1.1.13"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-date-object": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/is-date-object/-/is-date-object-1.1.0.tgz",
+      "integrity": "sha512-PwwhEakHVKTdRNVOw+/Gyh0+MzlCl4R6qKvkhuvLtPMggI1WAHt9sOwZxQLSGpUaDnrdyDsomoRgNnCfKNSXXg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.2",
+        "has-tostringtag": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-decimal": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/is-decimal/-/is-decimal-2.0.1.tgz",
+      "integrity": "sha512-AAB9hiomQs5DXWcRB1rqsxGUstbRroFOPPVAomNk/3XHR5JyEZChOyTWe2oayKnsSsr/kcGqF+z6yuH6HHpN0A==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/is-extglob": {
+      "version": "2.1.1",
+      "resolved": "https://registry.npmjs.org/is-extglob/-/is-extglob-2.1.1.tgz",
+      "integrity": "sha512-SbKbANkN603Vi4jEZv49LeVJMn4yGwsbzZworEoyEiutsN3nJYdbO36zfhGJ6QEDpOZIFkDtnq5JRxmvl3jsoQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/is-finalizationregistry": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/is-finalizationregistry/-/is-finalizationregistry-1.1.1.tgz",
+      "integrity": "sha512-1pC6N8qWJbWoPtEjgcL2xyhQOP491EQjeUo3qTKcmV8YSDDJrOepfG8pcC7h/QgnQHYSv0mJ3Z/ZWxmatVrysg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.3"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-generator-function": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/is-generator-function/-/is-generator-function-1.1.2.tgz",
+      "integrity": "sha512-upqt1SkGkODW9tsGNG5mtXTXtECizwtS2kA161M+gJPc1xdb/Ax629af6YrTwcOeQHbewrPNlE5Dx7kzvXTizA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.4",
+        "generator-function": "^2.0.0",
+        "get-proto": "^1.0.1",
+        "has-tostringtag": "^1.0.2",
+        "safe-regex-test": "^1.1.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-glob": {
+      "version": "4.0.3",
+      "resolved": "https://registry.npmjs.org/is-glob/-/is-glob-4.0.3.tgz",
+      "integrity": "sha512-xelSayHH36ZgE7ZWhli7pW34hNbNl8Ojv5KVmkJD4hBdD3th8Tfk9vYasLM+mXWOZhFkgZfxhLSnrwRr4elSSg==",
+      "license": "MIT",
+      "dependencies": {
+        "is-extglob": "^2.1.1"
+      },
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/is-hexadecimal": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/is-hexadecimal/-/is-hexadecimal-2.0.1.tgz",
+      "integrity": "sha512-DgZQp241c8oO6cA1SbTEWiXeoxV42vlcJxgH+B3hi1AiqqKruZR3ZGF8In3fj4+/y/7rHvlOZLZtgJ/4ttYGZg==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/is-map": {
+      "version": "2.0.3",
+      "resolved": "https://registry.npmjs.org/is-map/-/is-map-2.0.3.tgz",
+      "integrity": "sha512-1Qed0/Hr2m+YqxnM09CjA2d/i6YZNfF6R2oRAOj36eUdS6qIV/huPJNSEpKbupewFs+ZsJlxsjjPbc0/afW6Lw==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-negative-zero": {
+      "version": "2.0.3",
+      "resolved": "https://registry.npmjs.org/is-negative-zero/-/is-negative-zero-2.0.3.tgz",
+      "integrity": "sha512-5KoIu2Ngpyek75jXodFvnafB6DJgr3u8uuK0LEZJjrU19DrMD3EVERaR8sjz8CCGgpZvxPl9SuE1GMVPFHx1mw==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-number": {
+      "version": "7.0.0",
+      "resolved": "https://registry.npmjs.org/is-number/-/is-number-7.0.0.tgz",
+      "integrity": "sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.12.0"
+      }
+    },
+    "node_modules/is-number-object": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/is-number-object/-/is-number-object-1.1.1.tgz",
+      "integrity": "sha512-lZhclumE1G6VYD8VHe35wFaIif+CTy5SJIi5+3y4psDgWu4wPDoBhF8NxUOinEc7pHgiTsT6MaBb92rKhhD+Xw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.3",
+        "has-tostringtag": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-plain-obj": {
+      "version": "4.1.0",
+      "resolved": "https://registry.npmjs.org/is-plain-obj/-/is-plain-obj-4.1.0.tgz",
+      "integrity": "sha512-+Pgi+vMuUNkJyExiMBt5IlFoMyKnr5zhJ4Uspz58WOhBF5QoIZkFyNHIbBAtHwzVAgk5RtndVNsDRN61/mmDqg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/is-regex": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/is-regex/-/is-regex-1.2.1.tgz",
+      "integrity": "sha512-MjYsKHO5O7mCsmRGxWcLWheFqN9DJ/2TmngvjKXihe6efViPqc274+Fx/4fYj/r03+ESvBdTXK0V6tA3rgez1g==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.2",
+        "gopd": "^1.2.0",
+        "has-tostringtag": "^1.0.2",
+        "hasown": "^2.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-set": {
+      "version": "2.0.3",
+      "resolved": "https://registry.npmjs.org/is-set/-/is-set-2.0.3.tgz",
+      "integrity": "sha512-iPAjerrse27/ygGLxw+EBR9agv9Y6uLeYVJMu+QNCoouJ1/1ri0mGrcWpfCqFZuzzx3WjtwxG098X+n4OuRkPg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-shared-array-buffer": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/is-shared-array-buffer/-/is-shared-array-buffer-1.0.4.tgz",
+      "integrity": "sha512-ISWac8drv4ZGfwKl5slpHG9OwPNty4jOWPRIhBpxOoD+hqITiwuipOQ2bNthAzwA3B4fIjO4Nln74N0S9byq8A==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.3"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-string": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/is-string/-/is-string-1.1.1.tgz",
+      "integrity": "sha512-BtEeSsoaQjlSPBemMQIrY1MY0uM6vnS1g5fmufYOtnxLGUZM2178PKbhsk7Ffv58IX+ZtcvoGwccYsh0PglkAA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.3",
+        "has-tostringtag": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-symbol": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/is-symbol/-/is-symbol-1.1.1.tgz",
+      "integrity": "sha512-9gGx6GTtCQM73BgmHQXfDmLtfjjTUDSyoxTCbp5WtoixAhfgsDirWIcVQ/IHpvI5Vgd5i/J5F7B9cN/WlVbC/w==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.2",
+        "has-symbols": "^1.1.0",
+        "safe-regex-test": "^1.1.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-typed-array": {
+      "version": "1.1.15",
+      "resolved": "https://registry.npmjs.org/is-typed-array/-/is-typed-array-1.1.15.tgz",
+      "integrity": "sha512-p3EcsicXjit7SaskXHs1hA91QxgTw46Fv6EFKKGS5DRFLD8yKnohjF3hxoju94b/OcMZoQukzpPpBE9uLVKzgQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "which-typed-array": "^1.1.16"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-weakmap": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/is-weakmap/-/is-weakmap-2.0.2.tgz",
+      "integrity": "sha512-K5pXYOm9wqY1RgjpL3YTkF39tni1XajUIkawTLUo9EZEVUFga5gSQJF8nNS7ZwJQ02y+1YCNYcMh+HIf1ZqE+w==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-weakref": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/is-weakref/-/is-weakref-1.1.1.tgz",
+      "integrity": "sha512-6i9mGWSlqzNMEqpCp93KwRS1uUOodk2OJ6b+sq7ZPDSy2WuI5NFIxp/254TytR8ftefexkWn5xNiHUNpPOfSew==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.3"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/is-weakset": {
+      "version": "2.0.4",
+      "resolved": "https://registry.npmjs.org/is-weakset/-/is-weakset-2.0.4.tgz",
+      "integrity": "sha512-mfcwb6IzQyOKTs84CQMrOwW4gQcaTOAWJ0zzJCl2WSPDrWk/OzDaImWFH3djXhb24g4eudZfLRozAvPGw4d9hQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.3",
+        "get-intrinsic": "^1.2.6"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/isarray": {
+      "version": "2.0.5",
+      "resolved": "https://registry.npmjs.org/isarray/-/isarray-2.0.5.tgz",
+      "integrity": "sha512-xHjhDr3cNBK0BzdUJSPXZntQUx/mwMS5Rw4A7lPJ90XGAO6ISP/ePDNuo0vhqOZU+UD5JoodwCAAoZQd3FeAKw==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/isexe": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz",
+      "integrity": "sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==",
+      "dev": true,
+      "license": "ISC"
+    },
+    "node_modules/isomorphic.js": {
+      "version": "0.2.5",
+      "resolved": "https://registry.npmjs.org/isomorphic.js/-/isomorphic.js-0.2.5.tgz",
+      "integrity": "sha512-PIeMbHqMt4DnUP3MA/Flc0HElYjMXArsw1qwJZcm9sqR8mq3l8NYizFMty0pWwE/tzIGH3EKK5+jes5mAr85yw==",
+      "license": "MIT",
+      "peer": true,
+      "funding": {
+        "type": "GitHub Sponsors ❤",
+        "url": "https://github.com/sponsors/dmonad"
+      }
+    },
+    "node_modules/iterator.prototype": {
+      "version": "1.1.5",
+      "resolved": "https://registry.npmjs.org/iterator.prototype/-/iterator.prototype-1.1.5.tgz",
+      "integrity": "sha512-H0dkQoCa3b2VEeKQBOxFph+JAbcrQdE7KC0UkqwpLmv2EC4P41QXP+rqo9wYodACiG5/WM5s9oDApTU8utwj9g==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "define-data-property": "^1.1.4",
+        "es-object-atoms": "^1.0.0",
+        "get-intrinsic": "^1.2.6",
+        "get-proto": "^1.0.0",
+        "has-symbols": "^1.1.0",
+        "set-function-name": "^2.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/jiti": {
+      "version": "2.6.1",
+      "resolved": "https://registry.npmjs.org/jiti/-/jiti-2.6.1.tgz",
+      "integrity": "sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==",
+      "license": "MIT",
+      "bin": {
+        "jiti": "lib/jiti-cli.mjs"
+      }
+    },
+    "node_modules/jose": {
+      "version": "4.15.9",
+      "resolved": "https://registry.npmjs.org/jose/-/jose-4.15.9.tgz",
+      "integrity": "sha512-1vUQX+IdDMVPj4k8kOxgUqlcK518yluMuGZwqlr44FS1ppZB/5GWh4rZG89erpOBOJjU/OBsnCVFfapsRz6nEA==",
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/panva"
+      }
+    },
+    "node_modules/js-cookie": {
+      "version": "3.0.5",
+      "resolved": "https://registry.npmjs.org/js-cookie/-/js-cookie-3.0.5.tgz",
+      "integrity": "sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=14"
+      }
+    },
+    "node_modules/js-tokens": {
+      "version": "4.0.0",
+      "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz",
+      "integrity": "sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==",
+      "license": "MIT"
+    },
+    "node_modules/js-yaml": {
+      "version": "4.1.1",
+      "resolved": "https://registry.npmjs.org/js-yaml/-/js-yaml-4.1.1.tgz",
+      "integrity": "sha512-qQKT4zQxXl8lLwBtHMWwaTcGfFOZviOJet3Oy/xmGk2gZH677CJM9EvtfdSkgWcATZhj/55JZ0rmy3myCT5lsA==",
+      "license": "MIT",
+      "dependencies": {
+        "argparse": "^2.0.1"
+      },
+      "bin": {
+        "js-yaml": "bin/js-yaml.js"
+      }
+    },
+    "node_modules/json-buffer": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/json-buffer/-/json-buffer-3.0.1.tgz",
+      "integrity": "sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/json-schema-traverse": {
+      "version": "0.4.1",
+      "resolved": "https://registry.npmjs.org/json-schema-traverse/-/json-schema-traverse-0.4.1.tgz",
+      "integrity": "sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/json-stable-stringify-without-jsonify": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz",
+      "integrity": "sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/json5": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/json5/-/json5-1.0.2.tgz",
+      "integrity": "sha512-g1MWMLBiz8FKi1e4w0UyVL3w+iJceWAFBAaBnnGKOpNa5f8TLktkbre1+s6oICydWAm+HRUGTmI+//xv2hvXYA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "minimist": "^1.2.0"
+      },
+      "bin": {
+        "json5": "lib/cli.js"
+      }
+    },
+    "node_modules/jsx-ast-utils": {
+      "version": "3.3.5",
+      "resolved": "https://registry.npmjs.org/jsx-ast-utils/-/jsx-ast-utils-3.3.5.tgz",
+      "integrity": "sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "array-includes": "^3.1.6",
+        "array.prototype.flat": "^1.3.1",
+        "object.assign": "^4.1.4",
+        "object.values": "^1.1.6"
+      },
+      "engines": {
+        "node": ">=4.0"
+      }
+    },
+    "node_modules/keyv": {
+      "version": "4.5.4",
+      "resolved": "https://registry.npmjs.org/keyv/-/keyv-4.5.4.tgz",
+      "integrity": "sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "json-buffer": "3.0.1"
+      }
+    },
+    "node_modules/kleur": {
+      "version": "4.1.5",
+      "resolved": "https://registry.npmjs.org/kleur/-/kleur-4.1.5.tgz",
+      "integrity": "sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/language-subtag-registry": {
+      "version": "0.3.23",
+      "resolved": "https://registry.npmjs.org/language-subtag-registry/-/language-subtag-registry-0.3.23.tgz",
+      "integrity": "sha512-0K65Lea881pHotoGEa5gDlMxt3pctLi2RplBb7Ezh4rRdLEOtgi7n4EwK9lamnUCkKBqaeKRVebTq6BAxSkpXQ==",
+      "dev": true,
+      "license": "CC0-1.0"
+    },
+    "node_modules/language-tags": {
+      "version": "1.0.9",
+      "resolved": "https://registry.npmjs.org/language-tags/-/language-tags-1.0.9.tgz",
+      "integrity": "sha512-MbjN408fEndfiQXbFQ1vnd+1NoLDsnQW41410oQBXiyXDMYH5z505juWa4KUE1LqxRC7DgOgZDbKLxHIwm27hA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "language-subtag-registry": "^0.3.20"
+      },
+      "engines": {
+        "node": ">=0.10"
+      }
+    },
+    "node_modules/levn": {
+      "version": "0.4.1",
+      "resolved": "https://registry.npmjs.org/levn/-/levn-0.4.1.tgz",
+      "integrity": "sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "prelude-ls": "^1.2.1",
+        "type-check": "~0.4.0"
+      },
+      "engines": {
+        "node": ">= 0.8.0"
+      }
+    },
+    "node_modules/lexical": {
+      "version": "0.35.0",
+      "resolved": "https://registry.npmjs.org/lexical/-/lexical-0.35.0.tgz",
+      "integrity": "sha512-3VuV8xXhh5xJA6tzvfDvE0YBCMkIZUmxtRilJQDDdCgJCc+eut6qAv2qbN+pbqvarqcQqPN1UF+8YvsjmyOZpw==",
+      "license": "MIT"
+    },
+    "node_modules/lib0": {
+      "version": "0.2.114",
+      "resolved": "https://registry.npmjs.org/lib0/-/lib0-0.2.114.tgz",
+      "integrity": "sha512-gcxmNFzA4hv8UYi8j43uPlQ7CGcyMJ2KQb5kZASw6SnAKAf10hK12i2fjrS3Cl/ugZa5Ui6WwIu1/6MIXiHttQ==",
+      "license": "MIT",
+      "peer": true,
+      "dependencies": {
+        "isomorphic.js": "^0.2.4"
+      },
+      "bin": {
+        "0ecdsa-generate-keypair": "bin/0ecdsa-generate-keypair.js",
+        "0gentesthtml": "bin/gentesthtml.js",
+        "0serve": "bin/0serve.js"
+      },
+      "engines": {
+        "node": ">=16"
+      },
+      "funding": {
+        "type": "GitHub Sponsors ❤",
+        "url": "https://github.com/sponsors/dmonad"
+      }
+    },
+    "node_modules/lightningcss": {
+      "version": "1.30.2",
+      "resolved": "https://registry.npmjs.org/lightningcss/-/lightningcss-1.30.2.tgz",
+      "integrity": "sha512-utfs7Pr5uJyyvDETitgsaqSyjCb2qNRAtuqUeWIAKztsOYdcACf2KtARYXg2pSvhkt+9NfoaNY7fxjl6nuMjIQ==",
+      "dev": true,
+      "license": "MPL-2.0",
+      "dependencies": {
+        "detect-libc": "^2.0.3"
+      },
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      },
+      "optionalDependencies": {
+        "lightningcss-android-arm64": "1.30.2",
+        "lightningcss-darwin-arm64": "1.30.2",
+        "lightningcss-darwin-x64": "1.30.2",
+        "lightningcss-freebsd-x64": "1.30.2",
+        "lightningcss-linux-arm-gnueabihf": "1.30.2",
+        "lightningcss-linux-arm64-gnu": "1.30.2",
+        "lightningcss-linux-arm64-musl": "1.30.2",
+        "lightningcss-linux-x64-gnu": "1.30.2",
+        "lightningcss-linux-x64-musl": "1.30.2",
+        "lightningcss-win32-arm64-msvc": "1.30.2",
+        "lightningcss-win32-x64-msvc": "1.30.2"
+      }
+    },
+    "node_modules/lightningcss-android-arm64": {
+      "version": "1.30.2",
+      "resolved": "https://registry.npmjs.org/lightningcss-android-arm64/-/lightningcss-android-arm64-1.30.2.tgz",
+      "integrity": "sha512-BH9sEdOCahSgmkVhBLeU7Hc9DWeZ1Eb6wNS6Da8igvUwAe0sqROHddIlvU06q3WyXVEOYDZ6ykBZQnjTbmo4+A==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-darwin-arm64": {
+      "version": "1.30.2",
+      "resolved": "https://registry.npmjs.org/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.30.2.tgz",
+      "integrity": "sha512-ylTcDJBN3Hp21TdhRT5zBOIi73P6/W0qwvlFEk22fkdXchtNTOU4Qc37SkzV+EKYxLouZ6M4LG9NfZ1qkhhBWA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-darwin-x64": {
+      "version": "1.30.2",
+      "resolved": "https://registry.npmjs.org/lightningcss-darwin-x64/-/lightningcss-darwin-x64-1.30.2.tgz",
+      "integrity": "sha512-oBZgKchomuDYxr7ilwLcyms6BCyLn0z8J0+ZZmfpjwg9fRVZIR5/GMXd7r9RH94iDhld3UmSjBM6nXWM2TfZTQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-freebsd-x64": {
+      "version": "1.30.2",
+      "resolved": "https://registry.npmjs.org/lightningcss-freebsd-x64/-/lightningcss-freebsd-x64-1.30.2.tgz",
+      "integrity": "sha512-c2bH6xTrf4BDpK8MoGG4Bd6zAMZDAXS569UxCAGcA7IKbHNMlhGQ89eRmvpIUGfKWNVdbhSbkQaWhEoMGmGslA==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-arm-gnueabihf": {
+      "version": "1.30.2",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm-gnueabihf/-/lightningcss-linux-arm-gnueabihf-1.30.2.tgz",
+      "integrity": "sha512-eVdpxh4wYcm0PofJIZVuYuLiqBIakQ9uFZmipf6LF/HRj5Bgm0eb3qL/mr1smyXIS1twwOxNWndd8z0E374hiA==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-arm64-gnu": {
+      "version": "1.30.2",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-gnu/-/lightningcss-linux-arm64-gnu-1.30.2.tgz",
+      "integrity": "sha512-UK65WJAbwIJbiBFXpxrbTNArtfuznvxAJw4Q2ZGlU8kPeDIWEX1dg3rn2veBVUylA2Ezg89ktszWbaQnxD/e3A==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-arm64-musl": {
+      "version": "1.30.2",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-musl/-/lightningcss-linux-arm64-musl-1.30.2.tgz",
+      "integrity": "sha512-5Vh9dGeblpTxWHpOx8iauV02popZDsCYMPIgiuw97OJ5uaDsL86cnqSFs5LZkG3ghHoX5isLgWzMs+eD1YzrnA==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-x64-gnu": {
+      "version": "1.30.2",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.30.2.tgz",
+      "integrity": "sha512-Cfd46gdmj1vQ+lR6VRTTadNHu6ALuw2pKR9lYq4FnhvgBc4zWY1EtZcAc6EffShbb1MFrIPfLDXD6Xprbnni4w==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-linux-x64-musl": {
+      "version": "1.30.2",
+      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-musl/-/lightningcss-linux-x64-musl-1.30.2.tgz",
+      "integrity": "sha512-XJaLUUFXb6/QG2lGIW6aIk6jKdtjtcffUT0NKvIqhSBY3hh9Ch+1LCeH80dR9q9LBjG3ewbDjnumefsLsP6aiA==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-win32-arm64-msvc": {
+      "version": "1.30.2",
+      "resolved": "https://registry.npmjs.org/lightningcss-win32-arm64-msvc/-/lightningcss-win32-arm64-msvc-1.30.2.tgz",
+      "integrity": "sha512-FZn+vaj7zLv//D/192WFFVA0RgHawIcHqLX9xuWiQt7P0PtdFEVaxgF9rjM/IRYHQXNnk61/H/gb2Ei+kUQ4xQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/lightningcss-win32-x64-msvc": {
+      "version": "1.30.2",
+      "resolved": "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.30.2.tgz",
+      "integrity": "sha512-5g1yc73p+iAkid5phb4oVFMB45417DkRevRbt/El/gKXJk4jid+vPFF/AXbxn05Aky8PapwzZrdJShv5C0avjw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MPL-2.0",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/parcel"
+      }
+    },
+    "node_modules/locate-path": {
+      "version": "6.0.0",
+      "resolved": "https://registry.npmjs.org/locate-path/-/locate-path-6.0.0.tgz",
+      "integrity": "sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "p-locate": "^5.0.0"
+      },
+      "engines": {
+        "node": ">=10"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/lodash": {
+      "version": "4.17.21",
+      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz",
+      "integrity": "sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==",
+      "license": "MIT"
+    },
+    "node_modules/lodash-es": {
+      "version": "4.17.21",
+      "resolved": "https://registry.npmjs.org/lodash-es/-/lodash-es-4.17.21.tgz",
+      "integrity": "sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==",
+      "license": "MIT"
+    },
+    "node_modules/lodash.merge": {
+      "version": "4.6.2",
+      "resolved": "https://registry.npmjs.org/lodash.merge/-/lodash.merge-4.6.2.tgz",
+      "integrity": "sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/longest-streak": {
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/longest-streak/-/longest-streak-3.1.0.tgz",
+      "integrity": "sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/loose-envify": {
+      "version": "1.4.0",
+      "resolved": "https://registry.npmjs.org/loose-envify/-/loose-envify-1.4.0.tgz",
+      "integrity": "sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==",
+      "license": "MIT",
+      "dependencies": {
+        "js-tokens": "^3.0.0 || ^4.0.0"
+      },
+      "bin": {
+        "loose-envify": "cli.js"
+      }
+    },
+    "node_modules/lowlight": {
+      "version": "1.20.0",
+      "resolved": "https://registry.npmjs.org/lowlight/-/lowlight-1.20.0.tgz",
+      "integrity": "sha512-8Ktj+prEb1RoCPkEOrPMYUN/nCggB7qAWe3a7OpMjWQkh3l2RD5wKRQ+o8Q8YuI9RG/xs95waaI/E6ym/7NsTw==",
+      "license": "MIT",
+      "dependencies": {
+        "fault": "^1.0.0",
+        "highlight.js": "~10.7.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/lowlight/node_modules/fault": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/fault/-/fault-1.0.4.tgz",
+      "integrity": "sha512-CJ0HCB5tL5fYTEA7ToAq5+kTwd++Borf1/bifxd9iT70QcXr4MRrO3Llf8Ifs70q+SJcGHFtnIE/Nw6giCtECA==",
+      "license": "MIT",
+      "dependencies": {
+        "format": "^0.2.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/lru-cache": {
+      "version": "6.0.0",
+      "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-6.0.0.tgz",
+      "integrity": "sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==",
+      "license": "ISC",
+      "dependencies": {
+        "yallist": "^4.0.0"
+      },
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/lucide-react": {
+      "version": "0.525.0",
+      "resolved": "https://registry.npmjs.org/lucide-react/-/lucide-react-0.525.0.tgz",
+      "integrity": "sha512-Tm1txJ2OkymCGkvwoHt33Y2JpN5xucVq1slHcgE6Lk0WjDfjgKWor5CdVER8U6DvcfMwh4M8XxmpTiyzfmfDYQ==",
+      "license": "ISC",
+      "peerDependencies": {
+        "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+      }
+    },
+    "node_modules/lz-string": {
+      "version": "1.5.0",
+      "resolved": "https://registry.npmjs.org/lz-string/-/lz-string-1.5.0.tgz",
+      "integrity": "sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==",
+      "license": "MIT",
+      "bin": {
+        "lz-string": "bin/bin.js"
+      }
+    },
+    "node_modules/magic-string": {
+      "version": "0.30.21",
+      "resolved": "https://registry.npmjs.org/magic-string/-/magic-string-0.30.21.tgz",
+      "integrity": "sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@jridgewell/sourcemap-codec": "^1.5.5"
+      }
+    },
+    "node_modules/markdown-table": {
+      "version": "3.0.4",
+      "resolved": "https://registry.npmjs.org/markdown-table/-/markdown-table-3.0.4.tgz",
+      "integrity": "sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/math-intrinsics": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/math-intrinsics/-/math-intrinsics-1.1.0.tgz",
+      "integrity": "sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/mdast-util-directive": {
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/mdast-util-directive/-/mdast-util-directive-3.1.0.tgz",
+      "integrity": "sha512-I3fNFt+DHmpWCYAT7quoM6lHf9wuqtI+oCOfvILnoicNIqjh5E3dEJWiXuYME2gNe8vl1iMQwyUHa7bgFmak6Q==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/mdast": "^4.0.0",
+        "@types/unist": "^3.0.0",
+        "ccount": "^2.0.0",
+        "devlop": "^1.0.0",
+        "mdast-util-from-markdown": "^2.0.0",
+        "mdast-util-to-markdown": "^2.0.0",
+        "parse-entities": "^4.0.0",
+        "stringify-entities": "^4.0.0",
+        "unist-util-visit-parents": "^6.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/mdast-util-from-markdown": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/mdast-util-from-markdown/-/mdast-util-from-markdown-2.0.2.tgz",
+      "integrity": "sha512-uZhTV/8NBuw0WHkPTrCqDOl0zVe1BIng5ZtHoDk49ME1qqcjYmmLmOf0gELgcRMxN4w2iuIeVso5/6QymSrgmA==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/mdast": "^4.0.0",
+        "@types/unist": "^3.0.0",
+        "decode-named-character-reference": "^1.0.0",
+        "devlop": "^1.0.0",
+        "mdast-util-to-string": "^4.0.0",
+        "micromark": "^4.0.0",
+        "micromark-util-decode-numeric-character-reference": "^2.0.0",
+        "micromark-util-decode-string": "^2.0.0",
+        "micromark-util-normalize-identifier": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0",
+        "unist-util-stringify-position": "^4.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/mdast-util-frontmatter": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/mdast-util-frontmatter/-/mdast-util-frontmatter-2.0.1.tgz",
+      "integrity": "sha512-LRqI9+wdgC25P0URIJY9vwocIzCcksduHQ9OF2joxQoyTNVduwLAFUzjoopuRJbJAReaKrNQKAZKL3uCMugWJA==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/mdast": "^4.0.0",
+        "devlop": "^1.0.0",
+        "escape-string-regexp": "^5.0.0",
+        "mdast-util-from-markdown": "^2.0.0",
+        "mdast-util-to-markdown": "^2.0.0",
+        "micromark-extension-frontmatter": "^2.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/mdast-util-frontmatter/node_modules/escape-string-regexp": {
+      "version": "5.0.0",
+      "resolved": "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-5.0.0.tgz",
+      "integrity": "sha512-/veY75JbMK4j1yjvuUxuVsiS/hr/4iHs9FTT6cgTexxdE0Ly/glccBAkloH/DofkjRbZU3bnoj38mOmhkZ0lHw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/mdast-util-gfm-strikethrough": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/mdast-util-gfm-strikethrough/-/mdast-util-gfm-strikethrough-2.0.0.tgz",
+      "integrity": "sha512-mKKb915TF+OC5ptj5bJ7WFRPdYtuHv0yTRxK2tJvi+BDqbkiG7h7u/9SI89nRAYcmap2xHQL9D+QG/6wSrTtXg==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/mdast": "^4.0.0",
+        "mdast-util-from-markdown": "^2.0.0",
+        "mdast-util-to-markdown": "^2.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/mdast-util-gfm-table": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/mdast-util-gfm-table/-/mdast-util-gfm-table-2.0.0.tgz",
+      "integrity": "sha512-78UEvebzz/rJIxLvE7ZtDd/vIQ0RHv+3Mh5DR96p7cS7HsBhYIICDBCu8csTNWNO6tBWfqXPWekRuj2FNOGOZg==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/mdast": "^4.0.0",
+        "devlop": "^1.0.0",
+        "markdown-table": "^3.0.0",
+        "mdast-util-from-markdown": "^2.0.0",
+        "mdast-util-to-markdown": "^2.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/mdast-util-gfm-task-list-item": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/mdast-util-gfm-task-list-item/-/mdast-util-gfm-task-list-item-2.0.0.tgz",
+      "integrity": "sha512-IrtvNvjxC1o06taBAVJznEnkiHxLFTzgonUdy8hzFVeDun0uTjxxrRGVaNFqkU1wJR3RBPEfsxmU6jDWPofrTQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/mdast": "^4.0.0",
+        "devlop": "^1.0.0",
+        "mdast-util-from-markdown": "^2.0.0",
+        "mdast-util-to-markdown": "^2.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/mdast-util-highlight-mark": {
+      "version": "1.2.2",
+      "resolved": "https://registry.npmjs.org/mdast-util-highlight-mark/-/mdast-util-highlight-mark-1.2.2.tgz",
+      "integrity": "sha512-OYumVoytj+B9YgwzBhBcYUCLYHIPvJtAvwnMyKhUXbfUFuER5S+FDZyu9fadUxm2TCT5fRYK3jQXh2ioWAxrMw==",
+      "license": "MIT",
+      "dependencies": {
+        "micromark-extension-highlight-mark": "1.2.0"
+      }
+    },
+    "node_modules/mdast-util-mdx": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/mdast-util-mdx/-/mdast-util-mdx-3.0.0.tgz",
+      "integrity": "sha512-JfbYLAW7XnYTTbUsmpu0kdBUVe+yKVJZBItEjwyYJiDJuZ9w4eeaqks4HQO+R7objWgS2ymV60GYpI14Ug554w==",
+      "license": "MIT",
+      "dependencies": {
+        "mdast-util-from-markdown": "^2.0.0",
+        "mdast-util-mdx-expression": "^2.0.0",
+        "mdast-util-mdx-jsx": "^3.0.0",
+        "mdast-util-mdxjs-esm": "^2.0.0",
+        "mdast-util-to-markdown": "^2.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/mdast-util-mdx-expression": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/mdast-util-mdx-expression/-/mdast-util-mdx-expression-2.0.1.tgz",
+      "integrity": "sha512-J6f+9hUp+ldTZqKRSg7Vw5V6MqjATc+3E4gf3CFNcuZNWD8XdyI6zQ8GqH7f8169MM6P7hMBRDVGnn7oHB9kXQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/estree-jsx": "^1.0.0",
+        "@types/hast": "^3.0.0",
+        "@types/mdast": "^4.0.0",
+        "devlop": "^1.0.0",
+        "mdast-util-from-markdown": "^2.0.0",
+        "mdast-util-to-markdown": "^2.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/mdast-util-mdx-jsx": {
+      "version": "3.2.0",
+      "resolved": "https://registry.npmjs.org/mdast-util-mdx-jsx/-/mdast-util-mdx-jsx-3.2.0.tgz",
+      "integrity": "sha512-lj/z8v0r6ZtsN/cGNNtemmmfoLAFZnjMbNyLzBafjzikOM+glrjNHPlf6lQDOTccj9n5b0PPihEBbhneMyGs1Q==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/estree-jsx": "^1.0.0",
+        "@types/hast": "^3.0.0",
+        "@types/mdast": "^4.0.0",
+        "@types/unist": "^3.0.0",
+        "ccount": "^2.0.0",
+        "devlop": "^1.1.0",
+        "mdast-util-from-markdown": "^2.0.0",
+        "mdast-util-to-markdown": "^2.0.0",
+        "parse-entities": "^4.0.0",
+        "stringify-entities": "^4.0.0",
+        "unist-util-stringify-position": "^4.0.0",
+        "vfile-message": "^4.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/mdast-util-mdxjs-esm": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/mdast-util-mdxjs-esm/-/mdast-util-mdxjs-esm-2.0.1.tgz",
+      "integrity": "sha512-EcmOpxsZ96CvlP03NghtH1EsLtr0n9Tm4lPUJUBccV9RwUOneqSycg19n5HGzCf+10LozMRSObtVr3ee1WoHtg==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/estree-jsx": "^1.0.0",
+        "@types/hast": "^3.0.0",
+        "@types/mdast": "^4.0.0",
+        "devlop": "^1.0.0",
+        "mdast-util-from-markdown": "^2.0.0",
+        "mdast-util-to-markdown": "^2.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/mdast-util-phrasing": {
+      "version": "4.1.0",
+      "resolved": "https://registry.npmjs.org/mdast-util-phrasing/-/mdast-util-phrasing-4.1.0.tgz",
+      "integrity": "sha512-TqICwyvJJpBwvGAMZjj4J2n0X8QWp21b9l0o7eXyVJ25YNWYbJDVIyD1bZXE6WtV6RmKJVYmQAKWa0zWOABz2w==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/mdast": "^4.0.0",
+        "unist-util-is": "^6.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/mdast-util-to-hast": {
+      "version": "13.2.1",
+      "resolved": "https://registry.npmjs.org/mdast-util-to-hast/-/mdast-util-to-hast-13.2.1.tgz",
+      "integrity": "sha512-cctsq2wp5vTsLIcaymblUriiTcZd0CwWtCbLvrOzYCDZoWyMNV8sZ7krj09FSnsiJi3WVsHLM4k6Dq/yaPyCXA==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/hast": "^3.0.0",
+        "@types/mdast": "^4.0.0",
+        "@ungap/structured-clone": "^1.0.0",
+        "devlop": "^1.0.0",
+        "micromark-util-sanitize-uri": "^2.0.0",
+        "trim-lines": "^3.0.0",
+        "unist-util-position": "^5.0.0",
+        "unist-util-visit": "^5.0.0",
+        "vfile": "^6.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/mdast-util-to-markdown": {
+      "version": "2.1.2",
+      "resolved": "https://registry.npmjs.org/mdast-util-to-markdown/-/mdast-util-to-markdown-2.1.2.tgz",
+      "integrity": "sha512-xj68wMTvGXVOKonmog6LwyJKrYXZPvlwabaryTjLh9LuvovB/KAH+kvi8Gjj+7rJjsFi23nkUxRQv1KqSroMqA==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/mdast": "^4.0.0",
+        "@types/unist": "^3.0.0",
+        "longest-streak": "^3.0.0",
+        "mdast-util-phrasing": "^4.0.0",
+        "mdast-util-to-string": "^4.0.0",
+        "micromark-util-classify-character": "^2.0.0",
+        "micromark-util-decode-string": "^2.0.0",
+        "unist-util-visit": "^5.0.0",
+        "zwitch": "^2.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/mdast-util-to-string": {
+      "version": "4.0.0",
+      "resolved": "https://registry.npmjs.org/mdast-util-to-string/-/mdast-util-to-string-4.0.0.tgz",
+      "integrity": "sha512-0H44vDimn51F0YwvxSJSm0eCDOJTRlmN0R1yBh4HLj9wiV1Dn0QoXGbvFAWj2hSItVTlCmBF1hqKlIyUBVFLPg==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/mdast": "^4.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/merge2": {
+      "version": "1.4.1",
+      "resolved": "https://registry.npmjs.org/merge2/-/merge2-1.4.1.tgz",
+      "integrity": "sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 8"
+      }
+    },
+    "node_modules/micromark": {
+      "version": "4.0.2",
+      "resolved": "https://registry.npmjs.org/micromark/-/micromark-4.0.2.tgz",
+      "integrity": "sha512-zpe98Q6kvavpCr1NPVSCMebCKfD7CA2NqZ+rykeNhONIJBpc1tFKt9hucLGwha3jNTNI8lHpctWJWoimVF4PfA==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "@types/debug": "^4.0.0",
+        "debug": "^4.0.0",
+        "decode-named-character-reference": "^1.0.0",
+        "devlop": "^1.0.0",
+        "micromark-core-commonmark": "^2.0.0",
+        "micromark-factory-space": "^2.0.0",
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-chunked": "^2.0.0",
+        "micromark-util-combine-extensions": "^2.0.0",
+        "micromark-util-decode-numeric-character-reference": "^2.0.0",
+        "micromark-util-encode": "^2.0.0",
+        "micromark-util-normalize-identifier": "^2.0.0",
+        "micromark-util-resolve-all": "^2.0.0",
+        "micromark-util-sanitize-uri": "^2.0.0",
+        "micromark-util-subtokenize": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-core-commonmark": {
+      "version": "2.0.3",
+      "resolved": "https://registry.npmjs.org/micromark-core-commonmark/-/micromark-core-commonmark-2.0.3.tgz",
+      "integrity": "sha512-RDBrHEMSxVFLg6xvnXmb1Ayr2WzLAWjeSATAoxwKYJV94TeNavgoIdA0a9ytzDSVzBy2YKFK+emCPOEibLeCrg==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "decode-named-character-reference": "^1.0.0",
+        "devlop": "^1.0.0",
+        "micromark-factory-destination": "^2.0.0",
+        "micromark-factory-label": "^2.0.0",
+        "micromark-factory-space": "^2.0.0",
+        "micromark-factory-title": "^2.0.0",
+        "micromark-factory-whitespace": "^2.0.0",
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-chunked": "^2.0.0",
+        "micromark-util-classify-character": "^2.0.0",
+        "micromark-util-html-tag-name": "^2.0.0",
+        "micromark-util-normalize-identifier": "^2.0.0",
+        "micromark-util-resolve-all": "^2.0.0",
+        "micromark-util-subtokenize": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-extension-directive": {
+      "version": "3.0.2",
+      "resolved": "https://registry.npmjs.org/micromark-extension-directive/-/micromark-extension-directive-3.0.2.tgz",
+      "integrity": "sha512-wjcXHgk+PPdmvR58Le9d7zQYWy+vKEU9Se44p2CrCDPiLr2FMyiT4Fyb5UFKFC66wGB3kPlgD7q3TnoqPS7SZA==",
+      "license": "MIT",
+      "dependencies": {
+        "devlop": "^1.0.0",
+        "micromark-factory-space": "^2.0.0",
+        "micromark-factory-whitespace": "^2.0.0",
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0",
+        "parse-entities": "^4.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/micromark-extension-frontmatter": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/micromark-extension-frontmatter/-/micromark-extension-frontmatter-2.0.0.tgz",
+      "integrity": "sha512-C4AkuM3dA58cgZha7zVnuVxBhDsbttIMiytjgsM2XbHAB2faRVaHRle40558FBN+DJcrLNCoqG5mlrpdU4cRtg==",
+      "license": "MIT",
+      "dependencies": {
+        "fault": "^2.0.0",
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/micromark-extension-gfm-strikethrough": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/micromark-extension-gfm-strikethrough/-/micromark-extension-gfm-strikethrough-2.1.0.tgz",
+      "integrity": "sha512-ADVjpOOkjz1hhkZLlBiYA9cR2Anf8F4HqZUO6e5eDcPQd0Txw5fxLzzxnEkSkfnD0wziSGiv7sYhk/ktvbf1uw==",
+      "license": "MIT",
+      "dependencies": {
+        "devlop": "^1.0.0",
+        "micromark-util-chunked": "^2.0.0",
+        "micromark-util-classify-character": "^2.0.0",
+        "micromark-util-resolve-all": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/micromark-extension-gfm-table": {
+      "version": "2.1.1",
+      "resolved": "https://registry.npmjs.org/micromark-extension-gfm-table/-/micromark-extension-gfm-table-2.1.1.tgz",
+      "integrity": "sha512-t2OU/dXXioARrC6yWfJ4hqB7rct14e8f7m0cbI5hUmDyyIlwv5vEtooptH8INkbLzOatzKuVbQmAYcbWoyz6Dg==",
+      "license": "MIT",
+      "dependencies": {
+        "devlop": "^1.0.0",
+        "micromark-factory-space": "^2.0.0",
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/micromark-extension-gfm-task-list-item": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/micromark-extension-gfm-task-list-item/-/micromark-extension-gfm-task-list-item-2.1.0.tgz",
+      "integrity": "sha512-qIBZhqxqI6fjLDYFTBIa4eivDMnP+OZqsNwmQ3xNLE4Cxwc+zfQEfbs6tzAo2Hjq+bh6q5F+Z8/cksrLFYWQQw==",
+      "license": "MIT",
+      "dependencies": {
+        "devlop": "^1.0.0",
+        "micromark-factory-space": "^2.0.0",
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/micromark-extension-highlight-mark": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/micromark-extension-highlight-mark/-/micromark-extension-highlight-mark-1.2.0.tgz",
+      "integrity": "sha512-huGtbd/9kQsMk8u7nrVMaS5qH/47yDG6ZADggo5Owz5JoY8wdfQjfuy118/QiYNCvdFuFDbzT0A7K7Hp2cBsXA==",
+      "license": "MIT",
+      "dependencies": {
+        "micromark-util-chunked": "^2.0.0",
+        "micromark-util-classify-character": "^2.0.0",
+        "micromark-util-resolve-all": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0",
+        "uvu": "^0.5.6"
+      }
+    },
+    "node_modules/micromark-extension-mdx-expression": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/micromark-extension-mdx-expression/-/micromark-extension-mdx-expression-3.0.1.tgz",
+      "integrity": "sha512-dD/ADLJ1AeMvSAKBwO22zG22N4ybhe7kFIZ3LsDI0GlsNr2A3KYxb0LdC1u5rj4Nw+CHKY0RVdnHX8vj8ejm4Q==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "@types/estree": "^1.0.0",
+        "devlop": "^1.0.0",
+        "micromark-factory-mdx-expression": "^2.0.0",
+        "micromark-factory-space": "^2.0.0",
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-events-to-acorn": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-extension-mdx-jsx": {
+      "version": "3.0.2",
+      "resolved": "https://registry.npmjs.org/micromark-extension-mdx-jsx/-/micromark-extension-mdx-jsx-3.0.2.tgz",
+      "integrity": "sha512-e5+q1DjMh62LZAJOnDraSSbDMvGJ8x3cbjygy2qFEi7HCeUT4BDKCvMozPozcD6WmOt6sVvYDNBKhFSz3kjOVQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/estree": "^1.0.0",
+        "devlop": "^1.0.0",
+        "estree-util-is-identifier-name": "^3.0.0",
+        "micromark-factory-mdx-expression": "^2.0.0",
+        "micromark-factory-space": "^2.0.0",
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-events-to-acorn": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0",
+        "vfile-message": "^4.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/micromark-extension-mdx-md": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/micromark-extension-mdx-md/-/micromark-extension-mdx-md-2.0.0.tgz",
+      "integrity": "sha512-EpAiszsB3blw4Rpba7xTOUptcFeBFi+6PY8VnJ2hhimH+vCQDirWgsMpz7w1XcZE7LVrSAUGb9VJpG9ghlYvYQ==",
+      "license": "MIT",
+      "dependencies": {
+        "micromark-util-types": "^2.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/micromark-extension-mdxjs": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/micromark-extension-mdxjs/-/micromark-extension-mdxjs-3.0.0.tgz",
+      "integrity": "sha512-A873fJfhnJ2siZyUrJ31l34Uqwy4xIFmvPY1oj+Ean5PHcPBYzEsvqvWGaWcfEIr11O5Dlw3p2y0tZWpKHDejQ==",
+      "license": "MIT",
+      "dependencies": {
+        "acorn": "^8.0.0",
+        "acorn-jsx": "^5.0.0",
+        "micromark-extension-mdx-expression": "^3.0.0",
+        "micromark-extension-mdx-jsx": "^3.0.0",
+        "micromark-extension-mdx-md": "^2.0.0",
+        "micromark-extension-mdxjs-esm": "^3.0.0",
+        "micromark-util-combine-extensions": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/micromark-extension-mdxjs-esm": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/micromark-extension-mdxjs-esm/-/micromark-extension-mdxjs-esm-3.0.0.tgz",
+      "integrity": "sha512-DJFl4ZqkErRpq/dAPyeWp15tGrcrrJho1hKK5uBS70BCtfrIFg81sqcTVu3Ta+KD1Tk5vAtBNElWxtAa+m8K9A==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/estree": "^1.0.0",
+        "devlop": "^1.0.0",
+        "micromark-core-commonmark": "^2.0.0",
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-events-to-acorn": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0",
+        "unist-util-position-from-estree": "^2.0.0",
+        "vfile-message": "^4.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/micromark-factory-destination": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/micromark-factory-destination/-/micromark-factory-destination-2.0.1.tgz",
+      "integrity": "sha512-Xe6rDdJlkmbFRExpTOmRj9N3MaWmbAgdpSrBQvCFqhezUn4AHqJHbaEnfbVYYiexVSs//tqOdY/DxhjdCiJnIA==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-factory-label": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/micromark-factory-label/-/micromark-factory-label-2.0.1.tgz",
+      "integrity": "sha512-VFMekyQExqIW7xIChcXn4ok29YE3rnuyveW3wZQWWqF4Nv9Wk5rgJ99KzPvHjkmPXF93FXIbBp6YdW3t71/7Vg==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "devlop": "^1.0.0",
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-factory-mdx-expression": {
+      "version": "2.0.3",
+      "resolved": "https://registry.npmjs.org/micromark-factory-mdx-expression/-/micromark-factory-mdx-expression-2.0.3.tgz",
+      "integrity": "sha512-kQnEtA3vzucU2BkrIa8/VaSAsP+EJ3CKOvhMuJgOEGg9KDC6OAY6nSnNDVRiVNRqj7Y4SlSzcStaH/5jge8JdQ==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "@types/estree": "^1.0.0",
+        "devlop": "^1.0.0",
+        "micromark-factory-space": "^2.0.0",
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-events-to-acorn": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0",
+        "unist-util-position-from-estree": "^2.0.0",
+        "vfile-message": "^4.0.0"
+      }
+    },
+    "node_modules/micromark-factory-space": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/micromark-factory-space/-/micromark-factory-space-2.0.1.tgz",
+      "integrity": "sha512-zRkxjtBxxLd2Sc0d+fbnEunsTj46SWXgXciZmHq0kDYGnck/ZSGj9/wULTV95uoeYiK5hRXP2mJ98Uo4cq/LQg==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-factory-title": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/micromark-factory-title/-/micromark-factory-title-2.0.1.tgz",
+      "integrity": "sha512-5bZ+3CjhAd9eChYTHsjy6TGxpOFSKgKKJPJxr293jTbfry2KDoWkhBb6TcPVB4NmzaPhMs1Frm9AZH7OD4Cjzw==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "micromark-factory-space": "^2.0.0",
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-factory-whitespace": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/micromark-factory-whitespace/-/micromark-factory-whitespace-2.0.1.tgz",
+      "integrity": "sha512-Ob0nuZ3PKt/n0hORHyvoD9uZhr+Za8sFoP+OnMcnWK5lngSzALgQYKMr9RJVOWLqQYuyn6ulqGWSXdwf6F80lQ==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "micromark-factory-space": "^2.0.0",
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-util-character": {
+      "version": "2.1.1",
+      "resolved": "https://registry.npmjs.org/micromark-util-character/-/micromark-util-character-2.1.1.tgz",
+      "integrity": "sha512-wv8tdUTJ3thSFFFJKtpYKOYiGP2+v96Hvk4Tu8KpCAsTMs6yi+nVmGh1syvSCsaxz45J6Jbw+9DD6g97+NV67Q==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-util-chunked": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/micromark-util-chunked/-/micromark-util-chunked-2.0.1.tgz",
+      "integrity": "sha512-QUNFEOPELfmvv+4xiNg2sRYeS/P84pTW0TCgP5zc9FpXetHY0ab7SxKyAQCNCc1eK0459uoLI1y5oO5Vc1dbhA==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "micromark-util-symbol": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-util-classify-character": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/micromark-util-classify-character/-/micromark-util-classify-character-2.0.1.tgz",
+      "integrity": "sha512-K0kHzM6afW/MbeWYWLjoHQv1sgg2Q9EccHEDzSkxiP/EaagNzCm7T/WMKZ3rjMbvIpvBiZgwR3dKMygtA4mG1Q==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-util-combine-extensions": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/micromark-util-combine-extensions/-/micromark-util-combine-extensions-2.0.1.tgz",
+      "integrity": "sha512-OnAnH8Ujmy59JcyZw8JSbK9cGpdVY44NKgSM7E9Eh7DiLS2E9RNQf0dONaGDzEG9yjEl5hcqeIsj4hfRkLH/Bg==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "micromark-util-chunked": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-util-decode-numeric-character-reference": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/micromark-util-decode-numeric-character-reference/-/micromark-util-decode-numeric-character-reference-2.0.2.tgz",
+      "integrity": "sha512-ccUbYk6CwVdkmCQMyr64dXz42EfHGkPQlBj5p7YVGzq8I7CtjXZJrubAYezf7Rp+bjPseiROqe7G6foFd+lEuw==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "micromark-util-symbol": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-util-decode-string": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/micromark-util-decode-string/-/micromark-util-decode-string-2.0.1.tgz",
+      "integrity": "sha512-nDV/77Fj6eH1ynwscYTOsbK7rR//Uj0bZXBwJZRfaLEJ1iGBR6kIfNmlNqaqJf649EP0F3NWNdeJi03elllNUQ==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "decode-named-character-reference": "^1.0.0",
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-decode-numeric-character-reference": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-util-encode": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/micromark-util-encode/-/micromark-util-encode-2.0.1.tgz",
+      "integrity": "sha512-c3cVx2y4KqUnwopcO9b/SCdo2O67LwJJ/UyqGfbigahfegL9myoEFoDYZgkT7f36T0bLrM9hZTAaAyH+PCAXjw==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT"
+    },
+    "node_modules/micromark-util-events-to-acorn": {
+      "version": "2.0.3",
+      "resolved": "https://registry.npmjs.org/micromark-util-events-to-acorn/-/micromark-util-events-to-acorn-2.0.3.tgz",
+      "integrity": "sha512-jmsiEIiZ1n7X1Rr5k8wVExBQCg5jy4UXVADItHmNk1zkwEVhBuIUKRu3fqv+hs4nxLISi2DQGlqIOGiFxgbfHg==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "@types/estree": "^1.0.0",
+        "@types/unist": "^3.0.0",
+        "devlop": "^1.0.0",
+        "estree-util-visit": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0",
+        "vfile-message": "^4.0.0"
+      }
+    },
+    "node_modules/micromark-util-html-tag-name": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/micromark-util-html-tag-name/-/micromark-util-html-tag-name-2.0.1.tgz",
+      "integrity": "sha512-2cNEiYDhCWKI+Gs9T0Tiysk136SnR13hhO8yW6BGNyhOC4qYFnwF1nKfD3HFAIXA5c45RrIG1ub11GiXeYd1xA==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT"
+    },
+    "node_modules/micromark-util-normalize-identifier": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/micromark-util-normalize-identifier/-/micromark-util-normalize-identifier-2.0.1.tgz",
+      "integrity": "sha512-sxPqmo70LyARJs0w2UclACPUUEqltCkJ6PhKdMIDuJ3gSf/Q+/GIe3WKl0Ijb/GyH9lOpUkRAO2wp0GVkLvS9Q==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "micromark-util-symbol": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-util-resolve-all": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/micromark-util-resolve-all/-/micromark-util-resolve-all-2.0.1.tgz",
+      "integrity": "sha512-VdQyxFWFT2/FGJgwQnJYbe1jjQoNTS4RjglmSjTUlpUMa95Htx9NHeYW4rGDJzbjvCsl9eLjMQwGeElsqmzcHg==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "micromark-util-types": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-util-sanitize-uri": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/micromark-util-sanitize-uri/-/micromark-util-sanitize-uri-2.0.1.tgz",
+      "integrity": "sha512-9N9IomZ/YuGGZZmQec1MbgxtlgougxTodVwDzzEouPKo3qFWvymFHWcnDi2vzV1ff6kas9ucW+o3yzJK9YB1AQ==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "micromark-util-character": "^2.0.0",
+        "micromark-util-encode": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-util-subtokenize": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/micromark-util-subtokenize/-/micromark-util-subtokenize-2.1.0.tgz",
+      "integrity": "sha512-XQLu552iSctvnEcgXw6+Sx75GflAPNED1qx7eBJ+wydBb2KCbRZe+NwvIEEMM83uml1+2WSXpBAcp9IUCgCYWA==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "devlop": "^1.0.0",
+        "micromark-util-chunked": "^2.0.0",
+        "micromark-util-symbol": "^2.0.0",
+        "micromark-util-types": "^2.0.0"
+      }
+    },
+    "node_modules/micromark-util-symbol": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/micromark-util-symbol/-/micromark-util-symbol-2.0.1.tgz",
+      "integrity": "sha512-vs5t8Apaud9N28kgCrRUdEed4UJ+wWNvicHLPxCa9ENlYuAY31M0ETy5y1vA33YoNPDFTghEbnh6efaE8h4x0Q==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT"
+    },
+    "node_modules/micromark-util-types": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/micromark-util-types/-/micromark-util-types-2.0.2.tgz",
+      "integrity": "sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA==",
+      "funding": [
+        {
+          "type": "GitHub Sponsors",
+          "url": "https://github.com/sponsors/unifiedjs"
+        },
+        {
+          "type": "OpenCollective",
+          "url": "https://opencollective.com/unified"
+        }
+      ],
+      "license": "MIT"
+    },
+    "node_modules/micromatch": {
+      "version": "4.0.8",
+      "resolved": "https://registry.npmjs.org/micromatch/-/micromatch-4.0.8.tgz",
+      "integrity": "sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "braces": "^3.0.3",
+        "picomatch": "^2.3.1"
+      },
+      "engines": {
+        "node": ">=8.6"
+      }
+    },
+    "node_modules/micromatch/node_modules/picomatch": {
+      "version": "2.3.1",
+      "resolved": "https://registry.npmjs.org/picomatch/-/picomatch-2.3.1.tgz",
+      "integrity": "sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=8.6"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/jonschlinkert"
+      }
+    },
+    "node_modules/mime-db": {
+      "version": "1.54.0",
+      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.54.0.tgz",
+      "integrity": "sha512-aU5EJuIN2WDemCcAp2vFBfp/m4EAhWJnUNSSw0ixs7/kXbd6Pg64EmwJkNdFhB8aWt1sH2CTXrLxo/iAGV3oPQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/mime-types": {
+      "version": "2.1.35",
+      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.35.tgz",
+      "integrity": "sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==",
+      "license": "MIT",
+      "dependencies": {
+        "mime-db": "1.52.0"
+      },
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/mime-types/node_modules/mime-db": {
+      "version": "1.52.0",
+      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz",
+      "integrity": "sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/minimatch": {
+      "version": "3.1.2",
+      "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.1.2.tgz",
+      "integrity": "sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==",
+      "license": "ISC",
+      "dependencies": {
+        "brace-expansion": "^1.1.7"
+      },
+      "engines": {
+        "node": "*"
+      }
+    },
+    "node_modules/minimist": {
+      "version": "1.2.8",
+      "resolved": "https://registry.npmjs.org/minimist/-/minimist-1.2.8.tgz",
+      "integrity": "sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==",
+      "dev": true,
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/motion-dom": {
+      "version": "12.23.23",
+      "resolved": "https://registry.npmjs.org/motion-dom/-/motion-dom-12.23.23.tgz",
+      "integrity": "sha512-n5yolOs0TQQBRUFImrRfs/+6X4p3Q4n1dUEqt/H58Vx7OW6RF+foWEgmTVDhIWJIMXOuNNL0apKH2S16en9eiA==",
+      "license": "MIT",
+      "dependencies": {
+        "motion-utils": "^12.23.6"
+      }
+    },
+    "node_modules/motion-utils": {
+      "version": "12.23.6",
+      "resolved": "https://registry.npmjs.org/motion-utils/-/motion-utils-12.23.6.tgz",
+      "integrity": "sha512-eAWoPgr4eFEOFfg2WjIsMoqJTW6Z8MTUCgn/GZ3VRpClWBdnbjryiA3ZSNLyxCTmCQx4RmYX6jX1iWHbenUPNQ==",
+      "license": "MIT"
+    },
+    "node_modules/mri": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/mri/-/mri-1.2.0.tgz",
+      "integrity": "sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=4"
+      }
+    },
+    "node_modules/ms": {
+      "version": "2.1.3",
+      "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz",
+      "integrity": "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==",
+      "license": "MIT"
+    },
+    "node_modules/nanoid": {
+      "version": "3.3.11",
+      "resolved": "https://registry.npmjs.org/nanoid/-/nanoid-3.3.11.tgz",
+      "integrity": "sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==",
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/ai"
+        }
+      ],
+      "license": "MIT",
+      "bin": {
+        "nanoid": "bin/nanoid.cjs"
+      },
+      "engines": {
+        "node": "^10 || ^12 || ^13.7 || ^14 || >=15.0.1"
+      }
+    },
+    "node_modules/napi-postinstall": {
+      "version": "0.3.4",
+      "resolved": "https://registry.npmjs.org/napi-postinstall/-/napi-postinstall-0.3.4.tgz",
+      "integrity": "sha512-PHI5f1O0EP5xJ9gQmFGMS6IZcrVvTjpXjz7Na41gTE7eE2hK11lg04CECCYEEjdc17EV4DO+fkGEtt7TpTaTiQ==",
+      "dev": true,
+      "license": "MIT",
+      "bin": {
+        "napi-postinstall": "lib/cli.js"
+      },
+      "engines": {
+        "node": "^12.20.0 || ^14.18.0 || >=16.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/napi-postinstall"
+      }
+    },
+    "node_modules/natural-compare": {
+      "version": "1.4.0",
+      "resolved": "https://registry.npmjs.org/natural-compare/-/natural-compare-1.4.0.tgz",
+      "integrity": "sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/negotiator": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/negotiator/-/negotiator-1.0.0.tgz",
+      "integrity": "sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/next": {
+      "version": "15.3.5",
+      "resolved": "https://registry.npmjs.org/next/-/next-15.3.5.tgz",
+      "integrity": "sha512-RkazLBMMDJSJ4XZQ81kolSpwiCt907l0xcgcpF4xC2Vml6QVcPNXW0NQRwQ80FFtSn7UM52XN0anaw8TEJXaiw==",
+      "license": "MIT",
+      "dependencies": {
+        "@next/env": "15.3.5",
+        "@swc/counter": "0.1.3",
+        "@swc/helpers": "0.5.15",
+        "busboy": "1.6.0",
+        "caniuse-lite": "^1.0.30001579",
+        "postcss": "8.4.31",
+        "styled-jsx": "5.1.6"
+      },
+      "bin": {
+        "next": "dist/bin/next"
+      },
+      "engines": {
+        "node": "^18.18.0 || ^19.8.0 || >= 20.0.0"
+      },
+      "optionalDependencies": {
+        "@next/swc-darwin-arm64": "15.3.5",
+        "@next/swc-darwin-x64": "15.3.5",
+        "@next/swc-linux-arm64-gnu": "15.3.5",
+        "@next/swc-linux-arm64-musl": "15.3.5",
+        "@next/swc-linux-x64-gnu": "15.3.5",
+        "@next/swc-linux-x64-musl": "15.3.5",
+        "@next/swc-win32-arm64-msvc": "15.3.5",
+        "@next/swc-win32-x64-msvc": "15.3.5",
+        "sharp": "^0.34.1"
+      },
+      "peerDependencies": {
+        "@opentelemetry/api": "^1.1.0",
+        "@playwright/test": "^1.41.2",
+        "babel-plugin-react-compiler": "*",
+        "react": "^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0",
+        "react-dom": "^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0",
+        "sass": "^1.3.0"
+      },
+      "peerDependenciesMeta": {
+        "@opentelemetry/api": {
+          "optional": true
+        },
+        "@playwright/test": {
+          "optional": true
+        },
+        "babel-plugin-react-compiler": {
+          "optional": true
+        },
+        "sass": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/next-auth": {
+      "version": "4.24.13",
+      "resolved": "https://registry.npmjs.org/next-auth/-/next-auth-4.24.13.tgz",
+      "integrity": "sha512-sgObCfcfL7BzIK76SS5TnQtc3yo2Oifp/yIpfv6fMfeBOiBJkDWF3A2y9+yqnmJ4JKc2C+nMjSjmgDeTwgN1rQ==",
+      "license": "ISC",
+      "dependencies": {
+        "@babel/runtime": "^7.20.13",
+        "@panva/hkdf": "^1.0.2",
+        "cookie": "^0.7.0",
+        "jose": "^4.15.5",
+        "oauth": "^0.9.15",
+        "openid-client": "^5.4.0",
+        "preact": "^10.6.3",
+        "preact-render-to-string": "^5.1.19",
+        "uuid": "^8.3.2"
+      },
+      "peerDependencies": {
+        "@auth/core": "0.34.3",
+        "next": "^12.2.5 || ^13 || ^14 || ^15 || ^16",
+        "nodemailer": "^7.0.7",
+        "react": "^17.0.2 || ^18 || ^19",
+        "react-dom": "^17.0.2 || ^18 || ^19"
+      },
+      "peerDependenciesMeta": {
+        "@auth/core": {
+          "optional": true
+        },
+        "nodemailer": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/next-auth/node_modules/uuid": {
+      "version": "8.3.2",
+      "resolved": "https://registry.npmjs.org/uuid/-/uuid-8.3.2.tgz",
+      "integrity": "sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==",
+      "license": "MIT",
+      "bin": {
+        "uuid": "dist/bin/uuid"
+      }
+    },
+    "node_modules/next-intl": {
+      "version": "4.5.5",
+      "resolved": "https://registry.npmjs.org/next-intl/-/next-intl-4.5.5.tgz",
+      "integrity": "sha512-BVAcZP603tZ83c5b/qHaJt5g2/y6YaxQwc8xAlqE9VGf+q5Uc32rpRTlmqCZB8OhcPCO7L6opL47obXJh3uYTw==",
+      "funding": [
+        {
+          "type": "individual",
+          "url": "https://github.com/sponsors/amannn"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "@formatjs/intl-localematcher": "^0.5.4",
+        "@swc/core": "^1.15.2",
+        "negotiator": "^1.0.0",
+        "next-intl-swc-plugin-extractor": "^4.5.5",
+        "po-parser": "^0.1.2",
+        "use-intl": "^4.5.5"
+      },
+      "peerDependencies": {
+        "next": "^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0",
+        "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc <19.0.0 || ^19.0.0",
+        "typescript": "^5.0.0"
+      },
+      "peerDependenciesMeta": {
+        "typescript": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/next-intl-swc-plugin-extractor": {
+      "version": "4.5.5",
+      "resolved": "https://registry.npmjs.org/next-intl-swc-plugin-extractor/-/next-intl-swc-plugin-extractor-4.5.5.tgz",
+      "integrity": "sha512-mcq/Eag0SXR1Zcerc4TQxTc4QJdt+5uhLLI7VI1mCbArG/QVsbXcCqd72dKSQpEfz8q0yuTJIlddBs54fT4lkw==",
+      "license": "MIT"
+    },
+    "node_modules/next-themes": {
+      "version": "0.4.6",
+      "resolved": "https://registry.npmjs.org/next-themes/-/next-themes-0.4.6.tgz",
+      "integrity": "sha512-pZvgD5L0IEvX5/9GWyHMf3m8BKiVQwsCMHfoFosXtXBMnaS0ZnIJ9ST4b4NqLVKDEm8QBxoNNGNaBv2JNF6XNA==",
+      "license": "MIT",
+      "peerDependencies": {
+        "react": "^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc"
+      }
+    },
+    "node_modules/next-tick": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/next-tick/-/next-tick-1.1.0.tgz",
+      "integrity": "sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==",
+      "license": "ISC"
+    },
+    "node_modules/next/node_modules/@swc/helpers": {
+      "version": "0.5.15",
+      "resolved": "https://registry.npmjs.org/@swc/helpers/-/helpers-0.5.15.tgz",
+      "integrity": "sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "tslib": "^2.8.0"
+      }
+    },
+    "node_modules/next/node_modules/postcss": {
+      "version": "8.4.31",
+      "resolved": "https://registry.npmjs.org/postcss/-/postcss-8.4.31.tgz",
+      "integrity": "sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==",
+      "funding": [
+        {
+          "type": "opencollective",
+          "url": "https://opencollective.com/postcss/"
+        },
+        {
+          "type": "tidelift",
+          "url": "https://tidelift.com/funding/github/npm/postcss"
+        },
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/ai"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "nanoid": "^3.3.6",
+        "picocolors": "^1.0.0",
+        "source-map-js": "^1.0.2"
+      },
+      "engines": {
+        "node": "^10 || ^12 || >=14"
+      }
+    },
+    "node_modules/node-fetch-native": {
+      "version": "1.6.7",
+      "resolved": "https://registry.npmjs.org/node-fetch-native/-/node-fetch-native-1.6.7.tgz",
+      "integrity": "sha512-g9yhqoedzIUm0nTnTqAQvueMPVOuIY16bqgAJJC8XOOubYFNwz6IER9qs0Gq2Xd0+CecCKFjtdDTMA4u4xG06Q==",
+      "license": "MIT"
+    },
+    "node_modules/nodemon": {
+      "version": "3.1.11",
+      "resolved": "https://registry.npmjs.org/nodemon/-/nodemon-3.1.11.tgz",
+      "integrity": "sha512-is96t8F/1//UHAjNPHpbsNY46ELPpftGUoSVNXwUfMk/qdjSylYrWSu1XavVTBOn526kFiOR733ATgNBCQyH0g==",
+      "license": "MIT",
+      "dependencies": {
+        "chokidar": "^3.5.2",
+        "debug": "^4",
+        "ignore-by-default": "^1.0.1",
+        "minimatch": "^3.1.2",
+        "pstree.remy": "^1.1.8",
+        "semver": "^7.5.3",
+        "simple-update-notifier": "^2.0.0",
+        "supports-color": "^5.5.0",
+        "touch": "^3.1.0",
+        "undefsafe": "^2.0.5"
+      },
+      "bin": {
+        "nodemon": "bin/nodemon.js"
+      },
+      "engines": {
+        "node": ">=10"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/nodemon"
+      }
+    },
+    "node_modules/nodemon/node_modules/has-flag": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/has-flag/-/has-flag-3.0.0.tgz",
+      "integrity": "sha512-sKJf1+ceQBr4SMkvQnBDNDtf4TXpVhVGateu0t918bl30FnbE2m4vNLX+VWe/dpjlb+HugGYzW7uQXH98HPEYw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=4"
+      }
+    },
+    "node_modules/nodemon/node_modules/supports-color": {
+      "version": "5.5.0",
+      "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-5.5.0.tgz",
+      "integrity": "sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==",
+      "license": "MIT",
+      "dependencies": {
+        "has-flag": "^3.0.0"
+      },
+      "engines": {
+        "node": ">=4"
+      }
+    },
+    "node_modules/normalize-path": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/normalize-path/-/normalize-path-3.0.0.tgz",
+      "integrity": "sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/nypm": {
+      "version": "0.6.2",
+      "resolved": "https://registry.npmjs.org/nypm/-/nypm-0.6.2.tgz",
+      "integrity": "sha512-7eM+hpOtrKrBDCh7Ypu2lJ9Z7PNZBdi/8AT3AX8xoCj43BBVHD0hPSTEvMtkMpfs8FCqBGhxB+uToIQimA111g==",
+      "license": "MIT",
+      "dependencies": {
+        "citty": "^0.1.6",
+        "consola": "^3.4.2",
+        "pathe": "^2.0.3",
+        "pkg-types": "^2.3.0",
+        "tinyexec": "^1.0.1"
+      },
+      "bin": {
+        "nypm": "dist/cli.mjs"
+      },
+      "engines": {
+        "node": "^14.16.0 || >=16.10.0"
+      }
+    },
+    "node_modules/oauth": {
+      "version": "0.9.15",
+      "resolved": "https://registry.npmjs.org/oauth/-/oauth-0.9.15.tgz",
+      "integrity": "sha512-a5ERWK1kh38ExDEfoO6qUHJb32rd7aYmPHuyCu3Fta/cnICvYmgd2uhuKXvPD+PXB+gCEYYEaQdIRAjCOwAKNA==",
+      "license": "MIT"
+    },
+    "node_modules/object-assign": {
+      "version": "4.1.1",
+      "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-4.1.1.tgz",
+      "integrity": "sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/object-hash": {
+      "version": "2.2.0",
+      "resolved": "https://registry.npmjs.org/object-hash/-/object-hash-2.2.0.tgz",
+      "integrity": "sha512-gScRMn0bS5fH+IuwyIFgnh9zBdo4DV+6GhygmWM9HyNJSgS0hScp1f5vjtm7oIIOiT9trXrShAkLFSc2IqKNgw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 6"
+      }
+    },
+    "node_modules/object-inspect": {
+      "version": "1.13.4",
+      "resolved": "https://registry.npmjs.org/object-inspect/-/object-inspect-1.13.4.tgz",
+      "integrity": "sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/object-keys": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/object-keys/-/object-keys-1.1.1.tgz",
+      "integrity": "sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/object.assign": {
+      "version": "4.1.7",
+      "resolved": "https://registry.npmjs.org/object.assign/-/object.assign-4.1.7.tgz",
+      "integrity": "sha512-nK28WOo+QIjBkDduTINE4JkF/UJJKyf2EJxvJKfblDpyg0Q+pkOHNTL0Qwy6NP6FhE/EnzV73BxxqcJaXY9anw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "call-bound": "^1.0.3",
+        "define-properties": "^1.2.1",
+        "es-object-atoms": "^1.0.0",
+        "has-symbols": "^1.1.0",
+        "object-keys": "^1.1.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/object.entries": {
+      "version": "1.1.9",
+      "resolved": "https://registry.npmjs.org/object.entries/-/object.entries-1.1.9.tgz",
+      "integrity": "sha512-8u/hfXFRBD1O0hPUjioLhoWFHRmt6tKA4/vZPyckBr18l1KE9uHrFaFaUi8MDRTpi4uak2goyPTSNJLXX2k2Hw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "call-bound": "^1.0.4",
+        "define-properties": "^1.2.1",
+        "es-object-atoms": "^1.1.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/object.fromentries": {
+      "version": "2.0.8",
+      "resolved": "https://registry.npmjs.org/object.fromentries/-/object.fromentries-2.0.8.tgz",
+      "integrity": "sha512-k6E21FzySsSK5a21KRADBd/NGneRegFO5pLHfdQLpRDETUNJueLXs3WCzyQ3tFRDYgbq3KHGXfTbi2bs8WQ6rQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.7",
+        "define-properties": "^1.2.1",
+        "es-abstract": "^1.23.2",
+        "es-object-atoms": "^1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/object.groupby": {
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/object.groupby/-/object.groupby-1.0.3.tgz",
+      "integrity": "sha512-+Lhy3TQTuzXI5hevh8sBGqbmurHbbIjAi0Z4S63nthVLmLxfbj4T54a4CfZrXIrt9iP4mVAPYMo/v99taj3wjQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.7",
+        "define-properties": "^1.2.1",
+        "es-abstract": "^1.23.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/object.values": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/object.values/-/object.values-1.2.1.tgz",
+      "integrity": "sha512-gXah6aZrcUxjWg2zR2MwouP2eHlCBzdV4pygudehaKXSGW4v2AsRQUK+lwwXhii6KFZcunEnmSUoYp5CXibxtA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "call-bound": "^1.0.3",
+        "define-properties": "^1.2.1",
+        "es-object-atoms": "^1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/ohash": {
+      "version": "2.0.11",
+      "resolved": "https://registry.npmjs.org/ohash/-/ohash-2.0.11.tgz",
+      "integrity": "sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ==",
+      "license": "MIT"
+    },
+    "node_modules/oidc-token-hash": {
+      "version": "5.2.0",
+      "resolved": "https://registry.npmjs.org/oidc-token-hash/-/oidc-token-hash-5.2.0.tgz",
+      "integrity": "sha512-6gj2m8cJZ+iSW8bm0FXdGF0YhIQbKrfP4yWTNzxc31U6MOjfEmB1rHvlYvxI1B7t7BCi1F2vYTT6YhtQRG4hxw==",
+      "license": "MIT",
+      "engines": {
+        "node": "^10.13.0 || >=12.0.0"
+      }
+    },
+    "node_modules/openid-client": {
+      "version": "5.7.1",
+      "resolved": "https://registry.npmjs.org/openid-client/-/openid-client-5.7.1.tgz",
+      "integrity": "sha512-jDBPgSVfTnkIh71Hg9pRvtJc6wTwqjRkN88+gCFtYWrlP4Yx2Dsrow8uPi3qLr/aeymPF3o2+dS+wOpglK04ew==",
+      "license": "MIT",
+      "dependencies": {
+        "jose": "^4.15.9",
+        "lru-cache": "^6.0.0",
+        "object-hash": "^2.2.0",
+        "oidc-token-hash": "^5.0.3"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/panva"
+      }
+    },
+    "node_modules/optionator": {
+      "version": "0.9.4",
+      "resolved": "https://registry.npmjs.org/optionator/-/optionator-0.9.4.tgz",
+      "integrity": "sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "deep-is": "^0.1.3",
+        "fast-levenshtein": "^2.0.6",
+        "levn": "^0.4.1",
+        "prelude-ls": "^1.2.1",
+        "type-check": "^0.4.0",
+        "word-wrap": "^1.2.5"
+      },
+      "engines": {
+        "node": ">= 0.8.0"
+      }
+    },
+    "node_modules/outvariant": {
+      "version": "1.4.0",
+      "resolved": "https://registry.npmjs.org/outvariant/-/outvariant-1.4.0.tgz",
+      "integrity": "sha512-AlWY719RF02ujitly7Kk/0QlV+pXGFDHrHf9O2OKqyqgBieaPOIeuSkL8sRK6j2WK+/ZAURq2kZsY0d8JapUiw==",
+      "license": "MIT"
+    },
+    "node_modules/own-keys": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/own-keys/-/own-keys-1.0.1.tgz",
+      "integrity": "sha512-qFOyK5PjiWZd+QQIh+1jhdb9LpxTF0qs7Pm8o5QHYZ0M3vKqSqzsZaEB6oWlxZ+q2sJBMI/Ktgd2N5ZwQoRHfg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "get-intrinsic": "^1.2.6",
+        "object-keys": "^1.1.1",
+        "safe-push-apply": "^1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/p-limit": {
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/p-limit/-/p-limit-3.1.0.tgz",
+      "integrity": "sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "yocto-queue": "^0.1.0"
+      },
+      "engines": {
+        "node": ">=10"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/p-locate": {
+      "version": "5.0.0",
+      "resolved": "https://registry.npmjs.org/p-locate/-/p-locate-5.0.0.tgz",
+      "integrity": "sha512-LaNjtRWUBY++zB5nE/NwcaoMylSPk+S+ZHNB1TzdbMJMny6dynpAGt7X/tl/QYq3TIeE6nxHppbo2LGymrG5Pw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "p-limit": "^3.0.2"
+      },
+      "engines": {
+        "node": ">=10"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/parent-module": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/parent-module/-/parent-module-1.0.1.tgz",
+      "integrity": "sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "callsites": "^3.0.0"
+      },
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/parse-entities": {
+      "version": "4.0.2",
+      "resolved": "https://registry.npmjs.org/parse-entities/-/parse-entities-4.0.2.tgz",
+      "integrity": "sha512-GG2AQYWoLgL877gQIKeRPGO1xF9+eG1ujIb5soS5gPvLQ1y2o8FL90w2QWNdf9I361Mpp7726c+lj3U0qK1uGw==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/unist": "^2.0.0",
+        "character-entities-legacy": "^3.0.0",
+        "character-reference-invalid": "^2.0.0",
+        "decode-named-character-reference": "^1.0.0",
+        "is-alphanumerical": "^2.0.0",
+        "is-decimal": "^2.0.0",
+        "is-hexadecimal": "^2.0.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/parse-entities/node_modules/@types/unist": {
+      "version": "2.0.11",
+      "resolved": "https://registry.npmjs.org/@types/unist/-/unist-2.0.11.tgz",
+      "integrity": "sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==",
+      "license": "MIT"
+    },
+    "node_modules/path-exists": {
+      "version": "4.0.0",
+      "resolved": "https://registry.npmjs.org/path-exists/-/path-exists-4.0.0.tgz",
+      "integrity": "sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/path-key": {
+      "version": "3.1.1",
+      "resolved": "https://registry.npmjs.org/path-key/-/path-key-3.1.1.tgz",
+      "integrity": "sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/path-parse": {
+      "version": "1.0.7",
+      "resolved": "https://registry.npmjs.org/path-parse/-/path-parse-1.0.7.tgz",
+      "integrity": "sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/pathe": {
+      "version": "2.0.3",
+      "resolved": "https://registry.npmjs.org/pathe/-/pathe-2.0.3.tgz",
+      "integrity": "sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==",
+      "license": "MIT"
+    },
+    "node_modules/perfect-debounce": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/perfect-debounce/-/perfect-debounce-1.0.0.tgz",
+      "integrity": "sha512-xCy9V055GLEqoFaHoC1SoLIaLmWctgCUaBaWxDZ7/Zx4CTyX7cJQLJOok/orfjZAh9kEYpjJa4d0KcJmCbctZA==",
+      "license": "MIT"
+    },
+    "node_modules/picocolors": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz",
+      "integrity": "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==",
+      "license": "ISC"
+    },
+    "node_modules/picomatch": {
+      "version": "4.0.3",
+      "resolved": "https://registry.npmjs.org/picomatch/-/picomatch-4.0.3.tgz",
+      "integrity": "sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/jonschlinkert"
+      }
+    },
+    "node_modules/pkg-types": {
+      "version": "2.3.0",
+      "resolved": "https://registry.npmjs.org/pkg-types/-/pkg-types-2.3.0.tgz",
+      "integrity": "sha512-SIqCzDRg0s9npO5XQ3tNZioRY1uK06lA41ynBC1YmFTmnY6FjUjVt6s4LoADmwoig1qqD0oK8h1p/8mlMx8Oig==",
+      "license": "MIT",
+      "dependencies": {
+        "confbox": "^0.2.2",
+        "exsolve": "^1.0.7",
+        "pathe": "^2.0.3"
+      }
+    },
+    "node_modules/po-parser": {
+      "version": "0.1.3",
+      "resolved": "https://registry.npmjs.org/po-parser/-/po-parser-0.1.3.tgz",
+      "integrity": "sha512-VYuhQ4HpLgEvoHryBLSNRx9vI5gcfWKufw7Nv/uMHefQYFferxEtiC9afF7STeOQetIHMYMkrvHxs+H7OERQSw==",
+      "license": "MIT"
+    },
+    "node_modules/possible-typed-array-names": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/possible-typed-array-names/-/possible-typed-array-names-1.1.0.tgz",
+      "integrity": "sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/postcss": {
+      "version": "8.5.6",
+      "resolved": "https://registry.npmjs.org/postcss/-/postcss-8.5.6.tgz",
+      "integrity": "sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "opencollective",
+          "url": "https://opencollective.com/postcss/"
+        },
+        {
+          "type": "tidelift",
+          "url": "https://tidelift.com/funding/github/npm/postcss"
+        },
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/ai"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "nanoid": "^3.3.11",
+        "picocolors": "^1.1.1",
+        "source-map-js": "^1.2.1"
+      },
+      "engines": {
+        "node": "^10 || ^12 || >=14"
+      }
+    },
+    "node_modules/preact": {
+      "version": "10.27.2",
+      "resolved": "https://registry.npmjs.org/preact/-/preact-10.27.2.tgz",
+      "integrity": "sha512-5SYSgFKSyhCbk6SrXyMpqjb5+MQBgfvEKE/OC+PujcY34sOpqtr+0AZQtPYx5IA6VxynQ7rUPCtKzyovpj9Bpg==",
+      "license": "MIT",
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/preact"
+      }
+    },
+    "node_modules/preact-render-to-string": {
+      "version": "5.2.6",
+      "resolved": "https://registry.npmjs.org/preact-render-to-string/-/preact-render-to-string-5.2.6.tgz",
+      "integrity": "sha512-JyhErpYOvBV1hEPwIxc/fHWXPfnEGdRKxc8gFdAZ7XV4tlzyzG847XAyEZqoDnynP88akM4eaHcSOzNcLWFguw==",
+      "license": "MIT",
+      "dependencies": {
+        "pretty-format": "^3.8.0"
+      },
+      "peerDependencies": {
+        "preact": ">=10"
+      }
+    },
+    "node_modules/preact-render-to-string/node_modules/pretty-format": {
+      "version": "3.8.0",
+      "resolved": "https://registry.npmjs.org/pretty-format/-/pretty-format-3.8.0.tgz",
+      "integrity": "sha512-WuxUnVtlWL1OfZFQFuqvnvs6MiAGk9UNsBostyBOB0Is9wb5uRESevA6rnl/rkksXaGX3GzZhPup5d6Vp1nFew==",
+      "license": "MIT"
+    },
+    "node_modules/prelude-ls": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/prelude-ls/-/prelude-ls-1.2.1.tgz",
+      "integrity": "sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8.0"
+      }
+    },
+    "node_modules/pretty-format": {
+      "version": "27.5.1",
+      "resolved": "https://registry.npmjs.org/pretty-format/-/pretty-format-27.5.1.tgz",
+      "integrity": "sha512-Qb1gy5OrP5+zDf2Bvnzdl3jsTf1qXVMazbvCoKhtKqVs4/YK4ozX4gKQJJVyNe+cajNPn0KoC0MC3FUmaHWEmQ==",
+      "license": "MIT",
+      "dependencies": {
+        "ansi-regex": "^5.0.1",
+        "ansi-styles": "^5.0.0",
+        "react-is": "^17.0.1"
+      },
+      "engines": {
+        "node": "^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0"
+      }
+    },
+    "node_modules/pretty-format/node_modules/ansi-styles": {
+      "version": "5.2.0",
+      "resolved": "https://registry.npmjs.org/ansi-styles/-/ansi-styles-5.2.0.tgz",
+      "integrity": "sha512-Cxwpt2SfTzTtXcfOlzGEee8O+c+MmUgGrNiBcXnuWxuFJHe6a5Hz7qwhwe5OgaSYI0IJvkLqWX1ASG+cJOkEiA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=10"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/ansi-styles?sponsor=1"
+      }
+    },
+    "node_modules/prisma": {
+      "version": "6.19.0",
+      "resolved": "https://registry.npmjs.org/prisma/-/prisma-6.19.0.tgz",
+      "integrity": "sha512-F3eX7K+tWpkbhl3l4+VkFtrwJlLXbAM+f9jolgoUZbFcm1DgHZ4cq9AgVEgUym2au5Ad/TDLN8lg83D+M10ycw==",
+      "hasInstallScript": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@prisma/config": "6.19.0",
+        "@prisma/engines": "6.19.0"
+      },
+      "bin": {
+        "prisma": "build/index.js"
+      },
+      "engines": {
+        "node": ">=18.18"
+      },
+      "peerDependencies": {
+        "typescript": ">=5.1.0"
+      },
+      "peerDependenciesMeta": {
+        "typescript": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/prismjs": {
+      "version": "1.30.0",
+      "resolved": "https://registry.npmjs.org/prismjs/-/prismjs-1.30.0.tgz",
+      "integrity": "sha512-DEvV2ZF2r2/63V+tK8hQvrR2ZGn10srHbXviTlcv7Kpzw8jWiNTqbVgjO3IY8RxrrOUF8VPMQQFysYYYv0YZxw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/prop-types": {
+      "version": "15.8.1",
+      "resolved": "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz",
+      "integrity": "sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==",
+      "license": "MIT",
+      "dependencies": {
+        "loose-envify": "^1.4.0",
+        "object-assign": "^4.1.1",
+        "react-is": "^16.13.1"
+      }
+    },
+    "node_modules/prop-types/node_modules/react-is": {
+      "version": "16.13.1",
+      "resolved": "https://registry.npmjs.org/react-is/-/react-is-16.13.1.tgz",
+      "integrity": "sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==",
+      "license": "MIT"
+    },
+    "node_modules/property-information": {
+      "version": "7.1.0",
+      "resolved": "https://registry.npmjs.org/property-information/-/property-information-7.1.0.tgz",
+      "integrity": "sha512-TwEZ+X+yCJmYfL7TPUOcvBZ4QfoT5YenQiJuX//0th53DE6w0xxLEtfK3iyryQFddXuvkIk51EEgrJQ0WJkOmQ==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/proxy-from-env": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/proxy-from-env/-/proxy-from-env-1.1.0.tgz",
+      "integrity": "sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==",
+      "license": "MIT"
+    },
+    "node_modules/pstree.remy": {
+      "version": "1.1.8",
+      "resolved": "https://registry.npmjs.org/pstree.remy/-/pstree.remy-1.1.8.tgz",
+      "integrity": "sha512-77DZwxQmxKnu3aR542U+X8FypNzbfJ+C5XQDk3uWjWxn6151aIMGthWYRXTqT1E5oJvg+ljaa2OJi+VfvCOQ8w==",
+      "license": "MIT"
+    },
+    "node_modules/punycode": {
+      "version": "2.3.1",
+      "resolved": "https://registry.npmjs.org/punycode/-/punycode-2.3.1.tgz",
+      "integrity": "sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/pure-rand": {
+      "version": "6.1.0",
+      "resolved": "https://registry.npmjs.org/pure-rand/-/pure-rand-6.1.0.tgz",
+      "integrity": "sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA==",
+      "funding": [
+        {
+          "type": "individual",
+          "url": "https://github.com/sponsors/dubzzz"
+        },
+        {
+          "type": "opencollective",
+          "url": "https://opencollective.com/fast-check"
+        }
+      ],
+      "license": "MIT"
+    },
+    "node_modules/queue-microtask": {
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/queue-microtask/-/queue-microtask-1.2.3.tgz",
+      "integrity": "sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/feross"
+        },
+        {
+          "type": "patreon",
+          "url": "https://www.patreon.com/feross"
+        },
+        {
+          "type": "consulting",
+          "url": "https://feross.org/support"
+        }
+      ],
+      "license": "MIT"
+    },
+    "node_modules/rc9": {
+      "version": "2.1.2",
+      "resolved": "https://registry.npmjs.org/rc9/-/rc9-2.1.2.tgz",
+      "integrity": "sha512-btXCnMmRIBINM2LDZoEmOogIZU7Qe7zn4BpomSKZ/ykbLObuBdvG+mFq11DL6fjH1DRwHhrlgtYWG96bJiC7Cg==",
+      "license": "MIT",
+      "dependencies": {
+        "defu": "^6.1.4",
+        "destr": "^2.0.3"
+      }
+    },
+    "node_modules/react": {
+      "version": "19.2.0",
+      "resolved": "https://registry.npmjs.org/react/-/react-19.2.0.tgz",
+      "integrity": "sha512-tmbWg6W31tQLeB5cdIBOicJDJRR2KzXsV7uSK9iNfLWQ5bIZfxuPEHp7M8wiHyHnn0DD1i7w3Zmin0FtkrwoCQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/react-day-picker": {
+      "version": "9.11.2",
+      "resolved": "https://registry.npmjs.org/react-day-picker/-/react-day-picker-9.11.2.tgz",
+      "integrity": "sha512-TD/xMUGg2oiKX8jUR21MST5pj+7Y36097YtnDHQFlIcZOu3mbLLw2B2JqEByEGrR3HHveWYnKlyls6WqJgohAg==",
+      "license": "MIT",
+      "dependencies": {
+        "@date-fns/tz": "^1.4.1",
+        "date-fns": "^4.1.0",
+        "date-fns-jalali": "^4.1.0-0"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "type": "individual",
+        "url": "https://github.com/sponsors/gpbl"
+      },
+      "peerDependencies": {
+        "react": ">=16.8.0"
+      }
+    },
+    "node_modules/react-devtools-inline": {
+      "version": "4.4.0",
+      "resolved": "https://registry.npmjs.org/react-devtools-inline/-/react-devtools-inline-4.4.0.tgz",
+      "integrity": "sha512-ES0GolSrKO8wsKbsEkVeiR/ZAaHQTY4zDh1UW8DImVmm8oaGLl3ijJDvSGe+qDRKPZdPRnDtWWnSvvrgxXdThQ==",
+      "license": "MIT",
+      "dependencies": {
+        "es6-symbol": "^3"
+      }
+    },
+    "node_modules/react-dom": {
+      "version": "19.2.0",
+      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-19.2.0.tgz",
+      "integrity": "sha512-UlbRu4cAiGaIewkPyiRGJk0imDN2T3JjieT6spoL2UeSf5od4n5LB/mQ4ejmxhCFT1tYe8IvaFulzynWovsEFQ==",
+      "license": "MIT",
+      "dependencies": {
+        "scheduler": "^0.27.0"
+      },
+      "peerDependencies": {
+        "react": "^19.2.0"
+      }
+    },
+    "node_modules/react-error-boundary": {
+      "version": "3.1.4",
+      "resolved": "https://registry.npmjs.org/react-error-boundary/-/react-error-boundary-3.1.4.tgz",
+      "integrity": "sha512-uM9uPzZJTF6wRQORmSrvOIgt4lJ9MC1sNgEOj2XGsDTRE4kmpWxg7ENK9EWNKJRMAOY9z0MuF4yIfl6gp4sotA==",
+      "license": "MIT",
+      "dependencies": {
+        "@babel/runtime": "^7.12.5"
+      },
+      "engines": {
+        "node": ">=10",
+        "npm": ">=6"
+      },
+      "peerDependencies": {
+        "react": ">=16.13.1"
+      }
+    },
+    "node_modules/react-hook-form": {
+      "version": "7.66.1",
+      "resolved": "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.66.1.tgz",
+      "integrity": "sha512-2KnjpgG2Rhbi+CIiIBQQ9Df6sMGH5ExNyFl4Hw9qO7pIqMBR8Bvu9RQyjl3JM4vehzCh9soiNUM/xYMswb2EiA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=18.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/react-hook-form"
+      },
+      "peerDependencies": {
+        "react": "^16.8.0 || ^17 || ^18 || ^19"
+      }
+    },
+    "node_modules/react-is": {
+      "version": "17.0.2",
+      "resolved": "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz",
+      "integrity": "sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==",
+      "license": "MIT"
+    },
+    "node_modules/react-markdown": {
+      "version": "10.1.0",
+      "resolved": "https://registry.npmjs.org/react-markdown/-/react-markdown-10.1.0.tgz",
+      "integrity": "sha512-qKxVopLT/TyA6BX3Ue5NwabOsAzm0Q7kAPwq6L+wWDwisYs7R8vZ0nRXqq6rkueboxpkjvLGU9fWifiX/ZZFxQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/hast": "^3.0.0",
+        "@types/mdast": "^4.0.0",
+        "devlop": "^1.0.0",
+        "hast-util-to-jsx-runtime": "^2.0.0",
+        "html-url-attributes": "^3.0.0",
+        "mdast-util-to-hast": "^13.0.0",
+        "remark-parse": "^11.0.0",
+        "remark-rehype": "^11.0.0",
+        "unified": "^11.0.0",
+        "unist-util-visit": "^5.0.0",
+        "vfile": "^6.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      },
+      "peerDependencies": {
+        "@types/react": ">=18",
+        "react": ">=18"
+      }
+    },
+    "node_modules/react-remove-scroll": {
+      "version": "2.7.1",
+      "resolved": "https://registry.npmjs.org/react-remove-scroll/-/react-remove-scroll-2.7.1.tgz",
+      "integrity": "sha512-HpMh8+oahmIdOuS5aFKKY6Pyog+FNaZV/XyJOq7b4YFwsFHe5yYfdbIalI4k3vU2nSDql7YskmUseHsRrJqIPA==",
+      "license": "MIT",
+      "dependencies": {
+        "react-remove-scroll-bar": "^2.3.7",
+        "react-style-singleton": "^2.2.3",
+        "tslib": "^2.1.0",
+        "use-callback-ref": "^1.3.3",
+        "use-sidecar": "^1.1.3"
+      },
+      "engines": {
+        "node": ">=10"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/react-remove-scroll-bar": {
+      "version": "2.3.8",
+      "resolved": "https://registry.npmjs.org/react-remove-scroll-bar/-/react-remove-scroll-bar-2.3.8.tgz",
+      "integrity": "sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q==",
+      "license": "MIT",
+      "dependencies": {
+        "react-style-singleton": "^2.2.2",
+        "tslib": "^2.0.0"
+      },
+      "engines": {
+        "node": ">=10"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/react-resizable-panels": {
+      "version": "3.0.6",
+      "resolved": "https://registry.npmjs.org/react-resizable-panels/-/react-resizable-panels-3.0.6.tgz",
+      "integrity": "sha512-b3qKHQ3MLqOgSS+FRYKapNkJZf5EQzuf6+RLiq1/IlTHw99YrZ2NJZLk4hQIzTnnIkRg2LUqyVinu6YWWpUYew==",
+      "license": "MIT",
+      "peerDependencies": {
+        "react": "^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc",
+        "react-dom": "^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc"
+      }
+    },
+    "node_modules/react-smooth": {
+      "version": "4.0.4",
+      "resolved": "https://registry.npmjs.org/react-smooth/-/react-smooth-4.0.4.tgz",
+      "integrity": "sha512-gnGKTpYwqL0Iii09gHobNolvX4Kiq4PKx6eWBCYYix+8cdw+cGo3do906l1NBPKkSWx1DghC1dlWG9L2uGd61Q==",
+      "license": "MIT",
+      "dependencies": {
+        "fast-equals": "^5.0.1",
+        "prop-types": "^15.8.1",
+        "react-transition-group": "^4.4.5"
+      },
+      "peerDependencies": {
+        "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
+        "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+      }
+    },
+    "node_modules/react-style-singleton": {
+      "version": "2.2.3",
+      "resolved": "https://registry.npmjs.org/react-style-singleton/-/react-style-singleton-2.2.3.tgz",
+      "integrity": "sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ==",
+      "license": "MIT",
+      "dependencies": {
+        "get-nonce": "^1.0.0",
+        "tslib": "^2.0.0"
+      },
+      "engines": {
+        "node": ">=10"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/react-syntax-highlighter": {
+      "version": "15.6.6",
+      "resolved": "https://registry.npmjs.org/react-syntax-highlighter/-/react-syntax-highlighter-15.6.6.tgz",
+      "integrity": "sha512-DgXrc+AZF47+HvAPEmn7Ua/1p10jNoVZVI/LoPiYdtY+OM+/nG5yefLHKJwdKqY1adMuHFbeyBaG9j64ML7vTw==",
+      "license": "MIT",
+      "dependencies": {
+        "@babel/runtime": "^7.3.1",
+        "highlight.js": "^10.4.1",
+        "highlightjs-vue": "^1.0.0",
+        "lowlight": "^1.17.0",
+        "prismjs": "^1.30.0",
+        "refractor": "^3.6.0"
+      },
+      "peerDependencies": {
+        "react": ">= 0.14.0"
+      }
+    },
+    "node_modules/react-transition-group": {
+      "version": "4.4.5",
+      "resolved": "https://registry.npmjs.org/react-transition-group/-/react-transition-group-4.4.5.tgz",
+      "integrity": "sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g==",
+      "license": "BSD-3-Clause",
+      "dependencies": {
+        "@babel/runtime": "^7.5.5",
+        "dom-helpers": "^5.0.1",
+        "loose-envify": "^1.4.0",
+        "prop-types": "^15.6.2"
+      },
+      "peerDependencies": {
+        "react": ">=16.6.0",
+        "react-dom": ">=16.6.0"
+      }
+    },
+    "node_modules/readdirp": {
+      "version": "3.6.0",
+      "resolved": "https://registry.npmjs.org/readdirp/-/readdirp-3.6.0.tgz",
+      "integrity": "sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==",
+      "license": "MIT",
+      "dependencies": {
+        "picomatch": "^2.2.1"
+      },
+      "engines": {
+        "node": ">=8.10.0"
+      }
+    },
+    "node_modules/readdirp/node_modules/picomatch": {
+      "version": "2.3.1",
+      "resolved": "https://registry.npmjs.org/picomatch/-/picomatch-2.3.1.tgz",
+      "integrity": "sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=8.6"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/jonschlinkert"
+      }
+    },
+    "node_modules/recharts": {
+      "version": "2.15.4",
+      "resolved": "https://registry.npmjs.org/recharts/-/recharts-2.15.4.tgz",
+      "integrity": "sha512-UT/q6fwS3c1dHbXv2uFgYJ9BMFHu3fwnd7AYZaEQhXuYQ4hgsxLvsUXzGdKeZrW5xopzDCvuA2N41WJ88I7zIw==",
+      "license": "MIT",
+      "dependencies": {
+        "clsx": "^2.0.0",
+        "eventemitter3": "^4.0.1",
+        "lodash": "^4.17.21",
+        "react-is": "^18.3.1",
+        "react-smooth": "^4.0.4",
+        "recharts-scale": "^0.4.4",
+        "tiny-invariant": "^1.3.1",
+        "victory-vendor": "^36.6.8"
+      },
+      "engines": {
+        "node": ">=14"
+      },
+      "peerDependencies": {
+        "react": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
+        "react-dom": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+      }
+    },
+    "node_modules/recharts-scale": {
+      "version": "0.4.5",
+      "resolved": "https://registry.npmjs.org/recharts-scale/-/recharts-scale-0.4.5.tgz",
+      "integrity": "sha512-kivNFO+0OcUNu7jQquLXAxz1FIwZj8nrj+YkOKc5694NbjCvcT6aSZiIzNzd2Kul4o4rTto8QVR9lMNtxD4G1w==",
+      "license": "MIT",
+      "dependencies": {
+        "decimal.js-light": "^2.4.1"
+      }
+    },
+    "node_modules/recharts/node_modules/react-is": {
+      "version": "18.3.1",
+      "resolved": "https://registry.npmjs.org/react-is/-/react-is-18.3.1.tgz",
+      "integrity": "sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==",
+      "license": "MIT"
+    },
+    "node_modules/reflect.getprototypeof": {
+      "version": "1.0.10",
+      "resolved": "https://registry.npmjs.org/reflect.getprototypeof/-/reflect.getprototypeof-1.0.10.tgz",
+      "integrity": "sha512-00o4I+DVrefhv+nX0ulyi3biSHCPDe+yLv5o/p6d/UVlirijB8E16FtfwSAi4g3tcqrQ4lRAqQSoFEZJehYEcw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "define-properties": "^1.2.1",
+        "es-abstract": "^1.23.9",
+        "es-errors": "^1.3.0",
+        "es-object-atoms": "^1.0.0",
+        "get-intrinsic": "^1.2.7",
+        "get-proto": "^1.0.1",
+        "which-builtin-type": "^1.2.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/refractor": {
+      "version": "3.6.0",
+      "resolved": "https://registry.npmjs.org/refractor/-/refractor-3.6.0.tgz",
+      "integrity": "sha512-MY9W41IOWxxk31o+YvFCNyNzdkc9M20NoZK5vq6jkv4I/uh2zkWcfudj0Q1fovjUQJrNewS9NMzeTtqPf+n5EA==",
+      "license": "MIT",
+      "dependencies": {
+        "hastscript": "^6.0.0",
+        "parse-entities": "^2.0.0",
+        "prismjs": "~1.27.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/refractor/node_modules/character-entities": {
+      "version": "1.2.4",
+      "resolved": "https://registry.npmjs.org/character-entities/-/character-entities-1.2.4.tgz",
+      "integrity": "sha512-iBMyeEHxfVnIakwOuDXpVkc54HijNgCyQB2w0VfGQThle6NXn50zU6V/u+LDhxHcDUPojn6Kpga3PTAD8W1bQw==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/refractor/node_modules/character-entities-legacy": {
+      "version": "1.1.4",
+      "resolved": "https://registry.npmjs.org/character-entities-legacy/-/character-entities-legacy-1.1.4.tgz",
+      "integrity": "sha512-3Xnr+7ZFS1uxeiUDvV02wQ+QDbc55o97tIV5zHScSPJpcLm/r0DFPcoY3tYRp+VZukxuMeKgXYmsXQHO05zQeA==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/refractor/node_modules/character-reference-invalid": {
+      "version": "1.1.4",
+      "resolved": "https://registry.npmjs.org/character-reference-invalid/-/character-reference-invalid-1.1.4.tgz",
+      "integrity": "sha512-mKKUkUbhPpQlCOfIuZkvSEgktjPFIsZKRRbC6KWVEMvlzblj3i3asQv5ODsrwt0N3pHAEvjP8KTQPHkp0+6jOg==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/refractor/node_modules/is-alphabetical": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/is-alphabetical/-/is-alphabetical-1.0.4.tgz",
+      "integrity": "sha512-DwzsA04LQ10FHTZuL0/grVDk4rFoVH1pjAToYwBrHSxcrBIGQuXrQMtD5U1b0U2XVgKZCTLLP8u2Qxqhy3l2Vg==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/refractor/node_modules/is-alphanumerical": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/is-alphanumerical/-/is-alphanumerical-1.0.4.tgz",
+      "integrity": "sha512-UzoZUr+XfVz3t3v4KyGEniVL9BDRoQtY7tOyrRybkVNjDFWyo1yhXNGrrBTQxp3ib9BLAWs7k2YKBQsFRkZG9A==",
+      "license": "MIT",
+      "dependencies": {
+        "is-alphabetical": "^1.0.0",
+        "is-decimal": "^1.0.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/refractor/node_modules/is-decimal": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/is-decimal/-/is-decimal-1.0.4.tgz",
+      "integrity": "sha512-RGdriMmQQvZ2aqaQq3awNA6dCGtKpiDFcOzrTWrDAT2MiWrKQVPmxLGHl7Y2nNu6led0kEyoX0enY0qXYsv9zw==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/refractor/node_modules/is-hexadecimal": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/is-hexadecimal/-/is-hexadecimal-1.0.4.tgz",
+      "integrity": "sha512-gyPJuv83bHMpocVYoqof5VDiZveEoGoFL8m3BXNb2VW8Xs+rz9kqO8LOQ5DH6EsuvilT1ApazU0pyl+ytbPtlw==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/refractor/node_modules/parse-entities": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/parse-entities/-/parse-entities-2.0.0.tgz",
+      "integrity": "sha512-kkywGpCcRYhqQIchaWqZ875wzpS/bMKhz5HnN3p7wveJTkTtyAB/AlnS0f8DFSqYW1T82t6yEAkEcB+A1I3MbQ==",
+      "license": "MIT",
+      "dependencies": {
+        "character-entities": "^1.0.0",
+        "character-entities-legacy": "^1.0.0",
+        "character-reference-invalid": "^1.0.0",
+        "is-alphanumerical": "^1.0.0",
+        "is-decimal": "^1.0.0",
+        "is-hexadecimal": "^1.0.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/refractor/node_modules/prismjs": {
+      "version": "1.27.0",
+      "resolved": "https://registry.npmjs.org/prismjs/-/prismjs-1.27.0.tgz",
+      "integrity": "sha512-t13BGPUlFDR7wRB5kQDG4jjl7XeuH6jbJGt11JHPL96qwsEHNX2+68tFXqc1/k+/jALsbSWJKUOT/hcYAZ5LkA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/regexp.prototype.flags": {
+      "version": "1.5.4",
+      "resolved": "https://registry.npmjs.org/regexp.prototype.flags/-/regexp.prototype.flags-1.5.4.tgz",
+      "integrity": "sha512-dYqgNSZbDwkaJ2ceRd9ojCGjBq+mOm9LmtXnAnEGyHhN/5R7iDW2TRw3h+o/jCFxus3P2LfWIIiwowAjANm7IA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "define-properties": "^1.2.1",
+        "es-errors": "^1.3.0",
+        "get-proto": "^1.0.1",
+        "gopd": "^1.2.0",
+        "set-function-name": "^2.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/remark-parse": {
+      "version": "11.0.0",
+      "resolved": "https://registry.npmjs.org/remark-parse/-/remark-parse-11.0.0.tgz",
+      "integrity": "sha512-FCxlKLNGknS5ba/1lmpYijMUzX2esxW5xQqjWxw2eHFfS2MSdaHVINFmhjo+qN1WhZhNimq0dZATN9pH0IDrpA==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/mdast": "^4.0.0",
+        "mdast-util-from-markdown": "^2.0.0",
+        "micromark-util-types": "^2.0.0",
+        "unified": "^11.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/remark-rehype": {
+      "version": "11.1.2",
+      "resolved": "https://registry.npmjs.org/remark-rehype/-/remark-rehype-11.1.2.tgz",
+      "integrity": "sha512-Dh7l57ianaEoIpzbp0PC9UKAdCSVklD8E5Rpw7ETfbTl3FqcOOgq5q2LVDhgGCkaBv7p24JXikPdvhhmHvKMsw==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/hast": "^3.0.0",
+        "@types/mdast": "^4.0.0",
+        "mdast-util-to-hast": "^13.0.0",
+        "unified": "^11.0.0",
+        "vfile": "^6.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/resolve": {
+      "version": "1.22.11",
+      "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.22.11.tgz",
+      "integrity": "sha512-RfqAvLnMl313r7c9oclB1HhUEAezcpLjz95wFH4LVuhk9JF/r22qmVP9AMmOU4vMX7Q8pN8jwNg/CSpdFnMjTQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "is-core-module": "^2.16.1",
+        "path-parse": "^1.0.7",
+        "supports-preserve-symlinks-flag": "^1.0.0"
+      },
+      "bin": {
+        "resolve": "bin/resolve"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/resolve-from": {
+      "version": "4.0.0",
+      "resolved": "https://registry.npmjs.org/resolve-from/-/resolve-from-4.0.0.tgz",
+      "integrity": "sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=4"
+      }
+    },
+    "node_modules/resolve-pkg-maps": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/resolve-pkg-maps/-/resolve-pkg-maps-1.0.0.tgz",
+      "integrity": "sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==",
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/privatenumber/resolve-pkg-maps?sponsor=1"
+      }
+    },
+    "node_modules/reusify": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/reusify/-/reusify-1.1.0.tgz",
+      "integrity": "sha512-g6QUff04oZpHs0eG5p83rFLhHeV00ug/Yf9nZM6fLeUrPguBTkTQOdpAWWspMh55TZfVQDPaN3NQJfbVRAxdIw==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "iojs": ">=1.0.0",
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/run-parallel": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/run-parallel/-/run-parallel-1.2.0.tgz",
+      "integrity": "sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/feross"
+        },
+        {
+          "type": "patreon",
+          "url": "https://www.patreon.com/feross"
+        },
+        {
+          "type": "consulting",
+          "url": "https://feross.org/support"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "queue-microtask": "^1.2.2"
+      }
+    },
+    "node_modules/sade": {
+      "version": "1.8.1",
+      "resolved": "https://registry.npmjs.org/sade/-/sade-1.8.1.tgz",
+      "integrity": "sha512-xal3CZX1Xlo/k4ApwCFrHVACi9fBqJ7V+mwhBsuf/1IOKbBy098Fex+Wa/5QMubw09pSZ/u8EY8PWgevJsXp1A==",
+      "license": "MIT",
+      "dependencies": {
+        "mri": "^1.1.0"
+      },
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/safe-array-concat": {
+      "version": "1.1.3",
+      "resolved": "https://registry.npmjs.org/safe-array-concat/-/safe-array-concat-1.1.3.tgz",
+      "integrity": "sha512-AURm5f0jYEOydBj7VQlVvDrjeFgthDdEF5H1dP+6mNpoXOMo1quQqJ4wvJDyRZ9+pO3kGWoOdmV08cSv2aJV6Q==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "call-bound": "^1.0.2",
+        "get-intrinsic": "^1.2.6",
+        "has-symbols": "^1.1.0",
+        "isarray": "^2.0.5"
+      },
+      "engines": {
+        "node": ">=0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/safe-push-apply": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/safe-push-apply/-/safe-push-apply-1.0.0.tgz",
+      "integrity": "sha512-iKE9w/Z7xCzUMIZqdBsp6pEQvwuEebH4vdpjcDWnyzaI6yl6O9FHvVpmGelvEHNsoY6wGblkxR6Zty/h00WiSA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "isarray": "^2.0.5"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/safe-regex-test": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/safe-regex-test/-/safe-regex-test-1.1.0.tgz",
+      "integrity": "sha512-x/+Cz4YrimQxQccJf5mKEbIa1NzeCRNI5Ecl/ekmlYaampdNLPalVyIcCZNNH3MvmqBugV5TMYZXv0ljslUlaw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.2",
+        "es-errors": "^1.3.0",
+        "is-regex": "^1.2.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/scheduler": {
+      "version": "0.27.0",
+      "resolved": "https://registry.npmjs.org/scheduler/-/scheduler-0.27.0.tgz",
+      "integrity": "sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==",
+      "license": "MIT"
+    },
+    "node_modules/screenfull": {
+      "version": "5.2.0",
+      "resolved": "https://registry.npmjs.org/screenfull/-/screenfull-5.2.0.tgz",
+      "integrity": "sha512-9BakfsO2aUQN2K9Fdbj87RJIEZ82Q9IGim7FqM5OsebfoFC6ZHXgDq/KvniuLTPdeM8wY2o6Dj3WQ7KeQCj3cA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.10.0"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/semver": {
+      "version": "7.7.3",
+      "resolved": "https://registry.npmjs.org/semver/-/semver-7.7.3.tgz",
+      "integrity": "sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==",
+      "license": "ISC",
+      "bin": {
+        "semver": "bin/semver.js"
+      },
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/set-function-length": {
+      "version": "1.2.2",
+      "resolved": "https://registry.npmjs.org/set-function-length/-/set-function-length-1.2.2.tgz",
+      "integrity": "sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "define-data-property": "^1.1.4",
+        "es-errors": "^1.3.0",
+        "function-bind": "^1.1.2",
+        "get-intrinsic": "^1.2.4",
+        "gopd": "^1.0.1",
+        "has-property-descriptors": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/set-function-name": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/set-function-name/-/set-function-name-2.0.2.tgz",
+      "integrity": "sha512-7PGFlmtwsEADb0WYyvCMa1t+yke6daIG4Wirafur5kcf+MhUnPms1UeR0CKQdTZD81yESwMHbtn+TR+dMviakQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "define-data-property": "^1.1.4",
+        "es-errors": "^1.3.0",
+        "functions-have-names": "^1.2.3",
+        "has-property-descriptors": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/set-proto": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/set-proto/-/set-proto-1.0.0.tgz",
+      "integrity": "sha512-RJRdvCo6IAnPdsvP/7m6bsQqNnn1FCBX5ZNtFL98MmFF/4xAIJTIg1YbHW5DC2W5SKZanrC6i4HsJqlajw/dZw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "dunder-proto": "^1.0.1",
+        "es-errors": "^1.3.0",
+        "es-object-atoms": "^1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/sharp": {
+      "version": "0.34.5",
+      "resolved": "https://registry.npmjs.org/sharp/-/sharp-0.34.5.tgz",
+      "integrity": "sha512-Ou9I5Ft9WNcCbXrU9cMgPBcCK8LiwLqcbywW3t4oDV37n1pzpuNLsYiAV8eODnjbtQlSDwZ2cUEeQz4E54Hltg==",
+      "hasInstallScript": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@img/colour": "^1.0.0",
+        "detect-libc": "^2.1.2",
+        "semver": "^7.7.3"
+      },
+      "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      },
+      "optionalDependencies": {
+        "@img/sharp-darwin-arm64": "0.34.5",
+        "@img/sharp-darwin-x64": "0.34.5",
+        "@img/sharp-libvips-darwin-arm64": "1.2.4",
+        "@img/sharp-libvips-darwin-x64": "1.2.4",
+        "@img/sharp-libvips-linux-arm": "1.2.4",
+        "@img/sharp-libvips-linux-arm64": "1.2.4",
+        "@img/sharp-libvips-linux-ppc64": "1.2.4",
+        "@img/sharp-libvips-linux-riscv64": "1.2.4",
+        "@img/sharp-libvips-linux-s390x": "1.2.4",
+        "@img/sharp-libvips-linux-x64": "1.2.4",
+        "@img/sharp-libvips-linuxmusl-arm64": "1.2.4",
+        "@img/sharp-libvips-linuxmusl-x64": "1.2.4",
+        "@img/sharp-linux-arm": "0.34.5",
+        "@img/sharp-linux-arm64": "0.34.5",
+        "@img/sharp-linux-ppc64": "0.34.5",
+        "@img/sharp-linux-riscv64": "0.34.5",
+        "@img/sharp-linux-s390x": "0.34.5",
+        "@img/sharp-linux-x64": "0.34.5",
+        "@img/sharp-linuxmusl-arm64": "0.34.5",
+        "@img/sharp-linuxmusl-x64": "0.34.5",
+        "@img/sharp-wasm32": "0.34.5",
+        "@img/sharp-win32-arm64": "0.34.5",
+        "@img/sharp-win32-ia32": "0.34.5",
+        "@img/sharp-win32-x64": "0.34.5"
+      }
+    },
+    "node_modules/shebang-command": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/shebang-command/-/shebang-command-2.0.0.tgz",
+      "integrity": "sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "shebang-regex": "^3.0.0"
+      },
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/shebang-regex": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/shebang-regex/-/shebang-regex-3.0.0.tgz",
+      "integrity": "sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/side-channel": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/side-channel/-/side-channel-1.1.0.tgz",
+      "integrity": "sha512-ZX99e6tRweoUXqR+VBrslhda51Nh5MTQwou5tnUDgbtyM0dBgmhEDtWGP/xbKn6hqfPRHujUNwz5fy/wbbhnpw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "object-inspect": "^1.13.3",
+        "side-channel-list": "^1.0.0",
+        "side-channel-map": "^1.0.1",
+        "side-channel-weakmap": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/side-channel-list": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/side-channel-list/-/side-channel-list-1.0.0.tgz",
+      "integrity": "sha512-FCLHtRD/gnpCiCHEiJLOwdmFP+wzCmDEkc9y7NsYxeF4u7Btsn1ZuwgwJGxImImHicJArLP4R0yX4c2KCrMrTA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "object-inspect": "^1.13.3"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/side-channel-map": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/side-channel-map/-/side-channel-map-1.0.1.tgz",
+      "integrity": "sha512-VCjCNfgMsby3tTdo02nbjtM/ewra6jPHmpThenkTYh8pG9ucZ/1P8So4u4FGBek/BjpOVsDCMoLA/iuBKIFXRA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.2",
+        "es-errors": "^1.3.0",
+        "get-intrinsic": "^1.2.5",
+        "object-inspect": "^1.13.3"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/side-channel-weakmap": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/side-channel-weakmap/-/side-channel-weakmap-1.0.2.tgz",
+      "integrity": "sha512-WPS/HvHQTYnHisLo9McqBHOJk2FkHO/tlpvldyrnem4aeQp4hai3gythswg6p01oSoTl58rcpiFAjF2br2Ak2A==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.2",
+        "es-errors": "^1.3.0",
+        "get-intrinsic": "^1.2.5",
+        "object-inspect": "^1.13.3",
+        "side-channel-map": "^1.0.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/simple-update-notifier": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/simple-update-notifier/-/simple-update-notifier-2.0.0.tgz",
+      "integrity": "sha512-a2B9Y0KlNXl9u/vsW6sTIu9vGEpfKu2wRV6l1H3XEas/0gUIzGzBoP/IouTcUQbm9JWZLH3COxyn03TYlFax6w==",
+      "license": "MIT",
+      "dependencies": {
+        "semver": "^7.5.3"
+      },
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/sonner": {
+      "version": "2.0.7",
+      "resolved": "https://registry.npmjs.org/sonner/-/sonner-2.0.7.tgz",
+      "integrity": "sha512-W6ZN4p58k8aDKA4XPcx2hpIQXBRAgyiWVkYhT7CvK6D3iAu7xjvVyhQHg2/iaKJZ1XVJ4r7XuwGL+WGEK37i9w==",
+      "license": "MIT",
+      "peerDependencies": {
+        "react": "^18.0.0 || ^19.0.0 || ^19.0.0-rc",
+        "react-dom": "^18.0.0 || ^19.0.0 || ^19.0.0-rc"
+      }
+    },
+    "node_modules/source-map-js": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.1.tgz",
+      "integrity": "sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==",
+      "license": "BSD-3-Clause",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/space-separated-tokens": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/space-separated-tokens/-/space-separated-tokens-2.0.2.tgz",
+      "integrity": "sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/stable-hash": {
+      "version": "0.0.5",
+      "resolved": "https://registry.npmjs.org/stable-hash/-/stable-hash-0.0.5.tgz",
+      "integrity": "sha512-+L3ccpzibovGXFK+Ap/f8LOS0ahMrHTf3xu7mMLSpEGU0EO9ucaysSylKo9eRDFNhWve/y275iPmIZ4z39a9iA==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/static-browser-server": {
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/static-browser-server/-/static-browser-server-1.0.3.tgz",
+      "integrity": "sha512-ZUyfgGDdFRbZGGJQ1YhiM930Yczz5VlbJObrQLlk24+qNHVQx4OlLcYswEUo3bIyNAbQUIUR9Yr5/Hqjzqb4zA==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@open-draft/deferred-promise": "^2.1.0",
+        "dotenv": "^16.0.3",
+        "mime-db": "^1.52.0",
+        "outvariant": "^1.3.0"
+      }
+    },
+    "node_modules/stop-iteration-iterator": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/stop-iteration-iterator/-/stop-iteration-iterator-1.1.0.tgz",
+      "integrity": "sha512-eLoXW/DHyl62zxY4SCaIgnRhuMr6ri4juEYARS8E6sCEqzKpOiE521Ucofdx+KnDZl5xmvGYaaKCk5FEOxJCoQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "internal-slot": "^1.1.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/streamsearch": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/streamsearch/-/streamsearch-1.1.0.tgz",
+      "integrity": "sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==",
+      "engines": {
+        "node": ">=10.0.0"
+      }
+    },
+    "node_modules/strict-event-emitter": {
+      "version": "0.4.6",
+      "resolved": "https://registry.npmjs.org/strict-event-emitter/-/strict-event-emitter-0.4.6.tgz",
+      "integrity": "sha512-12KWeb+wixJohmnwNFerbyiBrAlq5qJLwIt38etRtKtmmHyDSoGlIqFE9wx+4IwG0aDjI7GV8tc8ZccjWZZtTg==",
+      "license": "MIT"
+    },
+    "node_modules/string.prototype.includes": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/string.prototype.includes/-/string.prototype.includes-2.0.1.tgz",
+      "integrity": "sha512-o7+c9bW6zpAdJHTtujeePODAhkuicdAryFsfVKwA+wGw89wJ4GTY484WTucM9hLtDEOpOvI+aHnzqnC5lHp4Rg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.7",
+        "define-properties": "^1.2.1",
+        "es-abstract": "^1.23.3"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/string.prototype.matchall": {
+      "version": "4.0.12",
+      "resolved": "https://registry.npmjs.org/string.prototype.matchall/-/string.prototype.matchall-4.0.12.tgz",
+      "integrity": "sha512-6CC9uyBL+/48dYizRf7H7VAYCMCNTBeM78x/VTUe9bFEaxBepPJDa1Ow99LqI/1yF7kuy7Q3cQsYMrcjGUcskA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "call-bound": "^1.0.3",
+        "define-properties": "^1.2.1",
+        "es-abstract": "^1.23.6",
+        "es-errors": "^1.3.0",
+        "es-object-atoms": "^1.0.0",
+        "get-intrinsic": "^1.2.6",
+        "gopd": "^1.2.0",
+        "has-symbols": "^1.1.0",
+        "internal-slot": "^1.1.0",
+        "regexp.prototype.flags": "^1.5.3",
+        "set-function-name": "^2.0.2",
+        "side-channel": "^1.1.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/string.prototype.repeat": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/string.prototype.repeat/-/string.prototype.repeat-1.0.0.tgz",
+      "integrity": "sha512-0u/TldDbKD8bFCQ/4f5+mNRrXwZ8hg2w7ZR8wa16e8z9XpePWl3eGEcUD0OXpEH/VJH/2G3gjUtR3ZOiBe2S/w==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "define-properties": "^1.1.3",
+        "es-abstract": "^1.17.5"
+      }
+    },
+    "node_modules/string.prototype.trim": {
+      "version": "1.2.10",
+      "resolved": "https://registry.npmjs.org/string.prototype.trim/-/string.prototype.trim-1.2.10.tgz",
+      "integrity": "sha512-Rs66F0P/1kedk5lyYyH9uBzuiI/kNRmwJAR9quK6VOtIpZ2G+hMZd+HQbbv25MgCA6gEffoMZYxlTod4WcdrKA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "call-bound": "^1.0.2",
+        "define-data-property": "^1.1.4",
+        "define-properties": "^1.2.1",
+        "es-abstract": "^1.23.5",
+        "es-object-atoms": "^1.0.0",
+        "has-property-descriptors": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/string.prototype.trimend": {
+      "version": "1.0.9",
+      "resolved": "https://registry.npmjs.org/string.prototype.trimend/-/string.prototype.trimend-1.0.9.tgz",
+      "integrity": "sha512-G7Ok5C6E/j4SGfyLCloXTrngQIQU3PWtXGst3yM7Bea9FRURf1S42ZHlZZtsNque2FN2PoUhfZXYLNWwEr4dLQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "call-bound": "^1.0.2",
+        "define-properties": "^1.2.1",
+        "es-object-atoms": "^1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/string.prototype.trimstart": {
+      "version": "1.0.8",
+      "resolved": "https://registry.npmjs.org/string.prototype.trimstart/-/string.prototype.trimstart-1.0.8.tgz",
+      "integrity": "sha512-UXSH262CSZY1tfu3G3Secr6uGLCFVPMhIqHjlgCUtCCcgihYc/xKs9djMTMUOb2j1mVSeU8EU6NWc/iQKU6Gfg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.7",
+        "define-properties": "^1.2.1",
+        "es-object-atoms": "^1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/stringify-entities": {
+      "version": "4.0.4",
+      "resolved": "https://registry.npmjs.org/stringify-entities/-/stringify-entities-4.0.4.tgz",
+      "integrity": "sha512-IwfBptatlO+QCJUo19AqvrPNqlVMpW9YEL2LIVY+Rpv2qsjCGxaDLNRgeGsQWJhfItebuJhsGSLjaBbNSQ+ieg==",
+      "license": "MIT",
+      "dependencies": {
+        "character-entities-html4": "^2.0.0",
+        "character-entities-legacy": "^3.0.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/strip-bom": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/strip-bom/-/strip-bom-3.0.0.tgz",
+      "integrity": "sha512-vavAMRXOgBVNF6nyEEmL3DBK19iRpDcoIwW+swQ+CbGiu7lju6t+JklA1MHweoWtadgt4ISVUsXLyDq34ddcwA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=4"
+      }
+    },
+    "node_modules/strip-json-comments": {
+      "version": "3.1.1",
+      "resolved": "https://registry.npmjs.org/strip-json-comments/-/strip-json-comments-3.1.1.tgz",
+      "integrity": "sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=8"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/style-mod": {
+      "version": "4.1.3",
+      "resolved": "https://registry.npmjs.org/style-mod/-/style-mod-4.1.3.tgz",
+      "integrity": "sha512-i/n8VsZydrugj3Iuzll8+x/00GH2vnYsk1eomD8QiRrSAeW6ItbCQDtfXCeJHd0iwiNagqjQkvpvREEPtW3IoQ==",
+      "license": "MIT"
+    },
+    "node_modules/style-to-js": {
+      "version": "1.1.21",
+      "resolved": "https://registry.npmjs.org/style-to-js/-/style-to-js-1.1.21.tgz",
+      "integrity": "sha512-RjQetxJrrUJLQPHbLku6U/ocGtzyjbJMP9lCNK7Ag0CNh690nSH8woqWH9u16nMjYBAok+i7JO1NP2pOy8IsPQ==",
+      "license": "MIT",
+      "dependencies": {
+        "style-to-object": "1.0.14"
+      }
+    },
+    "node_modules/style-to-object": {
+      "version": "1.0.14",
+      "resolved": "https://registry.npmjs.org/style-to-object/-/style-to-object-1.0.14.tgz",
+      "integrity": "sha512-LIN7rULI0jBscWQYaSswptyderlarFkjQ+t79nzty8tcIAceVomEVlLzH5VP4Cmsv6MtKhs7qaAiwlcp+Mgaxw==",
+      "license": "MIT",
+      "dependencies": {
+        "inline-style-parser": "0.2.7"
+      }
+    },
+    "node_modules/styled-jsx": {
+      "version": "5.1.6",
+      "resolved": "https://registry.npmjs.org/styled-jsx/-/styled-jsx-5.1.6.tgz",
+      "integrity": "sha512-qSVyDTeMotdvQYoHWLNGwRFJHC+i+ZvdBRYosOFgC+Wg1vx4frN2/RG/NA7SYqqvKNLf39P2LSRA2pu6n0XYZA==",
+      "license": "MIT",
+      "dependencies": {
+        "client-only": "0.0.1"
+      },
+      "engines": {
+        "node": ">= 12.0.0"
+      },
+      "peerDependencies": {
+        "react": ">= 16.8.0 || 17.x.x || ^18.0.0-0 || ^19.0.0-0"
+      },
+      "peerDependenciesMeta": {
+        "@babel/core": {
+          "optional": true
+        },
+        "babel-plugin-macros": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/supports-color": {
+      "version": "7.2.0",
+      "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-7.2.0.tgz",
+      "integrity": "sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "has-flag": "^4.0.0"
+      },
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/supports-preserve-symlinks-flag": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz",
+      "integrity": "sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/tabbable": {
+      "version": "6.3.0",
+      "resolved": "https://registry.npmjs.org/tabbable/-/tabbable-6.3.0.tgz",
+      "integrity": "sha512-EIHvdY5bPLuWForiR/AN2Bxngzpuwn1is4asboytXtpTgsArc+WmSJKVLlhdh71u7jFcryDqB2A8lQvj78MkyQ==",
+      "license": "MIT"
+    },
+    "node_modules/tailwind-merge": {
+      "version": "3.4.0",
+      "resolved": "https://registry.npmjs.org/tailwind-merge/-/tailwind-merge-3.4.0.tgz",
+      "integrity": "sha512-uSaO4gnW+b3Y2aWoWfFpX62vn2sR3skfhbjsEnaBI81WD1wBLlHZe5sWf0AqjksNdYTbGBEd0UasQMT3SNV15g==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/dcastil"
+      }
+    },
+    "node_modules/tailwindcss": {
+      "version": "4.1.17",
+      "resolved": "https://registry.npmjs.org/tailwindcss/-/tailwindcss-4.1.17.tgz",
+      "integrity": "sha512-j9Ee2YjuQqYT9bbRTfTZht9W/ytp5H+jJpZKiYdP/bpnXARAuELt9ofP0lPnmHjbga7SNQIxdTAXCmtKVYjN+Q==",
+      "license": "MIT"
+    },
+    "node_modules/tailwindcss-animate": {
+      "version": "1.0.7",
+      "resolved": "https://registry.npmjs.org/tailwindcss-animate/-/tailwindcss-animate-1.0.7.tgz",
+      "integrity": "sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==",
+      "license": "MIT",
+      "peerDependencies": {
+        "tailwindcss": ">=3.0.0 || insiders"
+      }
+    },
+    "node_modules/tapable": {
+      "version": "2.3.0",
+      "resolved": "https://registry.npmjs.org/tapable/-/tapable-2.3.0.tgz",
+      "integrity": "sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=6"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/webpack"
+      }
+    },
+    "node_modules/tiny-invariant": {
+      "version": "1.3.3",
+      "resolved": "https://registry.npmjs.org/tiny-invariant/-/tiny-invariant-1.3.3.tgz",
+      "integrity": "sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==",
+      "license": "MIT"
+    },
+    "node_modules/tinyexec": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/tinyexec/-/tinyexec-1.0.2.tgz",
+      "integrity": "sha512-W/KYk+NFhkmsYpuHq5JykngiOCnxeVL8v8dFnqxSD8qEEdRfXk1SDM6JzNqcERbcGYj9tMrDQBYV9cjgnunFIg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/tinyglobby": {
+      "version": "0.2.15",
+      "resolved": "https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.15.tgz",
+      "integrity": "sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "fdir": "^6.5.0",
+        "picomatch": "^4.0.3"
+      },
+      "engines": {
+        "node": ">=12.0.0"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/SuperchupuDev"
+      }
+    },
+    "node_modules/to-regex-range": {
+      "version": "5.0.1",
+      "resolved": "https://registry.npmjs.org/to-regex-range/-/to-regex-range-5.0.1.tgz",
+      "integrity": "sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==",
+      "license": "MIT",
+      "dependencies": {
+        "is-number": "^7.0.0"
+      },
+      "engines": {
+        "node": ">=8.0"
+      }
+    },
+    "node_modules/touch": {
+      "version": "3.1.1",
+      "resolved": "https://registry.npmjs.org/touch/-/touch-3.1.1.tgz",
+      "integrity": "sha512-r0eojU4bI8MnHr8c5bNo7lJDdI2qXlWWJk6a9EAFG7vbhTjElYhBVS3/miuE0uOuoLdb8Mc/rVfsmm6eo5o9GA==",
+      "license": "ISC",
+      "bin": {
+        "nodetouch": "bin/nodetouch.js"
+      }
+    },
+    "node_modules/trim-lines": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/trim-lines/-/trim-lines-3.0.1.tgz",
+      "integrity": "sha512-kRj8B+YHZCc9kQYdWfJB2/oUl9rA99qbowYYBtr4ui4mZyAQ2JpvVBd/6U2YloATfqBhBTSMhTpgBHtU0Mf3Rg==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/trough": {
+      "version": "2.2.0",
+      "resolved": "https://registry.npmjs.org/trough/-/trough-2.2.0.tgz",
+      "integrity": "sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    },
+    "node_modules/ts-api-utils": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/ts-api-utils/-/ts-api-utils-2.1.0.tgz",
+      "integrity": "sha512-CUgTZL1irw8u29bzrOD/nH85jqyc74D6SshFgujOIA7osm2Rz7dYH77agkx7H4FBNxDq7Cjf+IjaX/8zwFW+ZQ==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=18.12"
+      },
+      "peerDependencies": {
+        "typescript": ">=4.8.4"
+      }
+    },
+    "node_modules/tsconfig-paths": {
+      "version": "3.15.0",
+      "resolved": "https://registry.npmjs.org/tsconfig-paths/-/tsconfig-paths-3.15.0.tgz",
+      "integrity": "sha512-2Ac2RgzDe/cn48GvOe3M+o82pEFewD3UPbyoUHHdKasHwJKjds4fLXWf/Ux5kATBKN20oaFGu+jbElp1pos0mg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "@types/json5": "^0.0.29",
+        "json5": "^1.0.2",
+        "minimist": "^1.2.6",
+        "strip-bom": "^3.0.0"
+      }
+    },
+    "node_modules/tslib": {
+      "version": "2.8.1",
+      "resolved": "https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz",
+      "integrity": "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==",
+      "license": "0BSD"
+    },
+    "node_modules/tsx": {
+      "version": "4.20.6",
+      "resolved": "https://registry.npmjs.org/tsx/-/tsx-4.20.6.tgz",
+      "integrity": "sha512-ytQKuwgmrrkDTFP4LjR0ToE2nqgy886GpvRSpU0JAnrdBYppuY5rLkRUYPU1yCryb24SsKBTL/hlDQAEFVwtZg==",
+      "license": "MIT",
+      "dependencies": {
+        "esbuild": "~0.25.0",
+        "get-tsconfig": "^4.7.5"
+      },
+      "bin": {
+        "tsx": "dist/cli.mjs"
+      },
+      "engines": {
+        "node": ">=18.0.0"
+      },
+      "optionalDependencies": {
+        "fsevents": "~2.3.3"
+      }
+    },
+    "node_modules/tw-animate-css": {
+      "version": "1.4.0",
+      "resolved": "https://registry.npmjs.org/tw-animate-css/-/tw-animate-css-1.4.0.tgz",
+      "integrity": "sha512-7bziOlRqH0hJx80h/3mbicLW7o8qLsH5+RaLR2t+OHM3D0JlWGODQKQ4cxbK7WlvmUxpcj6Kgu6EKqjrGFe3QQ==",
+      "dev": true,
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/Wombosvideo"
+      }
+    },
+    "node_modules/type": {
+      "version": "2.7.3",
+      "resolved": "https://registry.npmjs.org/type/-/type-2.7.3.tgz",
+      "integrity": "sha512-8j+1QmAbPvLZow5Qpi6NCaN8FB60p/6x8/vfNqOk/hC+HuvFZhL4+WfekuhQLiqFZXOgQdrs3B+XxEmCc6b3FQ==",
+      "license": "ISC"
+    },
+    "node_modules/type-check": {
+      "version": "0.4.0",
+      "resolved": "https://registry.npmjs.org/type-check/-/type-check-0.4.0.tgz",
+      "integrity": "sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "prelude-ls": "^1.2.1"
+      },
+      "engines": {
+        "node": ">= 0.8.0"
+      }
+    },
+    "node_modules/typed-array-buffer": {
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/typed-array-buffer/-/typed-array-buffer-1.0.3.tgz",
+      "integrity": "sha512-nAYYwfY3qnzX30IkA6AQZjVbtK6duGontcQm1WSG1MD94YLqK0515GNApXkoxKOWMusVssAHWLh9SeaoefYFGw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.3",
+        "es-errors": "^1.3.0",
+        "is-typed-array": "^1.1.14"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/typed-array-byte-length": {
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/typed-array-byte-length/-/typed-array-byte-length-1.0.3.tgz",
+      "integrity": "sha512-BaXgOuIxz8n8pIq3e7Atg/7s+DpiYrxn4vdot3w9KbnBhcRQq6o3xemQdIfynqSeXeDrF32x+WvfzmOjPiY9lg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.8",
+        "for-each": "^0.3.3",
+        "gopd": "^1.2.0",
+        "has-proto": "^1.2.0",
+        "is-typed-array": "^1.1.14"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/typed-array-byte-offset": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/typed-array-byte-offset/-/typed-array-byte-offset-1.0.4.tgz",
+      "integrity": "sha512-bTlAFB/FBYMcuX81gbL4OcpH5PmlFHqlCCpAl8AlEzMz5k53oNDvN8p1PNOWLEmI2x4orp3raOFB51tv9X+MFQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "available-typed-arrays": "^1.0.7",
+        "call-bind": "^1.0.8",
+        "for-each": "^0.3.3",
+        "gopd": "^1.2.0",
+        "has-proto": "^1.2.0",
+        "is-typed-array": "^1.1.15",
+        "reflect.getprototypeof": "^1.0.9"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/typed-array-length": {
+      "version": "1.0.7",
+      "resolved": "https://registry.npmjs.org/typed-array-length/-/typed-array-length-1.0.7.tgz",
+      "integrity": "sha512-3KS2b+kL7fsuk/eJZ7EQdnEmQoaho/r6KUef7hxvltNA5DR8NAUM+8wJMbJyZ4G9/7i3v5zPBIMN5aybAh2/Jg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bind": "^1.0.7",
+        "for-each": "^0.3.3",
+        "gopd": "^1.0.1",
+        "is-typed-array": "^1.1.13",
+        "possible-typed-array-names": "^1.0.0",
+        "reflect.getprototypeof": "^1.0.6"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/typescript": {
+      "version": "5.9.3",
+      "resolved": "https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz",
+      "integrity": "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==",
+      "devOptional": true,
+      "license": "Apache-2.0",
+      "bin": {
+        "tsc": "bin/tsc",
+        "tsserver": "bin/tsserver"
+      },
+      "engines": {
+        "node": ">=14.17"
+      }
+    },
+    "node_modules/unbox-primitive": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/unbox-primitive/-/unbox-primitive-1.1.0.tgz",
+      "integrity": "sha512-nWJ91DjeOkej/TA8pXQ3myruKpKEYgqvpw9lz4OPHj/NWFNluYrjbz9j01CJ8yKQd2g4jFoOkINCTW2I5LEEyw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.3",
+        "has-bigints": "^1.0.2",
+        "has-symbols": "^1.1.0",
+        "which-boxed-primitive": "^1.1.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/undefsafe": {
+      "version": "2.0.5",
+      "resolved": "https://registry.npmjs.org/undefsafe/-/undefsafe-2.0.5.tgz",
+      "integrity": "sha512-WxONCrssBM8TSPRqN5EmsjVrsv4A8X12J4ArBiiayv3DyyG3ZlIg6yysuuSYdZsVz3TKcTg2fd//Ujd4CHV1iA==",
+      "license": "MIT"
+    },
+    "node_modules/undici-types": {
+      "version": "6.21.0",
+      "resolved": "https://registry.npmjs.org/undici-types/-/undici-types-6.21.0.tgz",
+      "integrity": "sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/unidiff": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/unidiff/-/unidiff-1.0.4.tgz",
+      "integrity": "sha512-ynU0vsAXw0ir8roa+xPCUHmnJ5goc5BTM2Kuc3IJd8UwgaeRs7VSD5+eeaQL+xp1JtB92hu/Zy/Lgy7RZcr1pQ==",
+      "license": "MIT",
+      "dependencies": {
+        "diff": "^5.1.0"
+      }
+    },
+    "node_modules/unified": {
+      "version": "11.0.5",
+      "resolved": "https://registry.npmjs.org/unified/-/unified-11.0.5.tgz",
+      "integrity": "sha512-xKvGhPWw3k84Qjh8bI3ZeJjqnyadK+GEFtazSfZv/rKeTkTjOJho6mFqh2SM96iIcZokxiOpg78GazTSg8+KHA==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/unist": "^3.0.0",
+        "bail": "^2.0.0",
+        "devlop": "^1.0.0",
+        "extend": "^3.0.0",
+        "is-plain-obj": "^4.0.0",
+        "trough": "^2.0.0",
+        "vfile": "^6.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/unist-util-is": {
+      "version": "6.0.1",
+      "resolved": "https://registry.npmjs.org/unist-util-is/-/unist-util-is-6.0.1.tgz",
+      "integrity": "sha512-LsiILbtBETkDz8I9p1dQ0uyRUWuaQzd/cuEeS1hoRSyW5E5XGmTzlwY1OrNzzakGowI9Dr/I8HVaw4hTtnxy8g==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/unist": "^3.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/unist-util-position": {
+      "version": "5.0.0",
+      "resolved": "https://registry.npmjs.org/unist-util-position/-/unist-util-position-5.0.0.tgz",
+      "integrity": "sha512-fucsC7HjXvkB5R3kTCO7kUjRdrS0BJt3M/FPxmHMBOm8JQi2BsHAHFsy27E0EolP8rp0NzXsJ+jNPyDWvOJZPA==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/unist": "^3.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/unist-util-position-from-estree": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/unist-util-position-from-estree/-/unist-util-position-from-estree-2.0.0.tgz",
+      "integrity": "sha512-KaFVRjoqLyF6YXCbVLNad/eS4+OfPQQn2yOd7zF/h5T/CSL2v8NpN6a5TPvtbXthAGw5nG+PuTtq+DdIZr+cRQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/unist": "^3.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/unist-util-stringify-position": {
+      "version": "4.0.0",
+      "resolved": "https://registry.npmjs.org/unist-util-stringify-position/-/unist-util-stringify-position-4.0.0.tgz",
+      "integrity": "sha512-0ASV06AAoKCDkS2+xw5RXJywruurpbC4JZSm7nr7MOt1ojAzvyyaO+UxZf18j8FCF6kmzCZKcAgN/yu2gm2XgQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/unist": "^3.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/unist-util-visit": {
+      "version": "5.0.0",
+      "resolved": "https://registry.npmjs.org/unist-util-visit/-/unist-util-visit-5.0.0.tgz",
+      "integrity": "sha512-MR04uvD+07cwl/yhVuVWAtw+3GOR/knlL55Nd/wAdblk27GCVt3lqpTivy/tkJcZoNPzTwS1Y+KMojlLDhoTzg==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/unist": "^3.0.0",
+        "unist-util-is": "^6.0.0",
+        "unist-util-visit-parents": "^6.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/unist-util-visit-parents": {
+      "version": "6.0.2",
+      "resolved": "https://registry.npmjs.org/unist-util-visit-parents/-/unist-util-visit-parents-6.0.2.tgz",
+      "integrity": "sha512-goh1s1TBrqSqukSc8wrjwWhL0hiJxgA8m4kFxGlQ+8FYQ3C/m11FcTs4YYem7V664AhHVvgoQLk890Ssdsr2IQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/unist": "^3.0.0",
+        "unist-util-is": "^6.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/unrs-resolver": {
+      "version": "1.11.1",
+      "resolved": "https://registry.npmjs.org/unrs-resolver/-/unrs-resolver-1.11.1.tgz",
+      "integrity": "sha512-bSjt9pjaEBnNiGgc9rUiHGKv5l4/TGzDmYw3RhnkJGtLhbnnA/5qJj7x3dNDCRx/PJxu774LlH8lCOlB4hEfKg==",
+      "dev": true,
+      "hasInstallScript": true,
+      "license": "MIT",
+      "dependencies": {
+        "napi-postinstall": "^0.3.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/unrs-resolver"
+      },
+      "optionalDependencies": {
+        "@unrs/resolver-binding-android-arm-eabi": "1.11.1",
+        "@unrs/resolver-binding-android-arm64": "1.11.1",
+        "@unrs/resolver-binding-darwin-arm64": "1.11.1",
+        "@unrs/resolver-binding-darwin-x64": "1.11.1",
+        "@unrs/resolver-binding-freebsd-x64": "1.11.1",
+        "@unrs/resolver-binding-linux-arm-gnueabihf": "1.11.1",
+        "@unrs/resolver-binding-linux-arm-musleabihf": "1.11.1",
+        "@unrs/resolver-binding-linux-arm64-gnu": "1.11.1",
+        "@unrs/resolver-binding-linux-arm64-musl": "1.11.1",
+        "@unrs/resolver-binding-linux-ppc64-gnu": "1.11.1",
+        "@unrs/resolver-binding-linux-riscv64-gnu": "1.11.1",
+        "@unrs/resolver-binding-linux-riscv64-musl": "1.11.1",
+        "@unrs/resolver-binding-linux-s390x-gnu": "1.11.1",
+        "@unrs/resolver-binding-linux-x64-gnu": "1.11.1",
+        "@unrs/resolver-binding-linux-x64-musl": "1.11.1",
+        "@unrs/resolver-binding-wasm32-wasi": "1.11.1",
+        "@unrs/resolver-binding-win32-arm64-msvc": "1.11.1",
+        "@unrs/resolver-binding-win32-ia32-msvc": "1.11.1",
+        "@unrs/resolver-binding-win32-x64-msvc": "1.11.1"
+      }
+    },
+    "node_modules/uri-js": {
+      "version": "4.4.1",
+      "resolved": "https://registry.npmjs.org/uri-js/-/uri-js-4.4.1.tgz",
+      "integrity": "sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==",
+      "dev": true,
+      "license": "BSD-2-Clause",
+      "dependencies": {
+        "punycode": "^2.1.0"
+      }
+    },
+    "node_modules/use-callback-ref": {
+      "version": "1.3.3",
+      "resolved": "https://registry.npmjs.org/use-callback-ref/-/use-callback-ref-1.3.3.tgz",
+      "integrity": "sha512-jQL3lRnocaFtu3V00JToYz/4QkNWswxijDaCVNZRiRTO3HQDLsdu1ZtmIUvV4yPp+rvWm5j0y0TG/S61cuijTg==",
+      "license": "MIT",
+      "dependencies": {
+        "tslib": "^2.0.0"
+      },
+      "engines": {
+        "node": ">=10"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/use-intl": {
+      "version": "4.5.5",
+      "resolved": "https://registry.npmjs.org/use-intl/-/use-intl-4.5.5.tgz",
+      "integrity": "sha512-MUIOVDmZipK23Y2jrVgl/3w15nGcV9nNiz6FNfBFCdgbglOmjB9O7AegZcNFYGXUs5W+vYQYYsQCjmWW/NbhRQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@formatjs/fast-memoize": "^2.2.0",
+        "@schummar/icu-type-parser": "1.21.5",
+        "intl-messageformat": "^10.5.14"
+      },
+      "peerDependencies": {
+        "react": "^17.0.0 || ^18.0.0 || >=19.0.0-rc <19.0.0 || ^19.0.0"
+      }
+    },
+    "node_modules/use-sidecar": {
+      "version": "1.1.3",
+      "resolved": "https://registry.npmjs.org/use-sidecar/-/use-sidecar-1.1.3.tgz",
+      "integrity": "sha512-Fedw0aZvkhynoPYlA5WXrMCAMm+nSWdZt6lzJQ7Ok8S6Q+VsHmHpRWndVRJ8Be0ZbkfPc5LRYH+5XrzXcEeLRQ==",
+      "license": "MIT",
+      "dependencies": {
+        "detect-node-es": "^1.1.0",
+        "tslib": "^2.0.0"
+      },
+      "engines": {
+        "node": ">=10"
+      },
+      "peerDependencies": {
+        "@types/react": "*",
+        "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/use-sync-external-store": {
+      "version": "1.6.0",
+      "resolved": "https://registry.npmjs.org/use-sync-external-store/-/use-sync-external-store-1.6.0.tgz",
+      "integrity": "sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==",
+      "license": "MIT",
+      "peerDependencies": {
+        "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+      }
+    },
+    "node_modules/uuid": {
+      "version": "11.1.0",
+      "resolved": "https://registry.npmjs.org/uuid/-/uuid-11.1.0.tgz",
+      "integrity": "sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==",
+      "funding": [
+        "https://github.com/sponsors/broofa",
+        "https://github.com/sponsors/ctavan"
+      ],
+      "license": "MIT",
+      "bin": {
+        "uuid": "dist/esm/bin/uuid"
+      }
+    },
+    "node_modules/uvu": {
+      "version": "0.5.6",
+      "resolved": "https://registry.npmjs.org/uvu/-/uvu-0.5.6.tgz",
+      "integrity": "sha512-+g8ENReyr8YsOc6fv/NVJs2vFdHBnBNdfE49rshrTzDWOlUx4Gq7KOS2GD8eqhy2j+Ejq29+SbKH8yjkAqXqoA==",
+      "license": "MIT",
+      "dependencies": {
+        "dequal": "^2.0.0",
+        "diff": "^5.0.0",
+        "kleur": "^4.0.3",
+        "sade": "^1.7.3"
+      },
+      "bin": {
+        "uvu": "bin.js"
+      },
+      "engines": {
+        "node": ">=8"
+      }
+    },
+    "node_modules/vaul": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/vaul/-/vaul-1.1.2.tgz",
+      "integrity": "sha512-ZFkClGpWyI2WUQjdLJ/BaGuV6AVQiJ3uELGk3OYtP+B6yCO7Cmn9vPFXVJkRaGkOJu3m8bQMgtyzNHixULceQA==",
+      "license": "MIT",
+      "dependencies": {
+        "@radix-ui/react-dialog": "^1.1.1"
+      },
+      "peerDependencies": {
+        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0.0 || ^19.0.0-rc",
+        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0.0 || ^19.0.0-rc"
+      }
+    },
+    "node_modules/vfile": {
+      "version": "6.0.3",
+      "resolved": "https://registry.npmjs.org/vfile/-/vfile-6.0.3.tgz",
+      "integrity": "sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/unist": "^3.0.0",
+        "vfile-message": "^4.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/vfile-message": {
+      "version": "4.0.3",
+      "resolved": "https://registry.npmjs.org/vfile-message/-/vfile-message-4.0.3.tgz",
+      "integrity": "sha512-QTHzsGd1EhbZs4AsQ20JX1rC3cOlt/IWJruk893DfLRr57lcnOeMaWG4K0JrRta4mIJZKth2Au3mM3u03/JWKw==",
+      "license": "MIT",
+      "dependencies": {
+        "@types/unist": "^3.0.0",
+        "unist-util-stringify-position": "^4.0.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/unified"
+      }
+    },
+    "node_modules/victory-vendor": {
+      "version": "36.9.2",
+      "resolved": "https://registry.npmjs.org/victory-vendor/-/victory-vendor-36.9.2.tgz",
+      "integrity": "sha512-PnpQQMuxlwYdocC8fIJqVXvkeViHYzotI+NJrCuav0ZYFoq912ZHBk3mCeuj+5/VpodOjPe1z0Fk2ihgzlXqjQ==",
+      "license": "MIT AND ISC",
+      "dependencies": {
+        "@types/d3-array": "^3.0.3",
+        "@types/d3-ease": "^3.0.0",
+        "@types/d3-interpolate": "^3.0.1",
+        "@types/d3-scale": "^4.0.2",
+        "@types/d3-shape": "^3.1.0",
+        "@types/d3-time": "^3.0.0",
+        "@types/d3-timer": "^3.0.0",
+        "d3-array": "^3.1.6",
+        "d3-ease": "^3.0.1",
+        "d3-interpolate": "^3.0.1",
+        "d3-scale": "^4.0.2",
+        "d3-shape": "^3.1.0",
+        "d3-time": "^3.0.0",
+        "d3-timer": "^3.0.1"
+      }
+    },
+    "node_modules/w3c-keyname": {
+      "version": "2.2.8",
+      "resolved": "https://registry.npmjs.org/w3c-keyname/-/w3c-keyname-2.2.8.tgz",
+      "integrity": "sha512-dpojBhNsCNN7T82Tm7k26A6G9ML3NkhDsnw9n/eoxSRlVBB4CEtIQ/KTCLI2Fwf3ataSXRhYFkQi3SlnFwPvPQ==",
+      "license": "MIT"
+    },
+    "node_modules/which": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/which/-/which-2.0.2.tgz",
+      "integrity": "sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==",
+      "dev": true,
+      "license": "ISC",
+      "dependencies": {
+        "isexe": "^2.0.0"
+      },
+      "bin": {
+        "node-which": "bin/node-which"
+      },
+      "engines": {
+        "node": ">= 8"
+      }
+    },
+    "node_modules/which-boxed-primitive": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/which-boxed-primitive/-/which-boxed-primitive-1.1.1.tgz",
+      "integrity": "sha512-TbX3mj8n0odCBFVlY8AxkqcHASw3L60jIuF8jFP78az3C2YhmGvqbHBpAjTRH2/xqYunrJ9g1jSyjCjpoWzIAA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "is-bigint": "^1.1.0",
+        "is-boolean-object": "^1.2.1",
+        "is-number-object": "^1.1.1",
+        "is-string": "^1.1.1",
+        "is-symbol": "^1.1.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/which-builtin-type": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/which-builtin-type/-/which-builtin-type-1.2.1.tgz",
+      "integrity": "sha512-6iBczoX+kDQ7a3+YJBnh3T+KZRxM/iYNPXicqk66/Qfm1b93iu+yOImkg0zHbj5LNOcNv1TEADiZ0xa34B4q6Q==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.2",
+        "function.prototype.name": "^1.1.6",
+        "has-tostringtag": "^1.0.2",
+        "is-async-function": "^2.0.0",
+        "is-date-object": "^1.1.0",
+        "is-finalizationregistry": "^1.1.0",
+        "is-generator-function": "^1.0.10",
+        "is-regex": "^1.2.1",
+        "is-weakref": "^1.0.2",
+        "isarray": "^2.0.5",
+        "which-boxed-primitive": "^1.1.0",
+        "which-collection": "^1.0.2",
+        "which-typed-array": "^1.1.16"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/which-collection": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/which-collection/-/which-collection-1.0.2.tgz",
+      "integrity": "sha512-K4jVyjnBdgvc86Y6BkaLZEN933SwYOuBFkdmBu9ZfkcAbdVbpITnDmjvZ/aQjRXQrv5EPkTnD1s39GiiqbngCw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "is-map": "^2.0.3",
+        "is-set": "^2.0.3",
+        "is-weakmap": "^2.0.2",
+        "is-weakset": "^2.0.3"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/which-typed-array": {
+      "version": "1.1.19",
+      "resolved": "https://registry.npmjs.org/which-typed-array/-/which-typed-array-1.1.19.tgz",
+      "integrity": "sha512-rEvr90Bck4WZt9HHFC4DJMsjvu7x+r6bImz0/BrbWb7A2djJ8hnZMrWnHo9F8ssv0OMErasDhftrfROTyqSDrw==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "available-typed-arrays": "^1.0.7",
+        "call-bind": "^1.0.8",
+        "call-bound": "^1.0.4",
+        "for-each": "^0.3.5",
+        "get-proto": "^1.0.1",
+        "gopd": "^1.2.0",
+        "has-tostringtag": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/word-wrap": {
+      "version": "1.2.5",
+      "resolved": "https://registry.npmjs.org/word-wrap/-/word-wrap-1.2.5.tgz",
+      "integrity": "sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/xtend": {
+      "version": "4.0.2",
+      "resolved": "https://registry.npmjs.org/xtend/-/xtend-4.0.2.tgz",
+      "integrity": "sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.4"
+      }
+    },
+    "node_modules/yallist": {
+      "version": "4.0.0",
+      "resolved": "https://registry.npmjs.org/yallist/-/yallist-4.0.0.tgz",
+      "integrity": "sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==",
+      "license": "ISC"
+    },
+    "node_modules/yjs": {
+      "version": "13.6.27",
+      "resolved": "https://registry.npmjs.org/yjs/-/yjs-13.6.27.tgz",
+      "integrity": "sha512-OIDwaflOaq4wC6YlPBy2L6ceKeKuF7DeTxx+jPzv1FHn9tCZ0ZwSRnUBxD05E3yed46fv/FWJbvR+Ud7x0L7zw==",
+      "license": "MIT",
+      "peer": true,
+      "dependencies": {
+        "lib0": "^0.2.99"
+      },
+      "engines": {
+        "node": ">=16.0.0",
+        "npm": ">=8.0.0"
+      },
+      "funding": {
+        "type": "GitHub Sponsors ❤",
+        "url": "https://github.com/sponsors/dmonad"
+      }
+    },
+    "node_modules/yocto-queue": {
+      "version": "0.1.0",
+      "resolved": "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz",
+      "integrity": "sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=10"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/z-ai-web-dev-sdk": {
+      "version": "0.0.10",
+      "resolved": "https://registry.npmjs.org/z-ai-web-dev-sdk/-/z-ai-web-dev-sdk-0.0.10.tgz",
+      "integrity": "sha512-yMcR3tyReJph9aQkU++KLG9g8z904vjnNjmA4V3SMZagvmejuOd/UtlqAjLGJut6k55DxWByhcPfLEzNnzCTlw==",
+      "license": "ISC",
+      "bin": {
+        "z-ai-generate": "dist/cli.js"
+      }
+    },
+    "node_modules/zod": {
+      "version": "4.1.13",
+      "resolved": "https://registry.npmjs.org/zod/-/zod-4.1.13.tgz",
+      "integrity": "sha512-AvvthqfqrAhNH9dnfmrfKzX5upOdjUVJYFqNSlkmGf64gRaTzlPwz99IHYnVs28qYAybvAlBV+H7pn0saFY4Ig==",
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/colinhacks"
+      }
+    },
+    "node_modules/zustand": {
+      "version": "5.0.8",
+      "resolved": "https://registry.npmjs.org/zustand/-/zustand-5.0.8.tgz",
+      "integrity": "sha512-gyPKpIaxY9XcO2vSMrLbiER7QMAMGOQZVRdJ6Zi782jkbzZygq5GI9nG8g+sMgitRtndwaBSl7uiqC49o1SSiw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=12.20.0"
+      },
+      "peerDependencies": {
+        "@types/react": ">=18.0.0",
+        "immer": ">=9.0.6",
+        "react": ">=18.0.0",
+        "use-sync-external-store": ">=1.2.0"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "immer": {
+          "optional": true
+        },
+        "react": {
+          "optional": true
+        },
+        "use-sync-external-store": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/zwitch": {
+      "version": "2.0.4",
+      "resolved": "https://registry.npmjs.org/zwitch/-/zwitch-2.0.4.tgz",
+      "integrity": "sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==",
+      "license": "MIT",
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wooorm"
+      }
+    }
+  }
+}
+
+
+---
+
+
+## File: README.md__.txt
+
+# README.md
+# 🚀 Welcome to Z.ai Code Scaffold
+
+A modern, production-ready web application scaffold powered by cutting-edge technologies, designed to accelerate your development with [Z.ai](https://chat.z.ai)'s AI-powered coding assistance.
+
+## ✨ Technology Stack
+
+This scaffold provides a robust foundation built with:
+
+### 🎯 Core Framework
+- **⚡ Next.js 15** - The React framework for production with App Router
+- **📘 TypeScript 5** - Type-safe JavaScript for better developer experience
+- **🎨 Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
+
+### 🧩 UI Components & Styling
+- **🧩 shadcn/ui** - High-quality, accessible components built on Radix UI
+- **🎯 Lucide React** - Beautiful & consistent icon library
+- **🌈 Framer Motion** - Production-ready motion library for React
+- **🎨 Next Themes** - Perfect dark mode in 2 lines of code
+
+### 📋 Forms & Validation
+- **🎣 React Hook Form** - Performant forms with easy validation
+- **✅ Zod** - TypeScript-first schema validation
+
+### 🔄 State Management & Data Fetching
+- **🐻 Zustand** - Simple, scalable state management
+- **🔄 TanStack Query** - Powerful data synchronization for React
+- **🌐 Axios** - Promise-based HTTP client
+
+### 🗄️ Database & Backend
+- **🗄️ Prisma** - Next-generation Node.js and TypeScript ORM
+- **🔐 NextAuth.js** - Complete open-source authentication solution
+
+### 🎨 Advanced UI Features
+- **📊 TanStack Table** - Headless UI for building tables and datagrids
+- **🖱️ DND Kit** - Modern drag and drop toolkit for React
+- **📊 Recharts** - Redefined chart library built with React and D3
+- **🖼️ Sharp** - High performance image processing
+
+### 🌍 Internationalization & Utilities
+- **🌍 Next Intl** - Internationalization library for Next.js
+- **📅 Date-fns** - Modern JavaScript date utility library
+- **🪝 ReactUse** - Collection of essential React hooks for modern development
+
+## 🎯 Why This Scaffold?
+
+- **🏎️ Fast Development** - Pre-configured tooling and best practices
+- **🎨 Beautiful UI** - Complete shadcn/ui component library with advanced interactions
+- **🔒 Type Safety** - Full TypeScript configuration with Zod validation
+- **📱 Responsive** - Mobile-first design principles with smooth animations
+- **🗄️ Database Ready** - Prisma ORM configured for rapid backend development
+- **🔐 Auth Included** - NextAuth.js for secure authentication flows
+- **📊 Data Visualization** - Charts, tables, and drag-and-drop functionality
+- **🌍 i18n Ready** - Multi-language support with Next Intl
+- **🚀 Production Ready** - Optimized build and deployment settings
+- **🤖 AI-Friendly** - Structured codebase perfect for AI assistance
+
+## 🚀 Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+```
+
+Open [http://localhost:3000](http://localhost:3000) to see your application running.
+
+## 🤖 Powered by Z.ai
+
+This scaffold is optimized for use with [Z.ai](https://chat.z.ai) - your AI assistant for:
+
+- **💻 Code Generation** - Generate components, pages, and features instantly
+- **🎨 UI Development** - Create beautiful interfaces with AI assistance  
+- **🔧 Bug Fixing** - Identify and resolve issues with intelligent suggestions
+- **📝 Documentation** - Auto-generate comprehensive documentation
+- **🚀 Optimization** - Performance improvements and best practices
+
+Ready to build something amazing? Start chatting with Z.ai at [chat.z.ai](https://chat.z.ai) and experience the future of AI-powered development!
+
+## 📁 Project Structure
+
+```
+src/
+├── app/                 # Next.js App Router pages
+├── components/          # Reusable React components
+│   └── ui/             # shadcn/ui components
+├── hooks/              # Custom React hooks
+└── lib/                # Utility functions and configurations
+```
+
+## 🎨 Available Features & Components
+
+This scaffold includes a comprehensive set of modern web development tools:
+
+### 🧩 UI Components (shadcn/ui)
+- **Layout**: Card, Separator, Aspect Ratio, Resizable Panels
+- **Forms**: Input, Textarea, Select, Checkbox, Radio Group, Switch
+- **Feedback**: Alert, Toast (Sonner), Progress, Skeleton
+- **Navigation**: Breadcrumb, Menubar, Navigation Menu, Pagination
+- **Overlay**: Dialog, Sheet, Popover, Tooltip, Hover Card
+- **Data Display**: Badge, Avatar, Calendar
+
+### 📊 Advanced Data Features
+- **Tables**: Powerful data tables with sorting, filtering, pagination (TanStack Table)
+- **Charts**: Beautiful visualizations with Recharts
+- **Forms**: Type-safe forms with React Hook Form + Zod validation
+
+### 🎨 Interactive Features
+- **Animations**: Smooth micro-interactions with Framer Motion
+- **Drag & Drop**: Modern drag-and-drop functionality with DND Kit
+- **Theme Switching**: Built-in dark/light mode support
+
+### 🔐 Backend Integration
+- **Authentication**: Ready-to-use auth flows with NextAuth.js
+- **Database**: Type-safe database operations with Prisma
+- **API Client**: HTTP requests with Axios + TanStack Query
+- **State Management**: Simple and scalable with Zustand
+
+### 🌍 Production Features
+- **Internationalization**: Multi-language support with Next Intl
+- **Image Optimization**: Automatic image processing with Sharp
+- **Type Safety**: End-to-end TypeScript with Zod validation
+- **Essential Hooks**: 100+ useful React hooks with ReactUse for common patterns
+
+## 🤝 Get Started with Z.ai
+
+1. **Clone this scaffold** to jumpstart your project
+2. **Visit [chat.z.ai](https://chat.z.ai)** to access your AI coding assistant
+3. **Start building** with intelligent code generation and assistance
+4. **Deploy with confidence** using the production-ready setup
+
+---
+
+Built with ❤️ for the developer community. Supercharged by [Z.ai](https://chat.z.ai) 🚀
+
+
+---
+
+
+## File: robots.txt
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: *
+Allow: /
+
+---
+
+
+## File: scripts__seed-songs.js__.txt
+
+# seed-songs.js
+// Script para agregar canciones de ejemplo a la base de datos
+const { PrismaClient } = require('@prisma/client')
+
+const db = new PrismaClient()
+
+const songs = [
+  {
+    title: "Noches de Sangre",
+    artist: "Enrique de Zairtre",
+    duration: 245,
+    coverImage: "https://z-cdn-media.chatglm.cn/files/fe136bc7-0296-45b7-a567-82eb3e4072e4_Zairtre%20y%20Raltek.jpg?auth_key=1864304639-e6d63655667443888ad144ddaa27b31f-0-4b598a42d06e8256240c67561440c29f",
+    audioUrl: "/audio/noches-de-sangre.mp3",
+    lyrics: "En la oscuridad de la noche\nDonde las sombras danzan\nMi voz resuena con fuerza\nComo un trueno en la distancia..."
+  },
+  {
+    title: "Dragón Dorado",
+    artist: "Enrique de Zairtre",
+    duration: 198,
+    coverImage: "https://z-cdn-media.chatglm.cn/files/fe136bc7-0296-45b7-a567-82eb3e4072e4_Zairtre%20y%20Raltek.jpg?auth_key=1864304639-e6d63655667443888ad144ddaa27b31f-0-4b598a42d06e8256240c67561440c29f",
+    audioUrl: "/audio/dragon-dorado.mp3",
+    lyrics: "Alas de oro flamean\nEn el cielo oscuro\nFuego y magia ancestral\nLibertad en mi furor..."
+  },
+  {
+    title: "Reino de las Sombras",
+    artist: "Enrique de Zairtre",
+    duration: 312,
+    coverImage: "https://z-cdn-media.chatglm.cn/files/fe136bc7-0296-45b7-a567-82eb3e4072e4_Zairtre%20y%20Raltek.jpg?auth_key=1864304639-e6d63655667443888ad144ddaa27b31f-0-4b598a42d06e8256240c67561440c29f",
+    audioUrl: "/audio/reino-sombras.mp3",
+    lyrics: "En el reino donde la luz muere\nDonde el miedo nace y crece\nMi poder se hace infinito\nComo la eterna noche..."
+  }
+]
+
+async function main() {
+  console.log('🎵 Agregando canciones a la base de datos...')
+  
+  for (const song of songs) {
+    await db.song.create({
+      data: song
+    })
+    console.log(`✅ Canción agregada: ${song.title}`)
+  }
+  
+  console.log('🎉 Todas las canciones han sido agregadas!')
+}
+
+main()
+  .catch((e) => {
+    console.error(e)
+    process.exit(1)
+  })
+  .finally(async () => {
+    await db.$disconnect()
+  })
+
+---
+
+
+## File: src__app__admin__login__page.tsx__.txt
+
+# page.tsx
+'use client'
+
+import { useState } from 'react'
+import { signIn, getSession } from 'next-auth/react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Music, Lock } from 'lucide-react'
+
+export default function AdminLogin() {
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') || '/admin'
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true)
+    try {
+      await signIn('google', { callbackUrl })
+    } catch (error) {
+      console.error('Error signing in:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-4">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      
+      <div className="relative z-10 w-full max-w-md">
+        <Card className="bg-black/80 border-purple-500/20 text-white backdrop-blur-lg">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center">
+              <Music className="w-8 h-8" />
+            </div>
+            <CardTitle className="text-2xl font-bold">Panel Administrativo</CardTitle>
+            <CardDescription className="text-gray-300">
+              Enrique de Zairtre - Gestión de Contenido
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent className="space-y-6">
+            <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Lock className="w-4 h-4 text-purple-400" />
+                <span className="text-sm font-medium text-purple-300">Acceso Restringido</span>
+              </div>
+              <p className="text-xs text-gray-400">
+                Solo administradores autorizados pueden acceder a este panel.
+              </p>
+            </div>
+
+            <Button 
+              onClick={handleGoogleSignIn}
+              disabled={isLoading}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Iniciando sesión...</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                  </svg>
+                  <span>Iniciar con Google</span>
+                </div>
+              )}
+            </Button>
+
+            <div className="text-center">
+              <p className="text-xs text-gray-400">
+                Al iniciar sesión, aceptas nuestros términos y condiciones.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <div className="mt-8 text-center">
+          <p className="text-gray-400 text-sm">
+            © 2024 Enrique de Zairtre - Todos los derechos reservados
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+---
+
+
+## File: src__app__admin__page.tsx__.txt
+
+# page.tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useSession, signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Music, Users, PlayList, Settings, LogOut, Plus, Edit, Trash2, Eye } from 'lucide-react'
+import { SongManager } from '@/components/admin/SongManager'
+import { PlaylistManager } from '@/components/admin/PlaylistManager'
+import { SettingsPanel } from '@/components/admin/SettingsPanel'
+import { FanManager } from '@/components/admin/FanManager'
+
+export default function AdminDashboard() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+  const [stats, setStats] = useState({
+    totalSongs: 0,
+    totalPlaylists: 0,
+    totalPlays: 0
+  })
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/admin/login')
+    }
+  }, [status, router])
+
+  useEffect(() => {
+    // Fetch stats from API
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/admin/stats')
+        if (response.ok) {
+          const data = await response.json()
+          setStats(data)
+        }
+      } catch (error) {
+        console.error('Error fetching stats:', error)
+      }
+    }
+    
+    if (session) {
+      fetchStats()
+    }
+  }, [session])
+
+  const handleSignOut = async () => {
+    await signOut({ callbackUrl: '/' })
+  }
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="text-white">Cargando...</div>
+      </div>
+    )
+  }
+
+  if (!session) {
+    return null
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-white">
+      {/* Header */}
+      <header className="bg-black/50 backdrop-blur-lg border-b border-gray-700">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
+                <Music className="w-5 h-5" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold">Panel Administrativo</h1>
+                <p className="text-sm text-gray-400">Enrique de Zairtre</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <img 
+                  src={session.user?.image || ''} 
+                  alt={session.user?.name || ''}
+                  className="w-8 h-8 rounded-full"
+                />
+                <span className="text-sm">{session.user?.name}</span>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleSignOut}
+                className="border-gray-600 text-white hover:bg-gray-800"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Cerrar Sesión
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="bg-black/50 border-gray-700">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Canciones</CardTitle>
+              <Music className="h-4 w-4 text-purple-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalSongs}</div>
+              <p className="text-xs text-gray-400">En el catálogo</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-black/50 border-gray-700">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Playlists</CardTitle>
+              <PlayList className="h-4 w-4 text-purple-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalPlaylists}</div>
+              <p className="text-xs text-gray-400">Listas creadas</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-black/50 border-gray-700">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Reproducciones</CardTitle>
+              <Users className="h-4 w-4 text-purple-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalPlays}</div>
+              <p className="text-xs text-gray-400">Total reproducciones</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Management Tabs */}
+        <Tabs defaultValue="songs" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 bg-black/50 border-gray-700">
+            <TabsTrigger value="songs" className="data-[state=active]:bg-purple-600">
+              <Music className="w-4 h-4 mr-2" />
+              Canciones
+            </TabsTrigger>
+            <TabsTrigger value="playlists" className="data-[state=active]:bg-purple-600">
+              <PlayList className="w-4 h-4 mr-2" />
+              Playlists
+            </TabsTrigger>
+            <TabsTrigger value="fans" className="data-[state=active]:bg-purple-600">
+              <Users className="w-4 h-4 mr-2" />
+              Fans SAC
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="data-[state=active]:bg-purple-600">
+              <Settings className="w-4 h-4 mr-2" />
+              Configuración
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="songs">
+            <SongManager />
+          </TabsContent>
+
+          <TabsContent value="playlists">
+            <PlaylistManager />
+          </TabsContent>
+
+          <TabsContent value="fans">
+            <FanManager />
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <SettingsPanel />
+          </TabsContent>
+        </Tabs>
+      </main>
+    </div>
+  )
+}
+
+---
+
+
+## File: src__app__api__admin__export__route.ts__.txt
+
+# route.ts
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { db } from '@/lib/db'
+
+export async function GET() {
+  try {
+    const session = await getServerSession()
+    
+    if (!session || session.user?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Export all data
+    const songs = await db.song.findMany()
+    const playlists = await db.playlist.findMany({
+      include: { songs: true }
+    })
+
+    const exportData = {
+      version: '1.0',
+      exportDate: new Date().toISOString(),
+      data: {
+        songs,
+        playlists
+      }
+    }
+
+    return new Response(JSON.stringify(exportData, null, 2), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Disposition': 'attachment; filename="enrique-zairtre-backup.json"'
+      }
+    })
+  } catch (error) {
+    return NextResponse.json({ error: 'Error exporting data' }, { status: 500 })
+  }
+}
+
+---
+
+
+## File: src__app__api__admin__fans__route.ts__.txt
+
+# route.ts
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { db } from '@/lib/db'
+
+export async function GET() {
+  try {
+    const session = await getServerSession()
+    
+    if (!session || session.user?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const fans = await db.user.findMany({
+      where: { role: 'fan' },
+      include: {
+        _count: {
+          select: {
+            favorites: true,
+            playlists: true,
+            activities: true,
+            rewards: true
+          }
+        }
+      },
+      orderBy: { joinDate: 'desc' }
+    })
+    
+    return NextResponse.json(fans)
+  } catch (error) {
+    return NextResponse.json({ error: 'Error fetching fans' }, { status: 500 })
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession()
+    
+    if (!session || session.user?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { userId, action, type, title, description } = await request.json()
+
+    if (!userId || !action) {
+      return NextResponse.json({ error: 'User ID and action are required' }, { status: 400 })
+    }
+
+    switch (action) {
+      case 'award_points':
+        const points = parseInt(type) || 100
+        await db.user.update({
+          where: { id: userId },
+          data: {
+            loyaltyPoints: {
+              increment: points
+            }
+          }
+        })
+
+        // Create reward record
+        await db.reward.create({
+          data: {
+            userId,
+            type: 'points',
+            title: `+${points} Puntos de Lealtad`,
+            description: description || 'Puntos otorgados por el administrador'
+          }
+        })
+        break
+
+      case 'award_badge':
+        await db.reward.create({
+          data: {
+            userId,
+            type: 'badge',
+            title: title || 'Insignia Especial',
+            description: description || 'Insignia otorgada por el administrador',
+            icon: type || '🏆'
+          }
+        })
+        break
+
+      case 'upgrade_tier':
+        await db.user.update({
+          where: { id: userId },
+          data: {
+            tier: type || 'silver'
+          }
+        })
+
+        await db.reward.create({
+          data: {
+            userId,
+            type: 'tier_upgrade',
+            title: `Actualizado a ${type || 'Silver'}`,
+            description: description || 'Nivel mejorado por el administrador'
+          }
+        })
+        break
+
+      case 'deactivate':
+        await db.user.update({
+          where: { id: userId },
+          data: {
+            isActive: false
+          }
+        })
+        break
+
+      case 'activate':
+        await db.user.update({
+          where: { id: userId },
+          data: {
+            isActive: true
+          }
+        })
+        break
+
+      default:
+        return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    return NextResponse.json({ error: 'Error processing action' }, { status: 500 })
+  }
+}
+
+---
+
+
+## File: src__app__api__admin__settings__route.ts__.txt
+
+# route.ts
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+
+export async function GET() {
+  try {
+    const session = await getServerSession()
+    
+    if (!session || session.user?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Mock settings - in real app, you'd store these in database
+    const settings = {
+      siteName: 'Enrique de Zairtre',
+      siteDescription: 'Poeta, Artista, Productor y Estrella de Rock',
+      artistName: 'Enrique de Zairtre',
+      contactEmail: 'contacto@enriquezairtre.com',
+      socialLinks: {
+        facebook: '',
+        twitter: '',
+        instagram: '',
+        youtube: '',
+        spotify: ''
+      },
+      features: {
+        enableComments: true,
+        enableDownloads: false,
+        enableLyrics: true,
+        enablePlaylists: true
+      }
+    }
+
+    return NextResponse.json(settings)
+  } catch (error) {
+    return NextResponse.json({ error: 'Error fetching settings' }, { status: 500 })
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const session = await getServerSession()
+    
+    if (!session || session.user?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const settings = await request.json()
+    
+    // In real app, you'd save these to database
+    console.log('Settings saved:', settings)
+
+    return NextResponse.json({ message: 'Settings saved successfully' })
+  } catch (error) {
+    return NextResponse.json({ error: 'Error saving settings' }, { status: 500 })
+  }
+}
+
+---
+
+
+## File: src__app__api__admin__stats__route.ts__.txt
+
+# route.ts
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { db } from '@/lib/db'
+
+export async function GET() {
+  try {
+    const session = await getServerSession()
+    
+    if (!session || session.user?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const totalSongs = await db.song.count()
+    const totalPlaylists = await db.playlist.count()
+    
+    // Mock plays count - in real app, you'd have a plays table
+    const totalPlays = Math.floor(Math.random() * 10000)
+
+    return NextResponse.json({
+      totalSongs,
+      totalPlaylists,
+      totalPlays
+    })
+  } catch (error) {
+    return NextResponse.json({ error: 'Error fetching stats' }, { status: 500 })
+  }
+}
+
+---
+
+
+## File: src__app__api__auth__sync-user__route.ts__.txt
+
+# route.ts
+import { NextResponse } from 'next/server'
+import { db } from '@/lib/db'
+
+export async function POST(request: Request) {
+  try {
+    const { email, name, image } = await request.json()
+
+    if (!email) {
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 })
+    }
+
+    // Check if user exists
+    let user = await db.user.findUnique({
+      where: { email }
+    })
+
+    if (user) {
+      // Update last login
+      user = await db.user.update({
+        where: { email },
+        data: {
+          lastLogin: new Date(),
+          name: name || user.name,
+          image: image || user.image,
+        }
+      })
+    } else {
+      // Create new user
+      const isAdmin = email === 'enrique.zairtre@example.com'
+      user = await db.user.create({
+        data: {
+          email,
+          name: name || 'Unknown User',
+          image: image || '',
+          role: isAdmin ? 'admin' : 'fan',
+          isActive: true,
+          joinDate: new Date(),
+          lastLogin: new Date(),
+        }
+      })
+    }
+
+    return NextResponse.json(user)
+  } catch (error) {
+    console.error('Error syncing user:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
+---
+
+
+## File: src__app__api__favorites__route.ts__.txt
+
+# route.ts
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { db } from '@/lib/db'
+
+export async function GET() {
+  try {
+    const session = await getServerSession()
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const favorites = await db.favorite.findMany({
+      where: { userId: session.user.id },
+      include: {
+        song: true
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+    
+    return NextResponse.json(favorites)
+  } catch (error) {
+    return NextResponse.json({ error: 'Error fetching favorites' }, { status: 500 })
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession()
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { songId } = await request.json()
+
+    if (!songId) {
+      return NextResponse.json({ error: 'Song ID is required' }, { status: 400 })
+    }
+
+    // Check if already favorited
+    const existing = await db.favorite.findUnique({
+      where: {
+        userId_songId: {
+          userId: session.user.id,
+          songId
+        }
+      }
+    })
+
+    if (existing) {
+      // Remove from favorites
+      await db.favorite.delete({
+        where: {
+          userId_songId: {
+            userId: session.user.id,
+            songId
+          }
+        }
+      })
+
+      // Update user stats
+      await db.user.update({
+        where: { id: session.user.id },
+        data: {
+          favoriteCount: {
+            decrement: 1
+          }
+        }
+      })
+
+      // Log activity
+      await db.activity.create({
+        data: {
+          userId: session.user.id,
+          type: 'unfavorite',
+          songId,
+          metadata: JSON.stringify({ action: 'removed_from_favorites' })
+        }
+      })
+
+      return NextResponse.json({ favorited: false })
+    } else {
+      // Add to favorites
+      const favorite = await db.favorite.create({
+        data: {
+          userId: session.user.id,
+          songId
+        },
+        include: {
+          song: true
+        }
+      })
+
+      // Update user stats
+      await db.user.update({
+        where: { id: session.user.id },
+        data: {
+          favoriteCount: {
+            increment: 1
+          },
+          loyaltyPoints: {
+            increment: 5
+          }
+        }
+      })
+
+      // Log activity
+      await db.activity.create({
+        data: {
+          userId: session.user.id,
+          type: 'favorite',
+          songId,
+          metadata: JSON.stringify({ action: 'added_to_favorites' })
+        }
+      })
+
+      return NextResponse.json({ favorited: true, favorite })
+    }
+  } catch (error) {
+    console.error('Error managing favorite:', error)
+    return NextResponse.json({ error: 'Error managing favorite' }, { status: 500 })
+  }
+}
+
+---
+
+
+## File: src__app__api__playlists__route.ts__.txt
+
+# route.ts
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { db } from '@/lib/db'
+
+export async function GET() {
+  try {
+    const playlists = await db.playlist.findMany({
+      include: {
+        _count: {
+          select: { songs: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+    
+    return NextResponse.json(playlists)
+  } catch (error) {
+    return NextResponse.json({ error: 'Error fetching playlists' }, { status: 500 })
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession()
+    
+    if (!session || session.user?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const playlist = await db.playlist.create({
+      data: body,
+      include: {
+        _count: {
+          select: { songs: true }
+        }
+      }
+    })
+    
+    return NextResponse.json(playlist)
+  } catch (error) {
+    return NextResponse.json({ error: 'Error creating playlist' }, { status: 500 })
+  }
+}
+
+---
+
+
+## File: src__app__api__route.ts__.txt
+
+# route.ts
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  return NextResponse.json({ message: "Hello, world!" });
+}
+
+---
+
+
+## File: src__app__api__songs__route.ts__.txt
+
+# route.ts
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { db } from '@/lib/db'
+
+export async function GET() {
+  try {
+    const songs = await db.song.findMany({
+      where: { published: true },
+      orderBy: { createdAt: 'desc' }
+    })
+    
+    return Response.json(songs)
+  } catch (error) {
+    return Response.json({ error: 'Error fetching songs' }, { status: 500 })
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession()
+    
+    if (!session || session.user?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const song = await db.song.create({
+      data: {
+        title: body.title,
+        artist: body.artist,
+        duration: body.duration,
+        coverImage: body.coverImage,
+        audioUrl: body.audioUrl,
+        lyrics: body.lyrics,
+        published: body.published
+      }
+    })
+    
+    return Response.json(song)
+  } catch (error) {
+    return Response.json({ error: 'Error creating song' }, { status: 500 })
+  }
+}
+
+---
+
+
+## File: src__app__api__user__profile__route.ts__.txt
+
+# route.ts
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { db } from '@/lib/db'
+
+export async function GET() {
+  try {
+    const session = await getServerSession()
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const user = await db.user.findUnique({
+      where: { id: session.user.id },
+      include: {
+        _count: {
+          select: {
+            favorites: true,
+            playlists: true,
+            activities: true,
+            rewards: true
+          }
+        }
+      }
+    })
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    return NextResponse.json(user)
+  } catch (error) {
+    return NextResponse.json({ error: 'Error fetching profile' }, { status: 500 })
+  }
+}
+
+---
+
+
+## File: src__app__api__user__rewards__route.ts__.txt
+
+# route.ts
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { db } from '@/lib/db'
+
+export async function GET() {
+  try {
+    const session = await getServerSession()
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const rewards = await db.reward.findMany({
+      where: { userId: session.user.id },
+      orderBy: { unlockedAt: 'desc' }
+    })
+    
+    return NextResponse.json(rewards)
+  } catch (error) {
+    return NextResponse.json({ error: 'Error fetching rewards' }, { status: 500 })
+  }
+}
+
+---
+
+
+## File: src__app__api__user-playlists__route.ts__.txt
+
+# route.ts
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { db } from '@/lib/db'
+
+export async function GET() {
+  try {
+    const session = await getServerSession()
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const playlists = await db.userPlaylist.findMany({
+      where: { userId: session.user.id },
+      include: {
+        songs: {
+          include: {
+            song: true
+          },
+          orderBy: {
+            position: 'asc'
+          }
+        },
+        _count: {
+          select: { songs: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+    
+    return NextResponse.json(playlists)
+  } catch (error) {
+    return NextResponse.json({ error: 'Error fetching playlists' }, { status: 500 })
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession()
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { name, description, isPublic } = await request.json()
+
+    if (!name) {
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 })
+    }
+
+    const playlist = await db.userPlaylist.create({
+      data: {
+        userId: session.user.id,
+        name,
+        description: description || '',
+        isPublic: isPublic || false
+      }
+    })
+
+    // Update user stats
+    await db.user.update({
+      where: { id: session.user.id },
+      data: {
+        playlistCount: {
+          increment: 1
+        },
+        loyaltyPoints: {
+          increment: 10
+        }
+      }
+    })
+
+    // Log activity
+    await db.activity.create({
+      data: {
+        userId: session.user.id,
+        type: 'playlist_create',
+        metadata: JSON.stringify({ playlistName: name })
+      }
+    })
+
+    return NextResponse.json(playlist)
+  } catch (error) {
+    return NextResponse.json({ error: 'Error creating playlist' }, { status: 500 })
+  }
+}
+
+---
+
+
+## File: src__app__auth__signin__page.tsx__.txt
+
+# page.tsx
+'use client'
+
+import { useState } from 'react'
+import { signIn, getSession } from 'next-auth/react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Music, Users, Heart, Star } from 'lucide-react'
+
+export default function SignIn() {
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') || '/'
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true)
+    try {
+      await signIn('google', { callbackUrl })
+    } catch (error) {
+      console.error('Error signing in:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-4">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      
+      <div className="relative z-10 w-full max-w-md">
+        <Card className="bg-black/80 border-purple-500/20 text-white backdrop-blur-lg">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center">
+              <Music className="w-8 h-8" />
+            </div>
+            <CardTitle className="text-2xl font-bold">Bienvenido Fan</CardTitle>
+            <CardDescription className="text-gray-300">
+              Únete a la comunidad de Enrique de Zairtre
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent className="space-y-6">
+            {/* Features */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 text-center">
+                <Heart className="w-6 h-6 mx-auto mb-2 text-red-400" />
+                <span className="text-xs">Favoritos</span>
+              </div>
+              <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 text-center">
+                <Users className="w-6 h-6 mx-auto mb-2 text-blue-400" />
+                <span className="text-xs">Playlists</span>
+              </div>
+              <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 text-center">
+                <Star className="w-6 h-6 mx-auto mb-2 text-yellow-400" />
+                <span className="text-xs">Recompensas</span>
+              </div>
+              <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 text-center">
+                <Music className="w-6 h-6 mx-auto mb-2 text-purple-400" />
+                <span className="text-xs">Exclusivo</span>
+              </div>
+            </div>
+
+            <Button 
+              onClick={handleGoogleSignIn}
+              disabled={isLoading}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Conectando...</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                  </svg>
+                  <span>Continuar con Google</span>
+                </div>
+              )}
+            </Button>
+
+            <div className="text-center">
+              <p className="text-xs text-gray-400">
+                Al iniciar sesión, obtienes acceso a contenido exclusivo y puedes personalizar tu experiencia.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <div className="mt-8 text-center">
+          <p className="text-gray-400 text-sm">
+            © 2024 Enrique de Zairtre - Todos los derechos reservados
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+---
+
+
+## File: src__app__globals.css__.txt
+
+# globals.css
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+
+---
+
+
+## File: src__app__layout.tsx__.txt
+
+# layout.tsx
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from "@/components/providers/AuthProvider";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Z.ai Code Scaffold - AI-Powered Development",
+  description: "Modern Next.js scaffold optimized for AI-powered development with Z.ai. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
+  keywords: ["Z.ai", "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "AI development", "React"],
+  authors: [{ name: "Z.ai Team" }],
+  icons: {
+    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+  },
+  openGraph: {
+    title: "Z.ai Code Scaffold",
+    description: "AI-powered development with modern React stack",
+    url: "https://chat.z.ai",
+    siteName: "Z.ai",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Z.ai Code Scaffold",
+    description: "AI-powered development with modern React stack",
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+      >
+        <AuthProvider>
+          {children}
+          <Toaster />
+        </AuthProvider>
+      </body>
+    </html>
+  );
+}
+
+
+---
+
+
+## File: src__app__page.tsx__.txt
+
+# page.tsx
+'use client'
+
+import { useState, useEffect, useRef } from 'react'
+import { useSession, signIn, signOut } from 'next-auth/react'
+import { Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, List, Share2, Volume2, Heart, Music, User, LogIn } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Slider } from '@/components/ui/slider'
+import { Badge } from '@/components/ui/badge'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { toast } from 'sonner'
+import AudioVisualizer from '@/components/AudioVisualizer'
+
+interface Song {
+  id: number
+  title: string
+  artist: string
+  duration: number
+  coverImage: string
+  audioUrl: string
+  lyrics: string
+}
+
+const mockSongs: Song[] = [
+  {
+    id: 1,
+    title: "Noches de Sangre",
+    artist: "Enrique de Zairtre",
+    duration: 245,
+    coverImage: "https://z-cdn-media.chatglm.cn/files/fe136bc7-0296-45b7-a567-82eb3e4072e4_Zairtre%20y%20Raltek.jpg?auth_key=1864304639-e6d63655667443888ad144ddaa27b31f-0-4b598a42d06e8256240c67561440c29f",
+    audioUrl: "/audio/song1.mp3",
+    lyrics: "En la oscuridad de la noche\nDonde las sombras danzan\nMi voz resuena con fuerza\nComo un trueno en la distancia..."
+  },
+  {
+    id: 2,
+    title: "Dragón Dorado",
+    artist: "Enrique de Zairtre",
+    duration: 198,
+    coverImage: "https://z-cdn-media.chatglm.cn/files/fe136bc7-0296-45b7-a567-82eb3e4072e4_Zairtre%20y%20Raltek.jpg?auth_key=1864304639-e6d63655667443888ad144ddaa27b31f-0-4b598a42d06e8256240c67561440c29f",
+    audioUrl: "/audio/song2.mp3",
+    lyrics: "Alas de oro flamean\nEn el cielo oscuro\nFuego y magia ancestral\nLibertad en mi furor..."
+  },
+  {
+    id: 3,
+    title: "Reino de las Sombras",
+    artist: "Enrique de Zairtre",
+    duration: 312,
+    coverImage: "https://z-cdn-media.chatglm.cn/files/fe136bc7-0296-45b7-a567-82eb3e4072e4_Zairtre%20y%20Raltek.jpg?auth_key=1864304639-e6d63655667443888ad144ddaa27b31f-0-4b598a42d06e8256240c67561440c29f",
+    audioUrl: "/audio/song3.mp3",
+    lyrics: "En el reino donde la luz muere\nDonde el miedo nace y crece\nMi poder se hace infinito\nComo la eterna noche..."
+  }
+]
+
+export default function Home() {
+  const { data: session } = useSession()
+  const [songs, setSongs] = useState<Song[]>(mockSongs)
+  const [favorites, setFavorites] = useState<string[]>([])
+  const [currentSong, setCurrentSong] = useState<Song>(mockSongs[0])
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [volume, setVolume] = useState(75)
+  const [isShuffleOn, setIsShuffleOn] = useState(false)
+  const [repeatMode, setRepeatMode] = useState<'off' | 'one' | 'all'>('off')
+  const [showPlaylist, setShowPlaylist] = useState(false)
+  const [showLyrics, setShowLyrics] = useState(false)
+  const [colorPhase, setColorPhase] = useState(0)
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const animationRef = useRef<number>()
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setColorPhase(prev => (prev + 1) % 360)
+    }, 50)
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume / 100
+    }
+  }, [volume])
+
+  useEffect(() => {
+    // Load songs and favorites from API
+    const loadData = async () => {
+      try {
+        const songsResponse = await fetch('/api/songs')
+        if (songsResponse.ok) {
+          const songsData = await songsResponse.json()
+          setSongs(songsData)
+          if (songsData.length > 0) {
+            setCurrentSong(songsData[0])
+          }
+        }
+
+        if (session?.user?.id) {
+          const favoritesResponse = await fetch('/api/favorites')
+          if (favoritesResponse.ok) {
+            const favoritesData = await favoritesResponse.json()
+            setFavorites(favoritesData.map((fav: any) => fav.songId))
+          }
+        }
+      } catch (error) {
+        console.error('Error loading data:', error)
+      }
+    }
+
+    loadData()
+  }, [session])
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = Math.floor(seconds % 60)
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
+  const handlePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause()
+      } else {
+        audioRef.current.play()
+      }
+      setIsPlaying(!isPlaying)
+    }
+  }
+
+  const handleNext = () => {
+    const currentIndex = mockSongs.findIndex(song => song.id === currentSong.id)
+    let nextIndex
+    if (isShuffleOn) {
+      nextIndex = Math.floor(Math.random() * mockSongs.length)
+    } else {
+      nextIndex = (currentIndex + 1) % mockSongs.length
+    }
+    setCurrentSong(mockSongs[nextIndex])
+    setCurrentTime(0)
+  }
+
+  const handlePrevious = () => {
+    const currentIndex = mockSongs.findIndex(song => song.id === currentSong.id)
+    const prevIndex = currentIndex === 0 ? mockSongs.length - 1 : currentIndex - 1
+    setCurrentSong(mockSongs[prevIndex])
+    setCurrentTime(0)
+  }
+
+  const handleFavorite = async () => {
+    if (!session?.user?.id) {
+      toast.error('Debes iniciar sesión para añadir favoritos')
+      return
+    }
+
+    try {
+      const response = await fetch('/api/favorites', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ songId: currentSong.id.toString() }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        if (data.favorited) {
+          setFavorites([...favorites, currentSong.id.toString()])
+          toast.success('Añadido a favoritos')
+        } else {
+          setFavorites(favorites.filter(id => id !== currentSong.id.toString()))
+          toast.info('Eliminado de favoritos')
+        }
+      }
+    } catch (error) {
+      toast.error('Error al gestionar favorito')
+    }
+  }
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${currentSong.title} - ${currentSong.artist}`,
+          text: `Escucha "${currentSong.title}" de ${currentSong.artist}`,
+          url: window.location.href
+        })
+      } catch (err) {
+        console.log('Error sharing:', err)
+      }
+    }
+  }
+
+  const getDynamicColor = () => {
+    const hue = (colorPhase + 240) % 360
+    return `hsl(${hue}, 70%, 15%)`
+  }
+
+  const getAccentColor = () => {
+    const hue = (colorPhase + 280) % 360
+    return `hsl(${hue}, 80%, 50%)`
+  }
+
+  return (
+    <div 
+      className="min-h-screen transition-all duration-1000 relative overflow-hidden"
+      style={{ backgroundColor: getDynamicColor() }}
+    >
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div 
+          className="absolute w-96 h-96 rounded-full opacity-10 blur-3xl"
+          style={{ 
+            backgroundColor: getAccentColor(),
+            top: '10%',
+            left: '10%',
+            animation: 'float 20s infinite ease-in-out'
+          }}
+        />
+        <div 
+          className="absolute w-96 h-96 rounded-full opacity-10 blur-3xl"
+          style={{ 
+            backgroundColor: getAccentColor(),
+            bottom: '10%',
+            right: '10%',
+            animation: 'float 25s infinite ease-in-out reverse'
+          }}
+        />
+      </div>
+
+      <div className="relative z-10 container mx-auto px-4 py-8">
+        {/* Header */}
+        <header className="text-center mb-12">
+          <div className="relative inline-block mb-6">
+            <div className="w-48 h-48 rounded-full overflow-hidden border-4 shadow-2xl"
+                 style={{ borderColor: getAccentColor() }}>
+              <img 
+                src="https://z-cdn-media.chatglm.cn/files/fe136bc7-0296-45b7-a567-82eb3e4072e4_Zairtre%20y%20Raltek.jpg?auth_key=1864304639-e6d63655667443888ad144ddaa27b31f-0-4b598a42d06e8256240c67561440c29f"
+                alt="Enrique de Zairtre"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="absolute -bottom-2 -right-2 bg-red-600 text-white rounded-full p-2">
+              <Music className="w-6 h-6" />
+            </div>
+          </div>
+          
+          <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 tracking-wider"
+              style={{ textShadow: '0 0 20px rgba(255,255,255,0.3)' }}>
+            Enrique de Zairtre
+          </h1>
+          
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
+            {['Poeta', 'Artista', 'Productor', 'Estrella de Rock'].map((role, index) => (
+              <span 
+                key={index}
+                className="px-4 py-2 rounded-full text-sm font-medium text-white border"
+                style={{ 
+                  borderColor: getAccentColor(),
+                  backgroundColor: `${getAccentColor()}20`
+                }}
+              >
+                {role}
+              </span>
+            ))}
+          </div>
+
+          {/* Auth Button */}
+          <div className="flex justify-center mb-6">
+            {session ? (
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="outline"
+                  onClick={() => router.push('/profile')}
+                  className="border-gray-600 text-white hover:bg-gray-800"
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Mi Perfil
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => signOut({ callbackUrl: '/' })}
+                  className="border-gray-600 text-white hover:bg-gray-800"
+                >
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Cerrar Sesión
+                </Button>
+              </div>
+            ) : (
+              <Button
+                onClick={() => signIn('google', { callbackUrl: '/' })}
+                className="bg-purple-600 hover:bg-purple-700 text-white"
+              >
+                <LogIn className="w-4 h-4 mr-2" />
+                Iniciar Sesión
+              </Button>
+            )}
+          </div>
+        </header>
+
+        {/* Main Player */}
+        <Card className="max-w-4xl mx-auto bg-black/50 backdrop-blur-lg border-gray-700 text-white overflow-hidden">
+          <div className="grid md:grid-cols-2 gap-6 p-6">
+            {/* Album Cover and Visualizer */}
+            <div className="space-y-4">
+              <div className="relative aspect-square rounded-lg overflow-hidden">
+                <img 
+                  src={currentSong.coverImage}
+                  alt={currentSong.title}
+                  className="w-full h-full object-cover"
+                />
+                <canvas 
+                  ref={canvasRef}
+                  className="absolute inset-0 w-full h-full opacity-50"
+                />
+                <AudioVisualizer 
+                  audioRef={audioRef}
+                  canvasRef={canvasRef}
+                  isPlaying={isPlaying}
+                />
+              </div>
+              
+              {/* Song Info */}
+              <div className="text-center">
+                <h2 className="text-2xl font-bold mb-2">{currentSong.title}</h2>
+                <p className="text-gray-300">{currentSong.artist}</p>
+              </div>
+            </div>
+
+            {/* Player Controls */}
+            <div className="space-y-6">
+              {/* Progress Bar */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm text-gray-300">
+                  <span>{formatTime(currentTime)}</span>
+                  <span>{formatTime(currentSong.duration)}</span>
+                </div>
+                <Slider
+                  value={[currentTime]}
+                  max={currentSong.duration}
+                  step={1}
+                  className="w-full"
+                  onValueChange={(value) => setCurrentTime(value[0])}
+                />
+              </div>
+
+              {/* Control Buttons */}
+              <div className="flex justify-center items-center gap-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsShuffleOn(!isShuffleOn)}
+                  className={isShuffleOn ? 'text-purple-400' : 'text-gray-400'}
+                >
+                  <Shuffle className="w-4 h-4" />
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handlePrevious}
+                  className="text-white hover:text-purple-400"
+                >
+                  <SkipBack className="w-6 h-6" />
+                </Button>
+                
+                <Button
+                  onClick={handlePlayPause}
+                  className="w-16 h-16 rounded-full"
+                  style={{ backgroundColor: getAccentColor() }}
+                >
+                  {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-1" />}
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleNext}
+                  className="text-white hover:text-purple-400"
+                >
+                  <SkipForward className="w-6 h-6" />
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setRepeatMode(repeatMode === 'off' ? 'all' : repeatMode === 'all' ? 'one' : 'off')}
+                  className={repeatMode !== 'off' ? 'text-purple-400' : 'text-gray-400'}
+                >
+                  <Repeat className="w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* Volume Control */}
+              <div className="flex items-center gap-3">
+                <Volume2 className="w-4 h-4 text-gray-400" />
+                <Slider
+                  value={[volume]}
+                  max={100}
+                  step={1}
+                  className="flex-1"
+                  onValueChange={(value) => setVolume(value[0])}
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={handleFavorite}
+                  className={`flex-1 border-gray-600 text-white hover:bg-gray-800 ${
+                    favorites.includes(currentSong.id.toString()) ? 'bg-red-900/30 border-red-600' : ''
+                  }`}
+                >
+                  <Heart className={`w-4 h-4 mr-2 ${favorites.includes(currentSong.id.toString()) ? 'fill-current' : ''}`} />
+                  {favorites.includes(currentSong.id.toString()) ? 'Favorito' : 'Favorito'}
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => setShowPlaylist(!showPlaylist)}
+                  className="flex-1 border-gray-600 text-white hover:bg-gray-800"
+                >
+                  <List className="w-4 h-4 mr-2" />
+                  Playlist
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => setShowLyrics(!showLyrics)}
+                  className="flex-1 border-gray-600 text-white hover:bg-gray-800"
+                >
+                  <Music className="w-4 h-4 mr-2" />
+                  Letras
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={handleShare}
+                  className="border-gray-600 text-white hover:bg-gray-800"
+                >
+                  <Share2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Playlist */}
+          {showPlaylist && (
+            <div className="border-t border-gray-700 p-4 max-h-64 overflow-y-auto">
+              <h3 className="text-lg font-semibold mb-3">Playlist</h3>
+              <div className="space-y-2">
+                {songs.map((song) => (
+                  <div
+                    key={song.id}
+                    onClick={() => setCurrentSong(song)}
+                    className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                      currentSong.id === song.id ? 'bg-purple-900/30' : 'hover:bg-gray-800'
+                    }`}
+                  >
+                    <img src={song.coverImage} alt={song.title} className="w-12 h-12 rounded" />
+                    <div className="flex-1">
+                      <p className="font-medium">{song.title}</p>
+                      <p className="text-sm text-gray-400">{song.artist}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {favorites.includes(song.id.toString()) && (
+                        <Heart className="w-4 h-4 text-red-400 fill-current" />
+                      )}
+                      <span className="text-sm text-gray-400">{formatTime(song.duration)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Lyrics */}
+          {showLyrics && (
+            <div className="border-t border-gray-700 p-4">
+              <h3 className="text-lg font-semibold mb-3">Letras</h3>
+              <div className="text-center space-y-2 text-gray-300 font-medium">
+                {currentSong.lyrics.split('\n').map((line, index) => (
+                  <p key={index}>{line}</p>
+                ))}
+              </div>
+            </div>
+          )}
+        </Card>
+
+        {/* Hidden Audio Element */}
+        <audio
+          ref={audioRef}
+          src={currentSong.audioUrl}
+          onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+          onEnded={() => {
+            if (repeatMode === 'one') {
+              audioRef.current?.play()
+            } else if (repeatMode === 'all' || isShuffleOn) {
+              handleNext()
+            }
+          }}
+        />
+      </div>
+
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          33% { transform: translateY(-30px) rotate(120deg); }
+          66% { transform: translateY(30px) rotate(240deg); }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+---
+
+
+## File: src__app__profile__page.tsx__.txt
+
+# page.tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useSession, signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Badge } from '@/components/ui/badge'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { 
+  Music, 
+  Heart, 
+  Users, 
+  Star, 
+  Crown, 
+  Award, 
+  Plus, 
+  LogOut, 
+  User,
+  Calendar,
+  Gift,
+  TrendingUp
+} from 'lucide-react'
+import { toast } from 'sonner'
+
+interface FanProfile {
+  id: string
+  email: string
+  name: string | null
+  image: string | null
+  totalPlays: number
+  joinDate: string
+  lastLogin: string | null
+  favoriteCount: number
+  playlistCount: number
+  loyaltyPoints: number
+  tier: string
+}
+
+interface Favorite {
+  id: string
+  song: {
+    id: string
+    title: string
+    artist: string
+    duration: number
+    coverImage: string
+  }
+  createdAt: string
+}
+
+interface UserPlaylist {
+  id: string
+  name: string
+  description: string | null
+  isPublic: boolean
+  createdAt: string
+  _count: {
+    songs: number
+  }
+}
+
+interface Reward {
+  id: string
+  type: string
+  title: string
+  description: string | null
+  icon: string | null
+  unlockedAt: string
+  expiresAt: string | null
+}
+
+export default function FanProfile() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+  const [profile, setProfile] = useState<FanProfile | null>(null)
+  const [favorites, setFavorites] = useState<Favorite[]>([])
+  const [playlists, setPlaylists] = useState<UserPlaylist[]>([])
+  const [rewards, setRewards] = useState<Reward[]>([])
+  const [loading, setLoading] = useState(true)
+  const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] = useState(false)
+  const [newPlaylist, setNewPlaylist] = useState({
+    name: '',
+    description: '',
+    isPublic: false
+  })
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin')
+    }
+  }, [status, router])
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetchProfileData()
+    }
+  }, [session])
+
+  const fetchProfileData = async () => {
+    try {
+      const [profileRes, favoritesRes, playlistsRes, rewardsRes] = await Promise.all([
+        fetch('/api/user/profile'),
+        fetch('/api/favorites'),
+        fetch('/api/user-playlists'),
+        fetch('/api/user/rewards')
+      ])
+
+      if (profileRes.ok) {
+        const profileData = await profileRes.json()
+        setProfile(profileData)
+      }
+
+      if (favoritesRes.ok) {
+        const favoritesData = await favoritesRes.json()
+        setFavorites(favoritesData)
+      }
+
+      if (playlistsRes.ok) {
+        const playlistsData = await playlistsRes.json()
+        setPlaylists(playlistsData)
+      }
+
+      if (rewardsRes.ok) {
+        const rewardsData = await rewardsRes.json()
+        setRewards(rewardsData)
+      }
+    } catch (error) {
+      toast.error('Error al cargar datos del perfil')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleCreatePlaylist = async () => {
+    if (!newPlaylist.name.trim()) {
+      toast.error('El nombre es requerido')
+      return
+    }
+
+    try {
+      const response = await fetch('/api/user-playlists', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newPlaylist),
+      })
+
+      if (response.ok) {
+        toast.success('Playlist creada correctamente')
+        setIsPlaylistDialogOpen(false)
+        setNewPlaylist({ name: '', description: '', isPublic: false })
+        fetchProfileData()
+      } else {
+        toast.error('Error al crear playlist')
+      }
+    } catch (error) {
+      toast.error('Error al crear playlist')
+    }
+  }
+
+  const getTierColor = (tier: string) => {
+    switch (tier) {
+      case 'platinum': return 'bg-purple-600'
+      case 'gold': return 'bg-yellow-600'
+      case 'silver': return 'bg-gray-400'
+      case 'bronze': return 'bg-orange-600'
+      default: return 'bg-gray-600'
+    }
+  }
+
+  const getTierIcon = (tier: string) => {
+    switch (tier) {
+      case 'platinum': return <Crown className="w-4 h-4" />
+      case 'gold': return <Star className="w-4 h-4" />
+      case 'silver': return <Award className="w-4 h-4" />
+      case 'bronze': return <Users className="w-4 h-4" />
+      default: return <Users className="w-4 h-4" />
+    }
+  }
+
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
+  if (status === 'loading' || loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="text-white">Cargando perfil...</div>
+      </div>
+    )
+  }
+
+  if (!session || !profile) {
+    return null
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-4">
+      <div className="container mx-auto max-w-6xl">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="outline" 
+              onClick={() => router.push('/')}
+              className="border-gray-600 text-white hover:bg-gray-800"
+            >
+              <Music className="w-4 h-4 mr-2" />
+              Volver
+            </Button>
+            <h1 className="text-3xl font-bold text-white">Mi Perfil</h1>
+          </div>
+          
+          <Button 
+            variant="outline" 
+            onClick={() => signOut({ callbackUrl: '/' })}
+            className="border-gray-600 text-white hover:bg-gray-800"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Cerrar Sesión
+          </Button>
+        </div>
+
+        {/* Profile Info */}
+        <Card className="bg-black/50 border-gray-700 text-white mb-8">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-6">
+              <img 
+                src={profile.image || '/default-avatar.png'} 
+                alt={profile.name || 'Fan'}
+                className="w-20 h-20 rounded-full border-2 border-purple-500"
+              />
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold mb-2">{profile.name || 'Fan'}</h2>
+                <p className="text-gray-400 mb-4">{profile.email}</p>
+                <div className="flex items-center gap-4">
+                  <Badge className={`${getTierColor(profile.tier)} text-white`}>
+                    <div className="flex items-center gap-1">
+                      {getTierIcon(profile.tier)}
+                      {profile.tier.charAt(0).toUpperCase() + profile.tier.slice(1)}
+                    </div>
+                  </Badge>
+                  <div className="flex items-center gap-1">
+                    <Star className="w-4 h-4 text-yellow-400" />
+                    <span>{profile.loyaltyPoints} puntos</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-sm text-gray-400">
+                    <Calendar className="w-4 h-4" />
+                    <span>Miembro desde {new Date(profile.joinDate).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <Card className="bg-purple-900/20 border-purple-500/30">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <Heart className="w-5 h-5 text-red-400" />
+                <div>
+                  <p className="text-sm text-gray-400">Favoritos</p>
+                  <p className="text-xl font-bold text-white">{profile.favoriteCount}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-blue-900/20 border-blue-500/30">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-blue-400" />
+                <div>
+                  <p className="text-sm text-gray-400">Playlists</p>
+                  <p className="text-xl font-bold text-white">{profile.playlistCount}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-green-900/20 border-green-500/30">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-green-400" />
+                <div>
+                  <p className="text-sm text-gray-400">Reproducciones</p>
+                  <p className="text-xl font-bold text-white">{profile.totalPlays}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-yellow-900/20 border-yellow-500/30">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <Gift className="w-5 h-5 text-yellow-400" />
+                <div>
+                  <p className="text-sm text-gray-400">Recompensas</p>
+                  <p className="text-xl font-bold text-white">{rewards.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Content */}
+        <Tabs defaultValue="favorites" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 bg-black/50 border-gray-700">
+            <TabsTrigger value="favorites" className="data-[state=active]:bg-purple-600">
+              <Heart className="w-4 h-4 mr-2" />
+              Favoritos
+            </TabsTrigger>
+            <TabsTrigger value="playlists" className="data-[state=active]:bg-purple-600">
+              <Users className="w-4 h-4 mr-2" />
+              Mis Playlists
+            </TabsTrigger>
+            <TabsTrigger value="rewards" className="data-[state=active]:bg-purple-600">
+              <Gift className="w-4 h-4 mr-2" />
+              Recompensas
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="favorites">
+            <Card className="bg-black/50 border-gray-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Heart className="w-5 h-5" />
+                  Mis Canciones Favoritas
+                </CardTitle>
+                <CardDescription>Canciones que has marcado como favoritas</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {favorites.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400">
+                    <Heart className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>No tienes canciones favoritas aún</p>
+                    <p className="text-sm">Explora el catálogo y añade tus canciones preferidas</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Canción</TableHead>
+                        <TableHead>Artista</TableHead>
+                        <TableHead>Duración</TableHead>
+                        <TableHead>Añadida</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {favorites.map((favorite) => (
+                        <TableRow key={favorite.id}>
+                          <TableCell className="font-medium">{favorite.song.title}</TableCell>
+                          <TableCell>{favorite.song.artist}</TableCell>
+                          <TableCell>{formatDuration(favorite.song.duration)}</TableCell>
+                          <TableCell>
+                            {new Date(favorite.createdAt).toLocaleDateString()}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="playlists">
+            <Card className="bg-black/50 border-gray-700">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="w-5 h-5" />
+                      Mis Playlists
+                    </CardTitle>
+                    <CardDescription>Tus listas de reproducción personalizadas</CardDescription>
+                  </div>
+                  <Dialog open={isPlaylistDialogOpen} onOpenChange={setIsPlaylistDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button className="bg-purple-600 hover:bg-purple-700">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Nueva Playlist
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-gray-900 border-gray-700 text-white">
+                      <DialogHeader>
+                        <DialogTitle>Crear Nueva Playlist</DialogTitle>
+                        <DialogDescription>
+                          Crea tu propia lista de reproducción personalizada
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="name">Nombre</Label>
+                          <Input
+                            id="name"
+                            value={newPlaylist.name}
+                            onChange={(e) => setNewPlaylist({ ...newPlaylist, name: e.target.value })}
+                            className="bg-gray-800 border-gray-600"
+                            placeholder="Mi playlist favorita"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="description">Descripción</Label>
+                          <Textarea
+                            id="description"
+                            value={newPlaylist.description}
+                            onChange={(e) => setNewPlaylist({ ...newPlaylist, description: e.target.value })}
+                            className="bg-gray-800 border-gray-600"
+                            rows={3}
+                            placeholder="Describe tu playlist..."
+                          />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="isPublic"
+                            checked={newPlaylist.isPublic}
+                            onChange={(e) => setNewPlaylist({ ...newPlaylist, isPublic: e.target.checked })}
+                            className="rounded"
+                          />
+                          <Label htmlFor="isPublic">Hacer pública</Label>
+                        </div>
+                        <div className="flex justify-end space-x-2">
+                          <Button variant="outline" onClick={() => setIsPlaylistDialogOpen(false)}>
+                            Cancelar
+                          </Button>
+                          <Button onClick={handleCreatePlaylist} className="bg-purple-600 hover:bg-purple-700">
+                            Crear Playlist
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {playlists.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400">
+                    <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>No tienes playlists aún</p>
+                    <p className="text-sm">Crea tu primera playlist personalizada</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {playlists.map((playlist) => (
+                      <Card key={playlist.id} className="bg-gray-800 border-gray-600">
+                        <CardContent className="p-4">
+                          <h3 className="font-semibold mb-2">{playlist.name}</h3>
+                          <p className="text-sm text-gray-400 mb-3">
+                            {playlist.description || 'Sin descripción'}
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <Badge variant="outline" className="border-gray-500">
+                              {playlist._count.songs} canciones
+                            </Badge>
+                            {playlist.isPublic && (
+                              <Badge variant="outline" className="border-green-500 text-green-400">
+                                Pública
+                              </Badge>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="rewards">
+            <Card className="bg-black/50 border-gray-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Gift className="w-5 h-5" />
+                  Mis Recompensas
+                </CardTitle>
+                <CardDescription>Insignias y premios ganados</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {rewards.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400">
+                    <Gift className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>No tienes recompensas aún</p>
+                    <p className="text-sm">Sigue interactuando para ganar premios</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {rewards.map((reward) => (
+                      <Card key={reward.id} className="bg-gray-800 border-gray-600">
+                        <CardContent className="p-4 text-center">
+                          <div className="text-4xl mb-3">{reward.icon || '🏆'}</div>
+                          <h3 className="font-semibold mb-2">{reward.title}</h3>
+                          <p className="text-sm text-gray-400 mb-3">{reward.description}</p>
+                          <p className="text-xs text-gray-500">
+                            Desbloqueado el {new Date(reward.unlockedAt).toLocaleDateString()}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  )
+}
+
+---
+
+
+## File: src__components__admin__FanManager.tsx__.txt
+
+# FanManager.tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
+import { Users, Award, Star, Crown, Gift, Power, PowerOff, Mail, Calendar } from 'lucide-react'
+import { toast } from 'sonner'
+
+interface Fan {
+  id: string
+  email: string
+  name: string | null
+  image: string | null
+  isActive: boolean
+  totalPlays: number
+  joinDate: string
+  lastLogin: string | null
+  favoriteCount: number
+  playlistCount: number
+  loyaltyPoints: number
+  tier: string
+  _count: {
+    favorites: number
+    playlists: number
+    activities: number
+    rewards: number
+  }
+}
+
+export function FanManager() {
+  const { data: session } = useSession()
+  const [fans, setFans] = useState<Fan[]>([])
+  const [loading, setLoading] = useState(true)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [selectedFan, setSelectedFan] = useState<Fan | null>(null)
+  const [actionData, setActionData] = useState({
+    action: '',
+    type: '',
+    title: '',
+    description: ''
+  })
+
+  useEffect(() => {
+    fetchFans()
+  }, [])
+
+  const fetchFans = async () => {
+    try {
+      const response = await fetch('/api/admin/fans')
+      if (response.ok) {
+        const data = await response.json()
+        setFans(data)
+      }
+    } catch (error) {
+      toast.error('Error al cargar fans')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleAction = async () => {
+    if (!selectedFan) return
+
+    try {
+      const response = await fetch('/api/admin/fans', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: selectedFan.id,
+          ...actionData
+        }),
+      })
+
+      if (response.ok) {
+        toast.success('Acción realizada correctamente')
+        setIsDialogOpen(false)
+        setSelectedFan(null)
+        setActionData({ action: '', type: '', title: '', description: '' })
+        fetchFans()
+      } else {
+        toast.error('Error al realizar acción')
+      }
+    } catch (error) {
+      toast.error('Error al realizar acción')
+    }
+  }
+
+  const getTierColor = (tier: string) => {
+    switch (tier) {
+      case 'platinum': return 'bg-purple-600'
+      case 'gold': return 'bg-yellow-600'
+      case 'silver': return 'bg-gray-400'
+      case 'bronze': return 'bg-orange-600'
+      default: return 'bg-gray-600'
+    }
+  }
+
+  const getTierIcon = (tier: string) => {
+    switch (tier) {
+      case 'platinum': return <Crown className="w-4 h-4" />
+      case 'gold': return <Star className="w-4 h-4" />
+      case 'silver': return <Award className="w-4 h-4" />
+      case 'bronze': return <Users className="w-4 h-4" />
+      default: return <Users className="w-4 h-4" />
+    }
+  }
+
+  if (loading) {
+    return <div className="text-center py-8">Cargando fans...</div>
+  }
+
+  return (
+    <Card className="bg-black/50 border-gray-700">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              Gestión de Fans
+            </CardTitle>
+            <CardDescription>Sistema de Atención al Cliente (SAC) y Recompensas</CardDescription>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="border-green-500 text-green-400">
+              {fans.length} Fans Activos
+            </Badge>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <Card className="bg-purple-900/20 border-purple-500/30">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <Crown className="w-5 h-5 text-purple-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">Platinum</p>
+                    <p className="text-xl font-bold">{fans.filter(f => f.tier === 'platinum').length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-yellow-900/20 border-yellow-500/30">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <Star className="w-5 h-5 text-yellow-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">Gold</p>
+                    <p className="text-xl font-bold">{fans.filter(f => f.tier === 'gold').length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-900/20 border-gray-500/30">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <Award className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">Silver</p>
+                    <p className="text-xl font-bold">{fans.filter(f => f.tier === 'silver').length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-orange-900/20 border-orange-500/30">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <Users className="w-5 h-5 text-orange-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">Bronze</p>
+                    <p className="text-xl font-bold">{fans.filter(f => f.tier === 'bronze').length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Fans Table */}
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Fan</TableHead>
+                <TableHead>Nivel</TableHead>
+                <TableHead>Puntos</TableHead>
+                <TableHead>Favoritos</TableHead>
+                <TableHead>Playlists</TableHead>
+                <TableHead>Registro</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead>Acciones</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {fans.map((fan) => (
+                <TableRow key={fan.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <img 
+                        src={fan.image || '/default-avatar.png'} 
+                        alt={fan.name || 'Fan'}
+                        className="w-8 h-8 rounded-full"
+                      />
+                      <div>
+                        <p className="font-medium">{fan.name || 'Sin nombre'}</p>
+                        <p className="text-sm text-gray-400">{fan.email}</p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={`${getTierColor(fan.tier)} text-white`}>
+                      <div className="flex items-center gap-1">
+                        {getTierIcon(fan.tier)}
+                        {fan.tier.charAt(0).toUpperCase() + fan.tier.slice(1)}
+                      </div>
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 text-yellow-400" />
+                      {fan.loyaltyPoints}
+                    </div>
+                  </TableCell>
+                  <TableCell>{fan._count.favorites}</TableCell>
+                  <TableCell>{fan._count.playlists}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1 text-sm text-gray-400">
+                      <Calendar className="w-4 h-4" />
+                      {new Date(fan.joinDate).toLocaleDateString()}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={fan.isActive ? 'default' : 'secondary'}>
+                      {fan.isActive ? 'Activo' : 'Inactivo'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Dialog open={isDialogOpen && selectedFan?.id === fan.id} onOpenChange={setIsDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setSelectedFan(fan)}
+                          className="border-gray-600"
+                        >
+                          <Gift className="w-4 h-4 mr-1" />
+                          SAC
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-md">
+                        <DialogHeader>
+                          <DialogTitle className="flex items-center gap-2">
+                            <Users className="w-5 h-5" />
+                            Atención al Fan
+                          </DialogTitle>
+                          <DialogDescription>
+                            {selectedFan?.name || selectedFan?.email} - Nivel {selectedFan?.tier}
+                          </DialogDescription>
+                        </DialogHeader>
+                        
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="action">Acción</Label>
+                            <Select value={actionData.action} onValueChange={(value) => setActionData({ ...actionData, action: value })}>
+                              <SelectTrigger className="bg-gray-800 border-gray-600">
+                                <SelectValue placeholder="Selecciona una acción" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="award_points">Otorgar Puntos</SelectItem>
+                                <SelectItem value="award_badge">Otorgar Insignia</SelectItem>
+                                <SelectItem value="upgrade_tier">Mejorar Nivel</SelectItem>
+                                <SelectItem value="activate">Activar Cuenta</SelectItem>
+                                <SelectItem value="deactivate">Desactivar Cuenta</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {actionData.action === 'award_points' && (
+                            <div>
+                              <Label htmlFor="type">Cantidad de Puntos</Label>
+                              <Input
+                                id="type"
+                                type="number"
+                                value={actionData.type}
+                                onChange={(e) => setActionData({ ...actionData, type: e.target.value })}
+                                className="bg-gray-800 border-gray-600"
+                                placeholder="100"
+                              />
+                            </div>
+                          )}
+
+                          {actionData.action === 'award_badge' && (
+                            <div>
+                              <Label htmlFor="type">Icono</Label>
+                              <Input
+                                id="type"
+                                value={actionData.type}
+                                onChange={(e) => setActionData({ ...actionData, type: e.target.value })}
+                                className="bg-gray-800 border-gray-600"
+                                placeholder="🏆"
+                              />
+                            </div>
+                          )}
+
+                          {actionData.action === 'upgrade_tier' && (
+                            <div>
+                              <Label htmlFor="type">Nuevo Nivel</Label>
+                              <Select value={actionData.type} onValueChange={(value) => setActionData({ ...actionData, type: value })}>
+                                <SelectTrigger className="bg-gray-800 border-gray-600">
+                                  <SelectValue placeholder="Selecciona nivel" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="silver">Silver</SelectItem>
+                                  <SelectItem value="gold">Gold</SelectItem>
+                                  <SelectItem value="platinum">Platinum</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+
+                          {(actionData.action === 'award_points' || actionData.action === 'award_badge' || actionData.action === 'upgrade_tier') && (
+                            <>
+                              <div>
+                                <Label htmlFor="title">Título</Label>
+                                <Input
+                                  id="title"
+                                  value={actionData.title}
+                                  onChange={(e) => setActionData({ ...actionData, title: e.target.value })}
+                                  className="bg-gray-800 border-gray-600"
+                                  placeholder="Título de la recompensa"
+                                />
+                              </div>
+
+                              <div>
+                                <Label htmlFor="description">Descripción</Label>
+                                <Textarea
+                                  id="description"
+                                  value={actionData.description}
+                                  onChange={(e) => setActionData({ ...actionData, description: e.target.value })}
+                                  className="bg-gray-800 border-gray-600"
+                                  rows={3}
+                                  placeholder="Descripción detallada"
+                                />
+                              </div>
+                            </>
+                          )}
+
+                          <div className="flex justify-end space-x-2">
+                            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                              Cancelar
+                            </Button>
+                            <Button 
+                              onClick={handleAction}
+                              className="bg-purple-600 hover:bg-purple-700"
+                              disabled={!actionData.action}
+                            >
+                              {actionData.action === 'activate' ? (
+                                <><Power className="w-4 h-4 mr-2" /> Activar</>
+                              ) : actionData.action === 'deactivate' ? (
+                                <><PowerOff className="w-4 h-4 mr-2" /> Desactivar</>
+                              ) : (
+                                <><Gift className="w-4 h-4 mr-2" /> Otorgar</>
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+---
+
+
+## File: src__components__admin__PlaylistManager.tsx__.txt
+
+# PlaylistManager.tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { Plus, Edit, Trash2, Music } from 'lucide-react'
+import { toast } from 'sonner'
+
+interface Playlist {
+  id: string
+  name: string
+  description?: string
+  createdAt: string
+  updatedAt: string
+  _count?: {
+    songs: number
+  }
+}
+
+export function PlaylistManager() {
+  const [playlists, setPlaylists] = useState<Playlist[]>([])
+  const [loading, setLoading] = useState(true)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [editingPlaylist, setEditingPlaylist] = useState<Playlist | null>(null)
+  const [formData, setFormData] = useState({
+    name: '',
+    description: ''
+  })
+
+  useEffect(() => {
+    fetchPlaylists()
+  }, [])
+
+  const fetchPlaylists = async () => {
+    try {
+      const response = await fetch('/api/playlists')
+      if (response.ok) {
+        const data = await response.json()
+        setPlaylists(data)
+      }
+    } catch (error) {
+      toast.error('Error al cargar playlists')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    try {
+      const url = editingPlaylist ? `/api/playlists/${editingPlaylist.id}` : '/api/playlists'
+      const method = editingPlaylist ? 'PUT' : 'POST'
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        toast.success(editingPlaylist ? 'Playlist actualizada' : 'Playlist creada')
+        setIsDialogOpen(false)
+        setEditingPlaylist(null)
+        resetForm()
+        fetchPlaylists()
+      } else {
+        toast.error('Error al guardar playlist')
+      }
+    } catch (error) {
+      toast.error('Error al guardar playlist')
+    }
+  }
+
+  const handleEdit = (playlist: Playlist) => {
+    setEditingPlaylist(playlist)
+    setFormData({
+      name: playlist.name,
+      description: playlist.description || ''
+    })
+    setIsDialogOpen(true)
+  }
+
+  const handleDelete = async (id: string) => {
+    if (confirm('¿Estás seguro de eliminar esta playlist?')) {
+      try {
+        const response = await fetch(`/api/playlists/${id}`, {
+          method: 'DELETE',
+        })
+
+        if (response.ok) {
+          toast.success('Playlist eliminada')
+          fetchPlaylists()
+        } else {
+          toast.error('Error al eliminar playlist')
+        }
+      } catch (error) {
+        toast.error('Error al eliminar playlist')
+      }
+    }
+  }
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      description: ''
+    })
+  }
+
+  if (loading) {
+    return <div className="text-center py-8">Cargando playlists...</div>
+  }
+
+  return (
+    <Card className="bg-black/50 border-gray-700">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Gestión de Playlists</CardTitle>
+            <CardDescription>Administra las listas de reproducción</CardDescription>
+          </div>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button 
+                onClick={() => {
+                  resetForm()
+                  setEditingPlaylist(null)
+                }}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Nueva Playlist
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-900 border-gray-700 text-white">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingPlaylist ? 'Editar Playlist' : 'Nueva Playlist'}
+                </DialogTitle>
+                <DialogDescription>
+                  {editingPlaylist ? 'Modifica los datos de la playlist' : 'Crea una nueva playlist'}
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Nombre</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="bg-gray-800 border-gray-600"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="description">Descripción</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className="bg-gray-800 border-gray-600"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
+                    {editingPlaylist ? 'Actualizar' : 'Crear'}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Nombre</TableHead>
+              <TableHead>Descripción</TableHead>
+              <TableHead>Canciones</TableHead>
+              <TableHead>Fecha</TableHead>
+              <TableHead>Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {playlists.map((playlist) => (
+              <TableRow key={playlist.id}>
+                <TableCell className="font-medium">{playlist.name}</TableCell>
+                <TableCell>{playlist.description || 'Sin descripción'}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-1">
+                    <Music className="w-4 h-4" />
+                    {playlist._count?.songs || 0}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  {new Date(playlist.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  <div className="flex space-x-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEdit(playlist)}
+                      className="border-gray-600"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDelete(playlist.id)}
+                      className="border-red-600 text-red-400 hover:bg-red-900/20"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  )
+}
+
+---
+
+
+## File: src__components__admin__SettingsPanel.tsx__.txt
+
+# SettingsPanel.tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Switch } from '@/components/ui/switch'
+import { Separator } from '@/components/ui/separator'
+import { Badge } from '@/components/ui/badge'
+import { Save, RefreshCw, Download, Upload } from 'lucide-react'
+import { toast } from 'sonner'
+
+interface SiteSettings {
+  siteName: string
+  siteDescription: string
+  artistName: string
+  contactEmail: string
+  socialLinks: {
+    facebook?: string
+    twitter?: string
+    instagram?: string
+    youtube?: string
+    spotify?: string
+  }
+  features: {
+    enableComments: boolean
+    enableDownloads: boolean
+    enableLyrics: boolean
+    enablePlaylists: boolean
+  }
+}
+
+export function SettingsPanel() {
+  const [settings, setSettings] = useState<SiteSettings>({
+    siteName: 'Enrique de Zairtre',
+    siteDescription: 'Poeta, Artista, Productor y Estrella de Rock',
+    artistName: 'Enrique de Zairtre',
+    contactEmail: 'contacto@enriquezairtre.com',
+    socialLinks: {
+      facebook: '',
+      twitter: '',
+      instagram: '',
+      youtube: '',
+      spotify: ''
+    },
+    features: {
+      enableComments: true,
+      enableDownloads: false,
+      enableLyrics: true,
+      enablePlaylists: true
+    }
+  })
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    fetchSettings()
+  }, [])
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/admin/settings')
+      if (response.ok) {
+        const data = await response.json()
+        setSettings(data)
+      }
+    } catch (error) {
+      console.error('Error fetching settings:', error)
+    }
+  }
+
+  const handleSave = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(settings),
+      })
+
+      if (response.ok) {
+        toast.success('Configuración guardada')
+      } else {
+        toast.error('Error al guardar configuración')
+      }
+    } catch (error) {
+      toast.error('Error al guardar configuración')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleExport = async () => {
+    try {
+      const response = await fetch('/api/admin/export')
+      if (response.ok) {
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'backup.json'
+        a.click()
+        window.URL.revokeObjectURL(url)
+        toast.success('Datos exportados')
+      }
+    } catch (error) {
+      toast.error('Error al exportar datos')
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* General Settings */}
+      <Card className="bg-black/50 border-gray-700">
+        <CardHeader>
+          <CardTitle>Configuración General</CardTitle>
+          <CardDescription>Información básica del sitio</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="siteName">Nombre del Sitio</Label>
+              <Input
+                id="siteName"
+                value={settings.siteName}
+                onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
+                className="bg-gray-800 border-gray-600"
+              />
+            </div>
+            <div>
+              <Label htmlFor="artistName">Nombre del Artista</Label>
+              <Input
+                id="artistName"
+                value={settings.artistName}
+                onChange={(e) => setSettings({ ...settings, artistName: e.target.value })}
+                className="bg-gray-800 border-gray-600"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="siteDescription">Descripción del Sitio</Label>
+            <Textarea
+              id="siteDescription"
+              value={settings.siteDescription}
+              onChange={(e) => setSettings({ ...settings, siteDescription: e.target.value })}
+              className="bg-gray-800 border-gray-600"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="contactEmail">Email de Contacto</Label>
+            <Input
+              id="contactEmail"
+              type="email"
+              value={settings.contactEmail}
+              onChange={(e) => setSettings({ ...settings, contactEmail: e.target.value })}
+              className="bg-gray-800 border-gray-600"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Social Links */}
+      <Card className="bg-black/50 border-gray-700">
+        <CardHeader>
+          <CardTitle>Redes Sociales</CardTitle>
+          <CardDescription>Enlaces a perfiles sociales</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="facebook">Facebook</Label>
+              <Input
+                id="facebook"
+                value={settings.socialLinks.facebook}
+                onChange={(e) => setSettings({ 
+                  ...settings, 
+                  socialLinks: { ...settings.socialLinks, facebook: e.target.value }
+                })}
+                className="bg-gray-800 border-gray-600"
+                placeholder="https://facebook.com/..."
+              />
+            </div>
+            <div>
+              <Label htmlFor="twitter">Twitter/X</Label>
+              <Input
+                id="twitter"
+                value={settings.socialLinks.twitter}
+                onChange={(e) => setSettings({ 
+                  ...settings, 
+                  socialLinks: { ...settings.socialLinks, twitter: e.target.value }
+                })}
+                className="bg-gray-800 border-gray-600"
+                placeholder="https://twitter.com/..."
+              />
+            </div>
+            <div>
+              <Label htmlFor="instagram">Instagram</Label>
+              <Input
+                id="instagram"
+                value={settings.socialLinks.instagram}
+                onChange={(e) => setSettings({ 
+                  ...settings, 
+                  socialLinks: { ...settings.socialLinks, instagram: e.target.value }
+                })}
+                className="bg-gray-800 border-gray-600"
+                placeholder="https://instagram.com/..."
+              />
+            </div>
+            <div>
+              <Label htmlFor="youtube">YouTube</Label>
+              <Input
+                id="youtube"
+                value={settings.socialLinks.youtube}
+                onChange={(e) => setSettings({ 
+                  ...settings, 
+                  socialLinks: { ...settings.socialLinks, youtube: e.target.value }
+                })}
+                className="bg-gray-800 border-gray-600"
+                placeholder="https://youtube.com/..."
+              />
+            </div>
+            <div>
+              <Label htmlFor="spotify">Spotify</Label>
+              <Input
+                id="spotify"
+                value={settings.socialLinks.spotify}
+                onChange={(e) => setSettings({ 
+                  ...settings, 
+                  socialLinks: { ...settings.socialLinks, spotify: e.target.value }
+                })}
+                className="bg-gray-800 border-gray-600"
+                placeholder="https://spotify.com/..."
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Features */}
+      <Card className="bg-black/50 border-gray-700">
+        <CardHeader>
+          <CardTitle>Características</CardTitle>
+          <CardDescription>Activar o desactivar funcionalidades</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <Label>Comentarios</Label>
+              <p className="text-sm text-gray-400">Permitir comentarios en canciones</p>
+            </div>
+            <Switch
+              checked={settings.features.enableComments}
+              onCheckedChange={(checked) => setSettings({
+                ...settings,
+                features: { ...settings.features, enableComments: checked }
+              })}
+            />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div>
+              <Label>Descargas</Label>
+              <p className="text-sm text-gray-400">Permitir descarga de canciones</p>
+            </div>
+            <Switch
+              checked={settings.features.enableDownloads}
+              onCheckedChange={(checked) => setSettings({
+                ...settings,
+                features: { ...settings.features, enableDownloads: checked }
+              })}
+            />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div>
+              <Label>Letras</Label>
+              <p className="text-sm text-gray-400">Mostrar letras de canciones</p>
+            </div>
+            <Switch
+              checked={settings.features.enableLyrics}
+              onCheckedChange={(checked) => setSettings({
+                ...settings,
+                features: { ...settings.features, enableLyrics: checked }
+              })}
+            />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div>
+              <Label>Playlists</Label>
+              <p className="text-sm text-gray-400">Activar sistema de playlists</p>
+            </div>
+            <Switch
+              checked={settings.features.enablePlaylists}
+              onCheckedChange={(checked) => setSettings({
+                ...settings,
+                features: { ...settings.features, enablePlaylists: checked }
+              })}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Actions */}
+      <Card className="bg-black/50 border-gray-700">
+        <CardHeader>
+          <CardTitle>Acciones</CardTitle>
+          <CardDescription>Operaciones de mantenimiento</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-4">
+            <Button 
+              onClick={handleSave}
+              disabled={loading}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {loading ? 'Guardando...' : 'Guardar Cambios'}
+            </Button>
+
+            <Button 
+              variant="outline"
+              onClick={handleExport}
+              className="border-gray-600"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Exportar Datos
+            </Button>
+
+            <Button 
+              variant="outline"
+              onClick={() => window.location.reload()}
+              className="border-gray-600"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Recargar
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+---
+
+
+## File: src__components__admin__SongManager.tsx__.txt
+
+# SongManager.tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { Plus, Edit, Trash2, Play, Pause, Eye } from 'lucide-react'
+import { toast } from 'sonner'
+
+interface Song {
+  id: string
+  title: string
+  artist: string
+  duration: number
+  coverImage: string
+  audioUrl: string
+  lyrics?: string
+  published: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export function SongManager() {
+  const [songs, setSongs] = useState<Song[]>([])
+  const [loading, setLoading] = useState(true)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [editingSong, setEditingSong] = useState<Song | null>(null)
+  const [formData, setFormData] = useState({
+    title: '',
+    artist: 'Enrique de Zairtre',
+    duration: 0,
+    coverImage: '',
+    audioUrl: '',
+    lyrics: '',
+    published: true
+  })
+
+  useEffect(() => {
+    fetchSongs()
+  }, [])
+
+  const fetchSongs = async () => {
+    try {
+      const response = await fetch('/api/songs')
+      if (response.ok) {
+        const data = await response.json()
+        setSongs(data)
+      }
+    } catch (error) {
+      toast.error('Error al cargar canciones')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    try {
+      const url = editingSong ? `/api/songs/${editingSong.id}` : '/api/songs'
+      const method = editingSong ? 'PUT' : 'POST'
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        toast.success(editingSong ? 'Canción actualizada' : 'Canción creada')
+        setIsDialogOpen(false)
+        setEditingSong(null)
+        resetForm()
+        fetchSongs()
+      } else {
+        toast.error('Error al guardar canción')
+      }
+    } catch (error) {
+      toast.error('Error al guardar canción')
+    }
+  }
+
+  const handleEdit = (song: Song) => {
+    setEditingSong(song)
+    setFormData({
+      title: song.title,
+      artist: song.artist,
+      duration: song.duration,
+      coverImage: song.coverImage,
+      audioUrl: song.audioUrl,
+      lyrics: song.lyrics || '',
+      published: song.published
+    })
+    setIsDialogOpen(true)
+  }
+
+  const handleDelete = async (id: string) => {
+    if (confirm('¿Estás seguro de eliminar esta canción?')) {
+      try {
+        const response = await fetch(`/api/songs/${id}`, {
+          method: 'DELETE',
+        })
+
+        if (response.ok) {
+          toast.success('Canción eliminada')
+          fetchSongs()
+        } else {
+          toast.error('Error al eliminar canción')
+        }
+      } catch (error) {
+        toast.error('Error al eliminar canción')
+      }
+    }
+  }
+
+  const togglePublish = async (id: string, published: boolean) => {
+    try {
+      const response = await fetch(`/api/songs/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ published: !published }),
+      })
+
+      if (response.ok) {
+        toast.success(published ? 'Canción despublicada' : 'Canción publicada')
+        fetchSongs()
+      }
+    } catch (error) {
+      toast.error('Error al cambiar estado')
+    }
+  }
+
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      artist: 'Enrique de Zairtre',
+      duration: 0,
+      coverImage: '',
+      audioUrl: '',
+      lyrics: '',
+      published: true
+    })
+  }
+
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
+  if (loading) {
+    return <div className="text-center py-8">Cargando canciones...</div>
+  }
+
+  return (
+    <Card className="bg-black/50 border-gray-700">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Gestión de Canciones</CardTitle>
+            <CardDescription>Administra el catálogo musical</CardDescription>
+          </div>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button 
+                onClick={() => {
+                  resetForm()
+                  setEditingSong(null)
+                }}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Nueva Canción
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingSong ? 'Editar Canción' : 'Nueva Canción'}
+                </DialogTitle>
+                <DialogDescription>
+                  {editingSong ? 'Modifica los datos de la canción' : 'Agrega una nueva canción al catálogo'}
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="title">Título</Label>
+                    <Input
+                      id="title"
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      className="bg-gray-800 border-gray-600"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="artist">Artista</Label>
+                    <Input
+                      id="artist"
+                      value={formData.artist}
+                      onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
+                      className="bg-gray-800 border-gray-600"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="duration">Duración (segundos)</Label>
+                    <Input
+                      id="duration"
+                      type="number"
+                      value={formData.duration}
+                      onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
+                      className="bg-gray-800 border-gray-600"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="coverImage">URL Imagen</Label>
+                    <Input
+                      id="coverImage"
+                      value={formData.coverImage}
+                      onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+                      className="bg-gray-800 border-gray-600"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="audioUrl">URL Audio</Label>
+                  <Input
+                    id="audioUrl"
+                    value={formData.audioUrl}
+                    onChange={(e) => setFormData({ ...formData, audioUrl: e.target.value })}
+                    className="bg-gray-800 border-gray-600"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="lyrics">Letras</Label>
+                  <Textarea
+                    id="lyrics"
+                    value={formData.lyrics}
+                    onChange={(e) => setFormData({ ...formData, lyrics: e.target.value })}
+                    className="bg-gray-800 border-gray-600"
+                    rows={4}
+                  />
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="published"
+                    checked={formData.published}
+                    onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
+                    className="rounded"
+                  />
+                  <Label htmlFor="published">Publicada</Label>
+                </div>
+
+                <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
+                    {editingSong ? 'Actualizar' : 'Crear'}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Título</TableHead>
+              <TableHead>Artista</TableHead>
+              <TableHead>Duración</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead>Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {songs.map((song) => (
+              <TableRow key={song.id}>
+                <TableCell className="font-medium">{song.title}</TableCell>
+                <TableCell>{song.artist}</TableCell>
+                <TableCell>{formatDuration(song.duration)}</TableCell>
+                <TableCell>
+                  <Badge variant={song.published ? 'default' : 'secondary'}>
+                    {song.published ? 'Publicada' : 'Borrador'}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex space-x-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEdit(song)}
+                      className="border-gray-600"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => togglePublish(song.id, song.published)}
+                      className="border-gray-600"
+                    >
+                      {song.published ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDelete(song.id)}
+                      className="border-red-600 text-red-400 hover:bg-red-900/20"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  )
+}
+
+---
+
+
+## File: src__components__AudioVisualizer.tsx__.txt
+
+# AudioVisualizer.tsx
+'use client'
+
+import { useEffect, useRef } from 'react'
+
+interface AudioVisualizerProps {
+  audioRef: React.RefObject<HTMLAudioElement>
+  canvasRef: React.RefObject<HTMLCanvasElement>
+  isPlaying: boolean
+}
+
+export default function AudioVisualizer({ audioRef, canvasRef, isPlaying }: AudioVisualizerProps) {
+  const animationRef = useRef<number>()
+  const analyserRef = useRef<AnalyserNode | null>(null)
+  const audioContextRef = useRef<AudioContext | null>(null)
+
+  useEffect(() => {
+    if (!audioRef.current || !canvasRef.current) return
+
+    const setupAudioContext = () => {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)()
+        analyserRef.current = audioContextRef.current.createAnalyser()
+        analyserRef.current.fftSize = 256
+
+        const source = audioContextRef.current.createMediaElementSource(audioRef.current!)
+        source.connect(analyserRef.current)
+        analyserRef.current.connect(audioContextRef.current.destination)
+      }
+    }
+
+    const draw = () => {
+      if (!canvasRef.current || !analyserRef.current) return
+
+      const canvas = canvasRef.current
+      const ctx = canvas.getContext('2d')!
+      const bufferLength = analyserRef.current.frequencyBinCount
+      const dataArray = new Uint8Array(bufferLength)
+
+      analyserRef.current.getByteFrequencyData(dataArray)
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+      const barWidth = (canvas.width / bufferLength) * 2.5
+      let barHeight
+      let x = 0
+
+      for (let i = 0; i < bufferLength; i++) {
+        barHeight = (dataArray[i] / 255) * canvas.height * 0.7
+
+        const hue = (i / bufferLength) * 360
+        ctx.fillStyle = `hsl(${hue}, 100%, 50%)`
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight)
+
+        x += barWidth + 1
+      }
+
+      if (isPlaying) {
+        animationRef.current = requestAnimationFrame(draw)
+      }
+    }
+
+    if (isPlaying) {
+      setupAudioContext()
+      draw()
+    } else {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+  }, [isPlaying, audioRef, canvasRef])
+
+  return null
+}
+
+---
+
+
+## File: src__components__providers__AuthProvider.tsx__.txt
+
+# AuthProvider.tsx
+'use client'
+
+import { SessionProvider } from 'next-auth/react'
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  return <SessionProvider>{children}</SessionProvider>
+}
+
+---
+
+
+## File: src__components__ui__accordion.tsx__.txt
+
+# accordion.tsx
+"use client"
+
+import * as React from "react"
+import * as AccordionPrimitive from "@radix-ui/react-accordion"
+import { ChevronDownIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+function Accordion({
+  ...props
+}: React.ComponentProps<typeof AccordionPrimitive.Root>) {
+  return <AccordionPrimitive.Root data-slot="accordion" {...props} />
+}
+
+function AccordionItem({
+  className,
+  ...props
+}: React.ComponentProps<typeof AccordionPrimitive.Item>) {
+  return (
+    <AccordionPrimitive.Item
+      data-slot="accordion-item"
+      className={cn("border-b last:border-b-0", className)}
+      {...props}
+    />
+  )
+}
+
+function AccordionTrigger({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof AccordionPrimitive.Trigger>) {
+  return (
+    <AccordionPrimitive.Header className="flex">
+      <AccordionPrimitive.Trigger
+        data-slot="accordion-trigger"
+        className={cn(
+          "focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180",
+          className
+        )}
+        {...props}
+      >
+        {children}
+        <ChevronDownIcon className="text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200" />
+      </AccordionPrimitive.Trigger>
+    </AccordionPrimitive.Header>
+  )
+}
+
+function AccordionContent({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof AccordionPrimitive.Content>) {
+  return (
+    <AccordionPrimitive.Content
+      data-slot="accordion-content"
+      className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
+      {...props}
+    >
+      <div className={cn("pt-0 pb-4", className)}>{children}</div>
+    </AccordionPrimitive.Content>
+  )
+}
+
+export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }
+
+
+---
+
+
+## File: src__components__ui__alert.tsx__.txt
+
+# alert.tsx
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+const alertVariants = cva(
+  "relative w-full rounded-lg border px-4 py-3 text-sm grid has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] grid-cols-[0_1fr] has-[>svg]:gap-x-3 gap-y-0.5 items-start [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current",
+  {
+    variants: {
+      variant: {
+        default: "bg-card text-card-foreground",
+        destructive:
+          "text-destructive bg-card [&>svg]:text-current *:data-[slot=alert-description]:text-destructive/90",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+function Alert({
+  className,
+  variant,
+  ...props
+}: React.ComponentProps<"div"> & VariantProps<typeof alertVariants>) {
+  return (
+    <div
+      data-slot="alert"
+      role="alert"
+      className={cn(alertVariants({ variant }), className)}
+      {...props}
+    />
+  )
+}
+
+function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="alert-title"
+      className={cn(
+        "col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function AlertDescription({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="alert-description"
+      className={cn(
+        "text-muted-foreground col-start-2 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Alert, AlertTitle, AlertDescription }
+
+
+---
+
+
+## File: src__components__ui__alert-dialog.tsx__.txt
+
+# alert-dialog.tsx
+"use client"
+
+import * as React from "react"
+import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
+
+import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button"
+
+function AlertDialog({
+  ...props
+}: React.ComponentProps<typeof AlertDialogPrimitive.Root>) {
+  return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />
+}
+
+function AlertDialogTrigger({
+  ...props
+}: React.ComponentProps<typeof AlertDialogPrimitive.Trigger>) {
+  return (
+    <AlertDialogPrimitive.Trigger data-slot="alert-dialog-trigger" {...props} />
+  )
+}
+
+function AlertDialogPortal({
+  ...props
+}: React.ComponentProps<typeof AlertDialogPrimitive.Portal>) {
+  return (
+    <AlertDialogPrimitive.Portal data-slot="alert-dialog-portal" {...props} />
+  )
+}
+
+function AlertDialogOverlay({
+  className,
+  ...props
+}: React.ComponentProps<typeof AlertDialogPrimitive.Overlay>) {
+  return (
+    <AlertDialogPrimitive.Overlay
+      data-slot="alert-dialog-overlay"
+      className={cn(
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function AlertDialogContent({
+  className,
+  ...props
+}: React.ComponentProps<typeof AlertDialogPrimitive.Content>) {
+  return (
+    <AlertDialogPortal>
+      <AlertDialogOverlay />
+      <AlertDialogPrimitive.Content
+        data-slot="alert-dialog-content"
+        className={cn(
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
+          className
+        )}
+        {...props}
+      />
+    </AlertDialogPortal>
+  )
+}
+
+function AlertDialogHeader({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="alert-dialog-header"
+      className={cn("flex flex-col gap-2 text-center sm:text-left", className)}
+      {...props}
+    />
+  )
+}
+
+function AlertDialogFooter({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="alert-dialog-footer"
+      className={cn(
+        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function AlertDialogTitle({
+  className,
+  ...props
+}: React.ComponentProps<typeof AlertDialogPrimitive.Title>) {
+  return (
+    <AlertDialogPrimitive.Title
+      data-slot="alert-dialog-title"
+      className={cn("text-lg font-semibold", className)}
+      {...props}
+    />
+  )
+}
+
+function AlertDialogDescription({
+  className,
+  ...props
+}: React.ComponentProps<typeof AlertDialogPrimitive.Description>) {
+  return (
+    <AlertDialogPrimitive.Description
+      data-slot="alert-dialog-description"
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props}
+    />
+  )
+}
+
+function AlertDialogAction({
+  className,
+  ...props
+}: React.ComponentProps<typeof AlertDialogPrimitive.Action>) {
+  return (
+    <AlertDialogPrimitive.Action
+      className={cn(buttonVariants(), className)}
+      {...props}
+    />
+  )
+}
+
+function AlertDialogCancel({
+  className,
+  ...props
+}: React.ComponentProps<typeof AlertDialogPrimitive.Cancel>) {
+  return (
+    <AlertDialogPrimitive.Cancel
+      className={cn(buttonVariants({ variant: "outline" }), className)}
+      {...props}
+    />
+  )
+}
+
+export {
+  AlertDialog,
+  AlertDialogPortal,
+  AlertDialogOverlay,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+}
+
+
+---
+
+
+## File: src__components__ui__aspect-ratio.tsx__.txt
+
+# aspect-ratio.tsx
+"use client"
+
+import * as AspectRatioPrimitive from "@radix-ui/react-aspect-ratio"
+
+function AspectRatio({
+  ...props
+}: React.ComponentProps<typeof AspectRatioPrimitive.Root>) {
+  return <AspectRatioPrimitive.Root data-slot="aspect-ratio" {...props} />
+}
+
+export { AspectRatio }
+
+
+---
+
+
+## File: src__components__ui__avatar.tsx__.txt
+
+# avatar.tsx
+"use client"
+
+import * as React from "react"
+import * as AvatarPrimitive from "@radix-ui/react-avatar"
+
+import { cn } from "@/lib/utils"
+
+function Avatar({
+  className,
+  ...props
+}: React.ComponentProps<typeof AvatarPrimitive.Root>) {
+  return (
+    <AvatarPrimitive.Root
+      data-slot="avatar"
+      className={cn(
+        "relative flex size-8 shrink-0 overflow-hidden rounded-full",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function AvatarImage({
+  className,
+  ...props
+}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
+  return (
+    <AvatarPrimitive.Image
+      data-slot="avatar-image"
+      className={cn("aspect-square size-full", className)}
+      {...props}
+    />
+  )
+}
+
+function AvatarFallback({
+  className,
+  ...props
+}: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
+  return (
+    <AvatarPrimitive.Fallback
+      data-slot="avatar-fallback"
+      className={cn(
+        "bg-muted flex size-full items-center justify-center rounded-full",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Avatar, AvatarImage, AvatarFallback }
+
+
+---
+
+
+## File: src__components__ui__badge.tsx__.txt
+
+# badge.tsx
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+const badgeVariants = cva(
+  "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
+  {
+    variants: {
+      variant: {
+        default:
+          "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+        secondary:
+          "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
+        destructive:
+          "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+        outline:
+          "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+function Badge({
+  className,
+  variant,
+  asChild = false,
+  ...props
+}: React.ComponentProps<"span"> &
+  VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
+  const Comp = asChild ? Slot : "span"
+
+  return (
+    <Comp
+      data-slot="badge"
+      className={cn(badgeVariants({ variant }), className)}
+      {...props}
+    />
+  )
+}
+
+export { Badge, badgeVariants }
+
+
+---
+
+
+## File: src__components__ui__breadcrumb.tsx__.txt
+
+# breadcrumb.tsx
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { ChevronRight, MoreHorizontal } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
+  return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />
+}
+
+function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
+  return (
+    <ol
+      data-slot="breadcrumb-list"
+      className={cn(
+        "text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
+  return (
+    <li
+      data-slot="breadcrumb-item"
+      className={cn("inline-flex items-center gap-1.5", className)}
+      {...props}
+    />
+  )
+}
+
+function BreadcrumbLink({
+  asChild,
+  className,
+  ...props
+}: React.ComponentProps<"a"> & {
+  asChild?: boolean
+}) {
+  const Comp = asChild ? Slot : "a"
+
+  return (
+    <Comp
+      data-slot="breadcrumb-link"
+      className={cn("hover:text-foreground transition-colors", className)}
+      {...props}
+    />
+  )
+}
+
+function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="breadcrumb-page"
+      role="link"
+      aria-disabled="true"
+      aria-current="page"
+      className={cn("text-foreground font-normal", className)}
+      {...props}
+    />
+  )
+}
+
+function BreadcrumbSeparator({
+  children,
+  className,
+  ...props
+}: React.ComponentProps<"li">) {
+  return (
+    <li
+      data-slot="breadcrumb-separator"
+      role="presentation"
+      aria-hidden="true"
+      className={cn("[&>svg]:size-3.5", className)}
+      {...props}
+    >
+      {children ?? <ChevronRight />}
+    </li>
+  )
+}
+
+function BreadcrumbEllipsis({
+  className,
+  ...props
+}: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="breadcrumb-ellipsis"
+      role="presentation"
+      aria-hidden="true"
+      className={cn("flex size-9 items-center justify-center", className)}
+      {...props}
+    >
+      <MoreHorizontal className="size-4" />
+      <span className="sr-only">More</span>
+    </span>
+  )
+}
+
+export {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+  BreadcrumbEllipsis,
+}
+
+
+---
+
+
+## File: src__components__ui__button.tsx__.txt
+
+# button.tsx
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  {
+    variants: {
+      variant: {
+        default:
+          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
+        destructive:
+          "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+        outline:
+          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+        secondary:
+          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
+        ghost:
+          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "h-9 px-4 py-2 has-[>svg]:px-3",
+        sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
+        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+        icon: "size-9",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+function Button({
+  className,
+  variant,
+  size,
+  asChild = false,
+  ...props
+}: React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean
+  }) {
+  const Comp = asChild ? Slot : "button"
+
+  return (
+    <Comp
+      data-slot="button"
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    />
+  )
+}
+
+export { Button, buttonVariants }
+
+
+---
+
+
+## File: src__components__ui__calendar.tsx__.txt
+
+# calendar.tsx
+"use client"
+
+import * as React from "react"
+import {
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "lucide-react"
+import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker"
+
+import { cn } from "@/lib/utils"
+import { Button, buttonVariants } from "@/components/ui/button"
+
+function Calendar({
+  className,
+  classNames,
+  showOutsideDays = true,
+  captionLayout = "label",
+  buttonVariant = "ghost",
+  formatters,
+  components,
+  ...props
+}: React.ComponentProps<typeof DayPicker> & {
+  buttonVariant?: React.ComponentProps<typeof Button>["variant"]
+}) {
+  const defaultClassNames = getDefaultClassNames()
+
+  return (
+    <DayPicker
+      showOutsideDays={showOutsideDays}
+      className={cn(
+        "bg-background group/calendar p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent",
+        String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
+        String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
+        className
+      )}
+      captionLayout={captionLayout}
+      formatters={{
+        formatMonthDropdown: (date) =>
+          date.toLocaleString("default", { month: "short" }),
+        ...formatters,
+      }}
+      classNames={{
+        root: cn("w-fit", defaultClassNames.root),
+        months: cn(
+          "flex gap-4 flex-col md:flex-row relative",
+          defaultClassNames.months
+        ),
+        month: cn("flex flex-col w-full gap-4", defaultClassNames.month),
+        nav: cn(
+          "flex items-center gap-1 w-full absolute top-0 inset-x-0 justify-between",
+          defaultClassNames.nav
+        ),
+        button_previous: cn(
+          buttonVariants({ variant: buttonVariant }),
+          "size-(--cell-size) aria-disabled:opacity-50 p-0 select-none",
+          defaultClassNames.button_previous
+        ),
+        button_next: cn(
+          buttonVariants({ variant: buttonVariant }),
+          "size-(--cell-size) aria-disabled:opacity-50 p-0 select-none",
+          defaultClassNames.button_next
+        ),
+        month_caption: cn(
+          "flex items-center justify-center h-(--cell-size) w-full px-(--cell-size)",
+          defaultClassNames.month_caption
+        ),
+        dropdowns: cn(
+          "w-full flex items-center text-sm font-medium justify-center h-(--cell-size) gap-1.5",
+          defaultClassNames.dropdowns
+        ),
+        dropdown_root: cn(
+          "relative has-focus:border-ring border border-input shadow-xs has-focus:ring-ring/50 has-focus:ring-[3px] rounded-md",
+          defaultClassNames.dropdown_root
+        ),
+        dropdown: cn(
+          "absolute bg-popover inset-0 opacity-0",
+          defaultClassNames.dropdown
+        ),
+        caption_label: cn(
+          "select-none font-medium",
+          captionLayout === "label"
+            ? "text-sm"
+            : "rounded-md pl-2 pr-1 flex items-center gap-1 text-sm h-8 [&>svg]:text-muted-foreground [&>svg]:size-3.5",
+          defaultClassNames.caption_label
+        ),
+        table: "w-full border-collapse",
+        weekdays: cn("flex", defaultClassNames.weekdays),
+        weekday: cn(
+          "text-muted-foreground rounded-md flex-1 font-normal text-[0.8rem] select-none",
+          defaultClassNames.weekday
+        ),
+        week: cn("flex w-full mt-2", defaultClassNames.week),
+        week_number_header: cn(
+          "select-none w-(--cell-size)",
+          defaultClassNames.week_number_header
+        ),
+        week_number: cn(
+          "text-[0.8rem] select-none text-muted-foreground",
+          defaultClassNames.week_number
+        ),
+        day: cn(
+          "relative w-full h-full p-0 text-center [&:first-child[data-selected=true]_button]:rounded-l-md [&:last-child[data-selected=true]_button]:rounded-r-md group/day aspect-square select-none",
+          defaultClassNames.day
+        ),
+        range_start: cn(
+          "rounded-l-md bg-accent",
+          defaultClassNames.range_start
+        ),
+        range_middle: cn("rounded-none", defaultClassNames.range_middle),
+        range_end: cn("rounded-r-md bg-accent", defaultClassNames.range_end),
+        today: cn(
+          "bg-accent text-accent-foreground rounded-md data-[selected=true]:rounded-none",
+          defaultClassNames.today
+        ),
+        outside: cn(
+          "text-muted-foreground aria-selected:text-muted-foreground",
+          defaultClassNames.outside
+        ),
+        disabled: cn(
+          "text-muted-foreground opacity-50",
+          defaultClassNames.disabled
+        ),
+        hidden: cn("invisible", defaultClassNames.hidden),
+        ...classNames,
+      }}
+      components={{
+        Root: ({ className, rootRef, ...props }) => {
+          return (
+            <div
+              data-slot="calendar"
+              ref={rootRef}
+              className={cn(className)}
+              {...props}
+            />
+          )
+        },
+        Chevron: ({ className, orientation, ...props }) => {
+          if (orientation === "left") {
+            return (
+              <ChevronLeftIcon className={cn("size-4", className)} {...props} />
+            )
+          }
+
+          if (orientation === "right") {
+            return (
+              <ChevronRightIcon
+                className={cn("size-4", className)}
+                {...props}
+              />
+            )
+          }
+
+          return (
+            <ChevronDownIcon className={cn("size-4", className)} {...props} />
+          )
+        },
+        DayButton: CalendarDayButton,
+        WeekNumber: ({ children, ...props }) => {
+          return (
+            <td {...props}>
+              <div className="flex size-(--cell-size) items-center justify-center text-center">
+                {children}
+              </div>
+            </td>
+          )
+        },
+        ...components,
+      }}
+      {...props}
+    />
+  )
+}
+
+function CalendarDayButton({
+  className,
+  day,
+  modifiers,
+  ...props
+}: React.ComponentProps<typeof DayButton>) {
+  const defaultClassNames = getDefaultClassNames()
+
+  const ref = React.useRef<HTMLButtonElement>(null)
+  React.useEffect(() => {
+    if (modifiers.focused) ref.current?.focus()
+  }, [modifiers.focused])
+
+  return (
+    <Button
+      ref={ref}
+      variant="ghost"
+      size="icon"
+      data-day={day.date.toLocaleDateString()}
+      data-selected-single={
+        modifiers.selected &&
+        !modifiers.range_start &&
+        !modifiers.range_end &&
+        !modifiers.range_middle
+      }
+      data-range-start={modifiers.range_start}
+      data-range-end={modifiers.range_end}
+      data-range-middle={modifiers.range_middle}
+      className={cn(
+        "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 dark:hover:text-accent-foreground flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] data-[range-end=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-start=true]:rounded-l-md [&>span]:text-xs [&>span]:opacity-70",
+        defaultClassNames.day,
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Calendar, CalendarDayButton }
+
+
+---
+
+
+## File: src__components__ui__card.tsx__.txt
+
+# card.tsx
+import * as React from "react"
+
+import { cn } from "@/lib/utils"
+
+function Card({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card"
+      className={cn(
+        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-header"
+      className={cn(
+        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-title"
+      className={cn("leading-none font-semibold", className)}
+      {...props}
+    />
+  )
+}
+
+function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-description"
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props}
+    />
+  )
+}
+
+function CardAction({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-action"
+      className={cn(
+        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardContent({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-content"
+      className={cn("px-6", className)}
+      {...props}
+    />
+  )
+}
+
+function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-footer"
+      className={cn("flex items-center px-6 [.border-t]:pt-6", className)}
+      {...props}
+    />
+  )
+}
+
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardAction,
+  CardDescription,
+  CardContent,
+}
+
+
+---
+
+
+## File: src__components__ui__carousel.tsx__.txt
+
+# carousel.tsx
+"use client"
+
+import * as React from "react"
+import useEmblaCarousel, {
+  type UseEmblaCarouselType,
+} from "embla-carousel-react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+
+type CarouselApi = UseEmblaCarouselType[1]
+type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
+type CarouselOptions = UseCarouselParameters[0]
+type CarouselPlugin = UseCarouselParameters[1]
+
+type CarouselProps = {
+  opts?: CarouselOptions
+  plugins?: CarouselPlugin
+  orientation?: "horizontal" | "vertical"
+  setApi?: (api: CarouselApi) => void
+}
+
+type CarouselContextProps = {
+  carouselRef: ReturnType<typeof useEmblaCarousel>[0]
+  api: ReturnType<typeof useEmblaCarousel>[1]
+  scrollPrev: () => void
+  scrollNext: () => void
+  canScrollPrev: boolean
+  canScrollNext: boolean
+} & CarouselProps
+
+const CarouselContext = React.createContext<CarouselContextProps | null>(null)
+
+function useCarousel() {
+  const context = React.useContext(CarouselContext)
+
+  if (!context) {
+    throw new Error("useCarousel must be used within a <Carousel />")
+  }
+
+  return context
+}
+
+function Carousel({
+  orientation = "horizontal",
+  opts,
+  setApi,
+  plugins,
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"div"> & CarouselProps) {
+  const [carouselRef, api] = useEmblaCarousel(
+    {
+      ...opts,
+      axis: orientation === "horizontal" ? "x" : "y",
+    },
+    plugins
+  )
+  const [canScrollPrev, setCanScrollPrev] = React.useState(false)
+  const [canScrollNext, setCanScrollNext] = React.useState(false)
+
+  const onSelect = React.useCallback((api: CarouselApi) => {
+    if (!api) return
+    setCanScrollPrev(api.canScrollPrev())
+    setCanScrollNext(api.canScrollNext())
+  }, [])
+
+  const scrollPrev = React.useCallback(() => {
+    api?.scrollPrev()
+  }, [api])
+
+  const scrollNext = React.useCallback(() => {
+    api?.scrollNext()
+  }, [api])
+
+  const handleKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault()
+        scrollPrev()
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault()
+        scrollNext()
+      }
+    },
+    [scrollPrev, scrollNext]
+  )
+
+  React.useEffect(() => {
+    if (!api || !setApi) return
+    setApi(api)
+  }, [api, setApi])
+
+  React.useEffect(() => {
+    if (!api) return
+    onSelect(api)
+    api.on("reInit", onSelect)
+    api.on("select", onSelect)
+
+    return () => {
+      api?.off("select", onSelect)
+    }
+  }, [api, onSelect])
+
+  return (
+    <CarouselContext.Provider
+      value={{
+        carouselRef,
+        api: api,
+        opts,
+        orientation:
+          orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
+        scrollPrev,
+        scrollNext,
+        canScrollPrev,
+        canScrollNext,
+      }}
+    >
+      <div
+        onKeyDownCapture={handleKeyDown}
+        className={cn("relative", className)}
+        role="region"
+        aria-roledescription="carousel"
+        data-slot="carousel"
+        {...props}
+      >
+        {children}
+      </div>
+    </CarouselContext.Provider>
+  )
+}
+
+function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
+  const { carouselRef, orientation } = useCarousel()
+
+  return (
+    <div
+      ref={carouselRef}
+      className="overflow-hidden"
+      data-slot="carousel-content"
+    >
+      <div
+        className={cn(
+          "flex",
+          orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col",
+          className
+        )}
+        {...props}
+      />
+    </div>
+  )
+}
+
+function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
+  const { orientation } = useCarousel()
+
+  return (
+    <div
+      role="group"
+      aria-roledescription="slide"
+      data-slot="carousel-item"
+      className={cn(
+        "min-w-0 shrink-0 grow-0 basis-full",
+        orientation === "horizontal" ? "pl-4" : "pt-4",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CarouselPrevious({
+  className,
+  variant = "outline",
+  size = "icon",
+  ...props
+}: React.ComponentProps<typeof Button>) {
+  const { orientation, scrollPrev, canScrollPrev } = useCarousel()
+
+  return (
+    <Button
+      data-slot="carousel-previous"
+      variant={variant}
+      size={size}
+      className={cn(
+        "absolute size-8 rounded-full",
+        orientation === "horizontal"
+          ? "top-1/2 -left-12 -translate-y-1/2"
+          : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
+        className
+      )}
+      disabled={!canScrollPrev}
+      onClick={scrollPrev}
+      {...props}
+    >
+      <ArrowLeft />
+      <span className="sr-only">Previous slide</span>
+    </Button>
+  )
+}
+
+function CarouselNext({
+  className,
+  variant = "outline",
+  size = "icon",
+  ...props
+}: React.ComponentProps<typeof Button>) {
+  const { orientation, scrollNext, canScrollNext } = useCarousel()
+
+  return (
+    <Button
+      data-slot="carousel-next"
+      variant={variant}
+      size={size}
+      className={cn(
+        "absolute size-8 rounded-full",
+        orientation === "horizontal"
+          ? "top-1/2 -right-12 -translate-y-1/2"
+          : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
+        className
+      )}
+      disabled={!canScrollNext}
+      onClick={scrollNext}
+      {...props}
+    >
+      <ArrowRight />
+      <span className="sr-only">Next slide</span>
+    </Button>
+  )
+}
+
+export {
+  type CarouselApi,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+}
+
+
+---
+
+
+## File: src__components__ui__chart.tsx__.txt
+
+# chart.tsx
+"use client"
+
+import * as React from "react"
+import * as RechartsPrimitive from "recharts"
+
+import { cn } from "@/lib/utils"
+
+// Format: { THEME_NAME: CSS_SELECTOR }
+const THEMES = { light: "", dark: ".dark" } as const
+
+export type ChartConfig = {
+  [k in string]: {
+    label?: React.ReactNode
+    icon?: React.ComponentType
+  } & (
+    | { color?: string; theme?: never }
+    | { color?: never; theme: Record<keyof typeof THEMES, string> }
+  )
+}
+
+type ChartContextProps = {
+  config: ChartConfig
+}
+
+const ChartContext = React.createContext<ChartContextProps | null>(null)
+
+function useChart() {
+  const context = React.useContext(ChartContext)
+
+  if (!context) {
+    throw new Error("useChart must be used within a <ChartContainer />")
+  }
+
+  return context
+}
+
+function ChartContainer({
+  id,
+  className,
+  children,
+  config,
+  ...props
+}: React.ComponentProps<"div"> & {
+  config: ChartConfig
+  children: React.ComponentProps<
+    typeof RechartsPrimitive.ResponsiveContainer
+  >["children"]
+}) {
+  const uniqueId = React.useId()
+  const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`
+
+  return (
+    <ChartContext.Provider value={{ config }}>
+      <div
+        data-slot="chart"
+        data-chart={chartId}
+        className={cn(
+          "[&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border flex aspect-video justify-center text-xs [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-hidden [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-surface]:outline-hidden",
+          className
+        )}
+        {...props}
+      >
+        <ChartStyle id={chartId} config={config} />
+        <RechartsPrimitive.ResponsiveContainer>
+          {children}
+        </RechartsPrimitive.ResponsiveContainer>
+      </div>
+    </ChartContext.Provider>
+  )
+}
+
+const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
+  const colorConfig = Object.entries(config).filter(
+    ([, config]) => config.theme || config.color
+  )
+
+  if (!colorConfig.length) {
+    return null
+  }
+
+  return (
+    <style
+      dangerouslySetInnerHTML={{
+        __html: Object.entries(THEMES)
+          .map(
+            ([theme, prefix]) => `
+${prefix} [data-chart=${id}] {
+${colorConfig
+  .map(([key, itemConfig]) => {
+    const color =
+      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
+      itemConfig.color
+    return color ? `  --color-${key}: ${color};` : null
+  })
+  .join("\n")}
+}
+`
+          )
+          .join("\n"),
+      }}
+    />
+  )
+}
+
+const ChartTooltip = RechartsPrimitive.Tooltip
+
+function ChartTooltipContent({
+  active,
+  payload,
+  className,
+  indicator = "dot",
+  hideLabel = false,
+  hideIndicator = false,
+  label,
+  labelFormatter,
+  labelClassName,
+  formatter,
+  color,
+  nameKey,
+  labelKey,
+}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
+  React.ComponentProps<"div"> & {
+    hideLabel?: boolean
+    hideIndicator?: boolean
+    indicator?: "line" | "dot" | "dashed"
+    nameKey?: string
+    labelKey?: string
+  }) {
+  const { config } = useChart()
+
+  const tooltipLabel = React.useMemo(() => {
+    if (hideLabel || !payload?.length) {
+      return null
+    }
+
+    const [item] = payload
+    const key = `${labelKey || item?.dataKey || item?.name || "value"}`
+    const itemConfig = getPayloadConfigFromPayload(config, item, key)
+    const value =
+      !labelKey && typeof label === "string"
+        ? config[label as keyof typeof config]?.label || label
+        : itemConfig?.label
+
+    if (labelFormatter) {
+      return (
+        <div className={cn("font-medium", labelClassName)}>
+          {labelFormatter(value, payload)}
+        </div>
+      )
+    }
+
+    if (!value) {
+      return null
+    }
+
+    return <div className={cn("font-medium", labelClassName)}>{value}</div>
+  }, [
+    label,
+    labelFormatter,
+    payload,
+    hideLabel,
+    labelClassName,
+    config,
+    labelKey,
+  ])
+
+  if (!active || !payload?.length) {
+    return null
+  }
+
+  const nestLabel = payload.length === 1 && indicator !== "dot"
+
+  return (
+    <div
+      className={cn(
+        "border-border/50 bg-background grid min-w-[8rem] items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl",
+        className
+      )}
+    >
+      {!nestLabel ? tooltipLabel : null}
+      <div className="grid gap-1.5">
+        {payload.map((item, index) => {
+          const key = `${nameKey || item.name || item.dataKey || "value"}`
+          const itemConfig = getPayloadConfigFromPayload(config, item, key)
+          const indicatorColor = color || item.payload.fill || item.color
+
+          return (
+            <div
+              key={item.dataKey}
+              className={cn(
+                "[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5",
+                indicator === "dot" && "items-center"
+              )}
+            >
+              {formatter && item?.value !== undefined && item.name ? (
+                formatter(item.value, item.name, item, index, item.payload)
+              ) : (
+                <>
+                  {itemConfig?.icon ? (
+                    <itemConfig.icon />
+                  ) : (
+                    !hideIndicator && (
+                      <div
+                        className={cn(
+                          "shrink-0 rounded-[2px] border-(--color-border) bg-(--color-bg)",
+                          {
+                            "h-2.5 w-2.5": indicator === "dot",
+                            "w-1": indicator === "line",
+                            "w-0 border-[1.5px] border-dashed bg-transparent":
+                              indicator === "dashed",
+                            "my-0.5": nestLabel && indicator === "dashed",
+                          }
+                        )}
+                        style={
+                          {
+                            "--color-bg": indicatorColor,
+                            "--color-border": indicatorColor,
+                          } as React.CSSProperties
+                        }
+                      />
+                    )
+                  )}
+                  <div
+                    className={cn(
+                      "flex flex-1 justify-between leading-none",
+                      nestLabel ? "items-end" : "items-center"
+                    )}
+                  >
+                    <div className="grid gap-1.5">
+                      {nestLabel ? tooltipLabel : null}
+                      <span className="text-muted-foreground">
+                        {itemConfig?.label || item.name}
+                      </span>
+                    </div>
+                    {item.value && (
+                      <span className="text-foreground font-mono font-medium tabular-nums">
+                        {item.value.toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+const ChartLegend = RechartsPrimitive.Legend
+
+function ChartLegendContent({
+  className,
+  hideIcon = false,
+  payload,
+  verticalAlign = "bottom",
+  nameKey,
+}: React.ComponentProps<"div"> &
+  Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
+    hideIcon?: boolean
+    nameKey?: string
+  }) {
+  const { config } = useChart()
+
+  if (!payload?.length) {
+    return null
+  }
+
+  return (
+    <div
+      className={cn(
+        "flex items-center justify-center gap-4",
+        verticalAlign === "top" ? "pb-3" : "pt-3",
+        className
+      )}
+    >
+      {payload.map((item) => {
+        const key = `${nameKey || item.dataKey || "value"}`
+        const itemConfig = getPayloadConfigFromPayload(config, item, key)
+
+        return (
+          <div
+            key={item.value}
+            className={cn(
+              "[&>svg]:text-muted-foreground flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3"
+            )}
+          >
+            {itemConfig?.icon && !hideIcon ? (
+              <itemConfig.icon />
+            ) : (
+              <div
+                className="h-2 w-2 shrink-0 rounded-[2px]"
+                style={{
+                  backgroundColor: item.color,
+                }}
+              />
+            )}
+            {itemConfig?.label}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// Helper to extract item config from a payload.
+function getPayloadConfigFromPayload(
+  config: ChartConfig,
+  payload: unknown,
+  key: string
+) {
+  if (typeof payload !== "object" || payload === null) {
+    return undefined
+  }
+
+  const payloadPayload =
+    "payload" in payload &&
+    typeof payload.payload === "object" &&
+    payload.payload !== null
+      ? payload.payload
+      : undefined
+
+  let configLabelKey: string = key
+
+  if (
+    key in payload &&
+    typeof payload[key as keyof typeof payload] === "string"
+  ) {
+    configLabelKey = payload[key as keyof typeof payload] as string
+  } else if (
+    payloadPayload &&
+    key in payloadPayload &&
+    typeof payloadPayload[key as keyof typeof payloadPayload] === "string"
+  ) {
+    configLabelKey = payloadPayload[
+      key as keyof typeof payloadPayload
+    ] as string
+  }
+
+  return configLabelKey in config
+    ? config[configLabelKey]
+    : config[key as keyof typeof config]
+}
+
+export {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  ChartStyle,
+}
+
+
+---
+
+
+## File: src__components__ui__checkbox.tsx__.txt
+
+# checkbox.tsx
+"use client"
+
+import * as React from "react"
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
+import { CheckIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+function Checkbox({
+  className,
+  ...props
+}: React.ComponentProps<typeof CheckboxPrimitive.Root>) {
+  return (
+    <CheckboxPrimitive.Root
+      data-slot="checkbox"
+      className={cn(
+        "peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+        className
+      )}
+      {...props}
+    >
+      <CheckboxPrimitive.Indicator
+        data-slot="checkbox-indicator"
+        className="flex items-center justify-center text-current transition-none"
+      >
+        <CheckIcon className="size-3.5" />
+      </CheckboxPrimitive.Indicator>
+    </CheckboxPrimitive.Root>
+  )
+}
+
+export { Checkbox }
+
+
+---
+
+
+## File: src__components__ui__collapsible.tsx__.txt
+
+# collapsible.tsx
+"use client"
+
+import * as CollapsiblePrimitive from "@radix-ui/react-collapsible"
+
+function Collapsible({
+  ...props
+}: React.ComponentProps<typeof CollapsiblePrimitive.Root>) {
+  return <CollapsiblePrimitive.Root data-slot="collapsible" {...props} />
+}
+
+function CollapsibleTrigger({
+  ...props
+}: React.ComponentProps<typeof CollapsiblePrimitive.CollapsibleTrigger>) {
+  return (
+    <CollapsiblePrimitive.CollapsibleTrigger
+      data-slot="collapsible-trigger"
+      {...props}
+    />
+  )
+}
+
+function CollapsibleContent({
+  ...props
+}: React.ComponentProps<typeof CollapsiblePrimitive.CollapsibleContent>) {
+  return (
+    <CollapsiblePrimitive.CollapsibleContent
+      data-slot="collapsible-content"
+      {...props}
+    />
+  )
+}
+
+export { Collapsible, CollapsibleTrigger, CollapsibleContent }
+
+
+---
+
+
+## File: src__components__ui__command.tsx__.txt
+
+# command.tsx
+"use client"
+
+import * as React from "react"
+import { Command as CommandPrimitive } from "cmdk"
+import { SearchIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+
+function Command({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive>) {
+  return (
+    <CommandPrimitive
+      data-slot="command"
+      className={cn(
+        "bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CommandDialog({
+  title = "Command Palette",
+  description = "Search for a command to run...",
+  children,
+  className,
+  showCloseButton = true,
+  ...props
+}: React.ComponentProps<typeof Dialog> & {
+  title?: string
+  description?: string
+  className?: string
+  showCloseButton?: boolean
+}) {
+  return (
+    <Dialog {...props}>
+      <DialogHeader className="sr-only">
+        <DialogTitle>{title}</DialogTitle>
+        <DialogDescription>{description}</DialogDescription>
+      </DialogHeader>
+      <DialogContent
+        className={cn("overflow-hidden p-0", className)}
+        showCloseButton={showCloseButton}
+      >
+        <Command className="[&_[cmdk-group-heading]]:text-muted-foreground **:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
+          {children}
+        </Command>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function CommandInput({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Input>) {
+  return (
+    <div
+      data-slot="command-input-wrapper"
+      className="flex h-9 items-center gap-2 border-b px-3"
+    >
+      <SearchIcon className="size-4 shrink-0 opacity-50" />
+      <CommandPrimitive.Input
+        data-slot="command-input"
+        className={cn(
+          "placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
+          className
+        )}
+        {...props}
+      />
+    </div>
+  )
+}
+
+function CommandList({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.List>) {
+  return (
+    <CommandPrimitive.List
+      data-slot="command-list"
+      className={cn(
+        "max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CommandEmpty({
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Empty>) {
+  return (
+    <CommandPrimitive.Empty
+      data-slot="command-empty"
+      className="py-6 text-center text-sm"
+      {...props}
+    />
+  )
+}
+
+function CommandGroup({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Group>) {
+  return (
+    <CommandPrimitive.Group
+      data-slot="command-group"
+      className={cn(
+        "text-foreground [&_[cmdk-group-heading]]:text-muted-foreground overflow-hidden p-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CommandSeparator({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Separator>) {
+  return (
+    <CommandPrimitive.Separator
+      data-slot="command-separator"
+      className={cn("bg-border -mx-1 h-px", className)}
+      {...props}
+    />
+  )
+}
+
+function CommandItem({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Item>) {
+  return (
+    <CommandPrimitive.Item
+      data-slot="command-item"
+      className={cn(
+        "data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CommandShortcut({
+  className,
+  ...props
+}: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="command-shortcut"
+      className={cn(
+        "text-muted-foreground ml-auto text-xs tracking-widest",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export {
+  Command,
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandShortcut,
+  CommandSeparator,
+}
+
+
+---
+
+
+## File: src__components__ui__context-menu.tsx__.txt
+
+# context-menu.tsx
+"use client"
+
+import * as React from "react"
+import * as ContextMenuPrimitive from "@radix-ui/react-context-menu"
+import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+function ContextMenu({
+  ...props
+}: React.ComponentProps<typeof ContextMenuPrimitive.Root>) {
+  return <ContextMenuPrimitive.Root data-slot="context-menu" {...props} />
+}
+
+function ContextMenuTrigger({
+  ...props
+}: React.ComponentProps<typeof ContextMenuPrimitive.Trigger>) {
+  return (
+    <ContextMenuPrimitive.Trigger data-slot="context-menu-trigger" {...props} />
+  )
+}
+
+function ContextMenuGroup({
+  ...props
+}: React.ComponentProps<typeof ContextMenuPrimitive.Group>) {
+  return (
+    <ContextMenuPrimitive.Group data-slot="context-menu-group" {...props} />
+  )
+}
+
+function ContextMenuPortal({
+  ...props
+}: React.ComponentProps<typeof ContextMenuPrimitive.Portal>) {
+  return (
+    <ContextMenuPrimitive.Portal data-slot="context-menu-portal" {...props} />
+  )
+}
+
+function ContextMenuSub({
+  ...props
+}: React.ComponentProps<typeof ContextMenuPrimitive.Sub>) {
+  return <ContextMenuPrimitive.Sub data-slot="context-menu-sub" {...props} />
+}
+
+function ContextMenuRadioGroup({
+  ...props
+}: React.ComponentProps<typeof ContextMenuPrimitive.RadioGroup>) {
+  return (
+    <ContextMenuPrimitive.RadioGroup
+      data-slot="context-menu-radio-group"
+      {...props}
+    />
+  )
+}
+
+function ContextMenuSubTrigger({
+  className,
+  inset,
+  children,
+  ...props
+}: React.ComponentProps<typeof ContextMenuPrimitive.SubTrigger> & {
+  inset?: boolean
+}) {
+  return (
+    <ContextMenuPrimitive.SubTrigger
+      data-slot="context-menu-sub-trigger"
+      data-inset={inset}
+      className={cn(
+        "focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      {...props}
+    >
+      {children}
+      <ChevronRightIcon className="ml-auto" />
+    </ContextMenuPrimitive.SubTrigger>
+  )
+}
+
+function ContextMenuSubContent({
+  className,
+  ...props
+}: React.ComponentProps<typeof ContextMenuPrimitive.SubContent>) {
+  return (
+    <ContextMenuPrimitive.SubContent
+      data-slot="context-menu-sub-content"
+      className={cn(
+        "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] origin-(--radix-context-menu-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-lg",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function ContextMenuContent({
+  className,
+  ...props
+}: React.ComponentProps<typeof ContextMenuPrimitive.Content>) {
+  return (
+    <ContextMenuPrimitive.Portal>
+      <ContextMenuPrimitive.Content
+        data-slot="context-menu-content"
+        className={cn(
+          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-(--radix-context-menu-content-available-height) min-w-[8rem] origin-(--radix-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md",
+          className
+        )}
+        {...props}
+      />
+    </ContextMenuPrimitive.Portal>
+  )
+}
+
+function ContextMenuItem({
+  className,
+  inset,
+  variant = "default",
+  ...props
+}: React.ComponentProps<typeof ContextMenuPrimitive.Item> & {
+  inset?: boolean
+  variant?: "default" | "destructive"
+}) {
+  return (
+    <ContextMenuPrimitive.Item
+      data-slot="context-menu-item"
+      data-inset={inset}
+      data-variant={variant}
+      className={cn(
+        "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function ContextMenuCheckboxItem({
+  className,
+  children,
+  checked,
+  ...props
+}: React.ComponentProps<typeof ContextMenuPrimitive.CheckboxItem>) {
+  return (
+    <ContextMenuPrimitive.CheckboxItem
+      data-slot="context-menu-checkbox-item"
+      className={cn(
+        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      checked={checked}
+      {...props}
+    >
+      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
+        <ContextMenuPrimitive.ItemIndicator>
+          <CheckIcon className="size-4" />
+        </ContextMenuPrimitive.ItemIndicator>
+      </span>
+      {children}
+    </ContextMenuPrimitive.CheckboxItem>
+  )
+}
+
+function ContextMenuRadioItem({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof ContextMenuPrimitive.RadioItem>) {
+  return (
+    <ContextMenuPrimitive.RadioItem
+      data-slot="context-menu-radio-item"
+      className={cn(
+        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      {...props}
+    >
+      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
+        <ContextMenuPrimitive.ItemIndicator>
+          <CircleIcon className="size-2 fill-current" />
+        </ContextMenuPrimitive.ItemIndicator>
+      </span>
+      {children}
+    </ContextMenuPrimitive.RadioItem>
+  )
+}
+
+function ContextMenuLabel({
+  className,
+  inset,
+  ...props
+}: React.ComponentProps<typeof ContextMenuPrimitive.Label> & {
+  inset?: boolean
+}) {
+  return (
+    <ContextMenuPrimitive.Label
+      data-slot="context-menu-label"
+      data-inset={inset}
+      className={cn(
+        "text-foreground px-2 py-1.5 text-sm font-medium data-[inset]:pl-8",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function ContextMenuSeparator({
+  className,
+  ...props
+}: React.ComponentProps<typeof ContextMenuPrimitive.Separator>) {
+  return (
+    <ContextMenuPrimitive.Separator
+      data-slot="context-menu-separator"
+      className={cn("bg-border -mx-1 my-1 h-px", className)}
+      {...props}
+    />
+  )
+}
+
+function ContextMenuShortcut({
+  className,
+  ...props
+}: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="context-menu-shortcut"
+      className={cn(
+        "text-muted-foreground ml-auto text-xs tracking-widest",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export {
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuCheckboxItem,
+  ContextMenuRadioItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuGroup,
+  ContextMenuPortal,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuRadioGroup,
+}
+
+
+---
+
+
+## File: src__components__ui__dialog.tsx__.txt
+
+# dialog.tsx
+"use client"
+
+import * as React from "react"
+import * as DialogPrimitive from "@radix-ui/react-dialog"
+import { XIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+function Dialog({
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Root>) {
+  return <DialogPrimitive.Root data-slot="dialog" {...props} />
+}
+
+function DialogTrigger({
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
+  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
+}
+
+function DialogPortal({
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Portal>) {
+  return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />
+}
+
+function DialogClose({
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Close>) {
+  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
+}
+
+function DialogOverlay({
+  className,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
+  return (
+    <DialogPrimitive.Overlay
+      data-slot="dialog-overlay"
+      className={cn(
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function DialogContent({
+  className,
+  children,
+  showCloseButton = true,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Content> & {
+  showCloseButton?: boolean
+}) {
+  return (
+    <DialogPortal data-slot="dialog-portal">
+      <DialogOverlay />
+      <DialogPrimitive.Content
+        data-slot="dialog-content"
+        className={cn(
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
+          className
+        )}
+        {...props}
+      >
+        {children}
+        {showCloseButton && (
+          <DialogPrimitive.Close
+            data-slot="dialog-close"
+            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+          >
+            <XIcon />
+            <span className="sr-only">Close</span>
+          </DialogPrimitive.Close>
+        )}
+      </DialogPrimitive.Content>
+    </DialogPortal>
+  )
+}
+
+function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="dialog-header"
+      className={cn("flex flex-col gap-2 text-center sm:text-left", className)}
+      {...props}
+    />
+  )
+}
+
+function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="dialog-footer"
+      className={cn(
+        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function DialogTitle({
+  className,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Title>) {
+  return (
+    <DialogPrimitive.Title
+      data-slot="dialog-title"
+      className={cn("text-lg leading-none font-semibold", className)}
+      {...props}
+    />
+  )
+}
+
+function DialogDescription({
+  className,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Description>) {
+  return (
+    <DialogPrimitive.Description
+      data-slot="dialog-description"
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props}
+    />
+  )
+}
+
+export {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+}
+
+
+---
+
+
+## File: src__components__ui__drawer.tsx__.txt
+
+# drawer.tsx
+"use client"
+
+import * as React from "react"
+import { Drawer as DrawerPrimitive } from "vaul"
+
+import { cn } from "@/lib/utils"
+
+function Drawer({
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Root>) {
+  return <DrawerPrimitive.Root data-slot="drawer" {...props} />
+}
+
+function DrawerTrigger({
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
+  return <DrawerPrimitive.Trigger data-slot="drawer-trigger" {...props} />
+}
+
+function DrawerPortal({
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Portal>) {
+  return <DrawerPrimitive.Portal data-slot="drawer-portal" {...props} />
+}
+
+function DrawerClose({
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Close>) {
+  return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />
+}
+
+function DrawerOverlay({
+  className,
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Overlay>) {
+  return (
+    <DrawerPrimitive.Overlay
+      data-slot="drawer-overlay"
+      className={cn(
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function DrawerContent({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Content>) {
+  return (
+    <DrawerPortal data-slot="drawer-portal">
+      <DrawerOverlay />
+      <DrawerPrimitive.Content
+        data-slot="drawer-content"
+        className={cn(
+          "group/drawer-content bg-background fixed z-50 flex h-auto flex-col",
+          "data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh] data-[vaul-drawer-direction=top]:rounded-b-lg data-[vaul-drawer-direction=top]:border-b",
+          "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=bottom]:rounded-t-lg data-[vaul-drawer-direction=bottom]:border-t",
+          "data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:sm:max-w-sm",
+          "data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=left]:border-r data-[vaul-drawer-direction=left]:sm:max-w-sm",
+          className
+        )}
+        {...props}
+      >
+        <div className="bg-muted mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
+        {children}
+      </DrawerPrimitive.Content>
+    </DrawerPortal>
+  )
+}
+
+function DrawerHeader({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="drawer-header"
+      className={cn(
+        "flex flex-col gap-0.5 p-4 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-center group-data-[vaul-drawer-direction=top]/drawer-content:text-center md:gap-1.5 md:text-left",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="drawer-footer"
+      className={cn("mt-auto flex flex-col gap-2 p-4", className)}
+      {...props}
+    />
+  )
+}
+
+function DrawerTitle({
+  className,
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Title>) {
+  return (
+    <DrawerPrimitive.Title
+      data-slot="drawer-title"
+      className={cn("text-foreground font-semibold", className)}
+      {...props}
+    />
+  )
+}
+
+function DrawerDescription({
+  className,
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Description>) {
+  return (
+    <DrawerPrimitive.Description
+      data-slot="drawer-description"
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props}
+    />
+  )
+}
+
+export {
+  Drawer,
+  DrawerPortal,
+  DrawerOverlay,
+  DrawerTrigger,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerFooter,
+  DrawerTitle,
+  DrawerDescription,
+}
+
+
+---
+
+
+## File: src__components__ui__dropdown-menu.tsx__.txt
+
+# dropdown-menu.tsx
+"use client"
+
+import * as React from "react"
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
+import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+function DropdownMenu({
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
+  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />
+}
+
+function DropdownMenuPortal({
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Portal>) {
+  return (
+    <DropdownMenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />
+  )
+}
+
+function DropdownMenuTrigger({
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>) {
+  return (
+    <DropdownMenuPrimitive.Trigger
+      data-slot="dropdown-menu-trigger"
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuContent({
+  className,
+  sideOffset = 4,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
+  return (
+    <DropdownMenuPrimitive.Portal>
+      <DropdownMenuPrimitive.Content
+        data-slot="dropdown-menu-content"
+        sideOffset={sideOffset}
+        className={cn(
+          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md",
+          className
+        )}
+        {...props}
+      />
+    </DropdownMenuPrimitive.Portal>
+  )
+}
+
+function DropdownMenuGroup({
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Group>) {
+  return (
+    <DropdownMenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />
+  )
+}
+
+function DropdownMenuItem({
+  className,
+  inset,
+  variant = "default",
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Item> & {
+  inset?: boolean
+  variant?: "default" | "destructive"
+}) {
+  return (
+    <DropdownMenuPrimitive.Item
+      data-slot="dropdown-menu-item"
+      data-inset={inset}
+      data-variant={variant}
+      className={cn(
+        "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuCheckboxItem({
+  className,
+  children,
+  checked,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.CheckboxItem>) {
+  return (
+    <DropdownMenuPrimitive.CheckboxItem
+      data-slot="dropdown-menu-checkbox-item"
+      className={cn(
+        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      checked={checked}
+      {...props}
+    >
+      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
+        <DropdownMenuPrimitive.ItemIndicator>
+          <CheckIcon className="size-4" />
+        </DropdownMenuPrimitive.ItemIndicator>
+      </span>
+      {children}
+    </DropdownMenuPrimitive.CheckboxItem>
+  )
+}
+
+function DropdownMenuRadioGroup({
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.RadioGroup>) {
+  return (
+    <DropdownMenuPrimitive.RadioGroup
+      data-slot="dropdown-menu-radio-group"
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuRadioItem({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.RadioItem>) {
+  return (
+    <DropdownMenuPrimitive.RadioItem
+      data-slot="dropdown-menu-radio-item"
+      className={cn(
+        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      {...props}
+    >
+      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
+        <DropdownMenuPrimitive.ItemIndicator>
+          <CircleIcon className="size-2 fill-current" />
+        </DropdownMenuPrimitive.ItemIndicator>
+      </span>
+      {children}
+    </DropdownMenuPrimitive.RadioItem>
+  )
+}
+
+function DropdownMenuLabel({
+  className,
+  inset,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Label> & {
+  inset?: boolean
+}) {
+  return (
+    <DropdownMenuPrimitive.Label
+      data-slot="dropdown-menu-label"
+      data-inset={inset}
+      className={cn(
+        "px-2 py-1.5 text-sm font-medium data-[inset]:pl-8",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuSeparator({
+  className,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Separator>) {
+  return (
+    <DropdownMenuPrimitive.Separator
+      data-slot="dropdown-menu-separator"
+      className={cn("bg-border -mx-1 my-1 h-px", className)}
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuShortcut({
+  className,
+  ...props
+}: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="dropdown-menu-shortcut"
+      className={cn(
+        "text-muted-foreground ml-auto text-xs tracking-widest",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuSub({
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Sub>) {
+  return <DropdownMenuPrimitive.Sub data-slot="dropdown-menu-sub" {...props} />
+}
+
+function DropdownMenuSubTrigger({
+  className,
+  inset,
+  children,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.SubTrigger> & {
+  inset?: boolean
+}) {
+  return (
+    <DropdownMenuPrimitive.SubTrigger
+      data-slot="dropdown-menu-sub-trigger"
+      data-inset={inset}
+      className={cn(
+        "focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[inset]:pl-8",
+        className
+      )}
+      {...props}
+    >
+      {children}
+      <ChevronRightIcon className="ml-auto size-4" />
+    </DropdownMenuPrimitive.SubTrigger>
+  )
+}
+
+function DropdownMenuSubContent({
+  className,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.SubContent>) {
+  return (
+    <DropdownMenuPrimitive.SubContent
+      data-slot="dropdown-menu-sub-content"
+      className={cn(
+        "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-lg",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export {
+  DropdownMenu,
+  DropdownMenuPortal,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuItem,
+  DropdownMenuCheckboxItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+}
+
+
+---
+
+
+## File: src__components__ui__form.tsx__.txt
+
+# form.tsx
+"use client"
+
+import * as React from "react"
+import * as LabelPrimitive from "@radix-ui/react-label"
+import { Slot } from "@radix-ui/react-slot"
+import {
+  Controller,
+  FormProvider,
+  useFormContext,
+  useFormState,
+  type ControllerProps,
+  type FieldPath,
+  type FieldValues,
+} from "react-hook-form"
+
+import { cn } from "@/lib/utils"
+import { Label } from "@/components/ui/label"
+
+const Form = FormProvider
+
+type FormFieldContextValue<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = {
+  name: TName
+}
+
+const FormFieldContext = React.createContext<FormFieldContextValue>(
+  {} as FormFieldContextValue
+)
+
+const FormField = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  ...props
+}: ControllerProps<TFieldValues, TName>) => {
+  return (
+    <FormFieldContext.Provider value={{ name: props.name }}>
+      <Controller {...props} />
+    </FormFieldContext.Provider>
+  )
+}
+
+const useFormField = () => {
+  const fieldContext = React.useContext(FormFieldContext)
+  const itemContext = React.useContext(FormItemContext)
+  const { getFieldState } = useFormContext()
+  const formState = useFormState({ name: fieldContext.name })
+  const fieldState = getFieldState(fieldContext.name, formState)
+
+  if (!fieldContext) {
+    throw new Error("useFormField should be used within <FormField>")
+  }
+
+  const { id } = itemContext
+
+  return {
+    id,
+    name: fieldContext.name,
+    formItemId: `${id}-form-item`,
+    formDescriptionId: `${id}-form-item-description`,
+    formMessageId: `${id}-form-item-message`,
+    ...fieldState,
+  }
+}
+
+type FormItemContextValue = {
+  id: string
+}
+
+const FormItemContext = React.createContext<FormItemContextValue>(
+  {} as FormItemContextValue
+)
+
+function FormItem({ className, ...props }: React.ComponentProps<"div">) {
+  const id = React.useId()
+
+  return (
+    <FormItemContext.Provider value={{ id }}>
+      <div
+        data-slot="form-item"
+        className={cn("grid gap-2", className)}
+        {...props}
+      />
+    </FormItemContext.Provider>
+  )
+}
+
+function FormLabel({
+  className,
+  ...props
+}: React.ComponentProps<typeof LabelPrimitive.Root>) {
+  const { error, formItemId } = useFormField()
+
+  return (
+    <Label
+      data-slot="form-label"
+      data-error={!!error}
+      className={cn("data-[error=true]:text-destructive", className)}
+      htmlFor={formItemId}
+      {...props}
+    />
+  )
+}
+
+function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
+  const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
+
+  return (
+    <Slot
+      data-slot="form-control"
+      id={formItemId}
+      aria-describedby={
+        !error
+          ? `${formDescriptionId}`
+          : `${formDescriptionId} ${formMessageId}`
+      }
+      aria-invalid={!!error}
+      {...props}
+    />
+  )
+}
+
+function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
+  const { formDescriptionId } = useFormField()
+
+  return (
+    <p
+      data-slot="form-description"
+      id={formDescriptionId}
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props}
+    />
+  )
+}
+
+function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
+  const { error, formMessageId } = useFormField()
+  const body = error ? String(error?.message ?? "") : props.children
+
+  if (!body) {
+    return null
+  }
+
+  return (
+    <p
+      data-slot="form-message"
+      id={formMessageId}
+      className={cn("text-destructive text-sm", className)}
+      {...props}
+    >
+      {body}
+    </p>
+  )
+}
+
+export {
+  useFormField,
+  Form,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormDescription,
+  FormMessage,
+  FormField,
+}
+
+
+---
+
+
+## File: src__components__ui__hover-card.tsx__.txt
+
+# hover-card.tsx
+"use client"
+
+import * as React from "react"
+import * as HoverCardPrimitive from "@radix-ui/react-hover-card"
+
+import { cn } from "@/lib/utils"
+
+function HoverCard({
+  ...props
+}: React.ComponentProps<typeof HoverCardPrimitive.Root>) {
+  return <HoverCardPrimitive.Root data-slot="hover-card" {...props} />
+}
+
+function HoverCardTrigger({
+  ...props
+}: React.ComponentProps<typeof HoverCardPrimitive.Trigger>) {
+  return (
+    <HoverCardPrimitive.Trigger data-slot="hover-card-trigger" {...props} />
+  )
+}
+
+function HoverCardContent({
+  className,
+  align = "center",
+  sideOffset = 4,
+  ...props
+}: React.ComponentProps<typeof HoverCardPrimitive.Content>) {
+  return (
+    <HoverCardPrimitive.Portal data-slot="hover-card-portal">
+      <HoverCardPrimitive.Content
+        data-slot="hover-card-content"
+        align={align}
+        sideOffset={sideOffset}
+        className={cn(
+          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-64 origin-(--radix-hover-card-content-transform-origin) rounded-md border p-4 shadow-md outline-hidden",
+          className
+        )}
+        {...props}
+      />
+    </HoverCardPrimitive.Portal>
+  )
+}
+
+export { HoverCard, HoverCardTrigger, HoverCardContent }
+
+
+---
+
+
+## File: src__components__ui__input.tsx__.txt
+
+# input.tsx
+import * as React from "react"
+
+import { cn } from "@/lib/utils"
+
+function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+  return (
+    <input
+      type={type}
+      data-slot="input"
+      className={cn(
+        "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+        "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Input }
+
+
+---
+
+
+## File: src__components__ui__input-otp.tsx__.txt
+
+# input-otp.tsx
+"use client"
+
+import * as React from "react"
+import { OTPInput, OTPInputContext } from "input-otp"
+import { MinusIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+function InputOTP({
+  className,
+  containerClassName,
+  ...props
+}: React.ComponentProps<typeof OTPInput> & {
+  containerClassName?: string
+}) {
+  return (
+    <OTPInput
+      data-slot="input-otp"
+      containerClassName={cn(
+        "flex items-center gap-2 has-disabled:opacity-50",
+        containerClassName
+      )}
+      className={cn("disabled:cursor-not-allowed", className)}
+      {...props}
+    />
+  )
+}
+
+function InputOTPGroup({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="input-otp-group"
+      className={cn("flex items-center", className)}
+      {...props}
+    />
+  )
+}
+
+function InputOTPSlot({
+  index,
+  className,
+  ...props
+}: React.ComponentProps<"div"> & {
+  index: number
+}) {
+  const inputOTPContext = React.useContext(OTPInputContext)
+  const { char, hasFakeCaret, isActive } = inputOTPContext?.slots[index] ?? {}
+
+  return (
+    <div
+      data-slot="input-otp-slot"
+      data-active={isActive}
+      className={cn(
+        "data-[active=true]:border-ring data-[active=true]:ring-ring/50 data-[active=true]:aria-invalid:ring-destructive/20 dark:data-[active=true]:aria-invalid:ring-destructive/40 aria-invalid:border-destructive data-[active=true]:aria-invalid:border-destructive dark:bg-input/30 border-input relative flex h-9 w-9 items-center justify-center border-y border-r text-sm shadow-xs transition-all outline-none first:rounded-l-md first:border-l last:rounded-r-md data-[active=true]:z-10 data-[active=true]:ring-[3px]",
+        className
+      )}
+      {...props}
+    >
+      {char}
+      {hasFakeCaret && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="animate-caret-blink bg-foreground h-4 w-px duration-1000" />
+        </div>
+      )}
+    </div>
+  )
+}
+
+function InputOTPSeparator({ ...props }: React.ComponentProps<"div">) {
+  return (
+    <div data-slot="input-otp-separator" role="separator" {...props}>
+      <MinusIcon />
+    </div>
+  )
+}
+
+export { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator }
+
+
+---
+
+
+## File: src__components__ui__label.tsx__.txt
+
+# label.tsx
+"use client"
+
+import * as React from "react"
+import * as LabelPrimitive from "@radix-ui/react-label"
+
+import { cn } from "@/lib/utils"
+
+function Label({
+  className,
+  ...props
+}: React.ComponentProps<typeof LabelPrimitive.Root>) {
+  return (
+    <LabelPrimitive.Root
+      data-slot="label"
+      className={cn(
+        "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Label }
+
+
+---
+
+
+## File: src__components__ui__menubar.tsx__.txt
+
+# menubar.tsx
+"use client"
+
+import * as React from "react"
+import * as MenubarPrimitive from "@radix-ui/react-menubar"
+import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+function Menubar({
+  className,
+  ...props
+}: React.ComponentProps<typeof MenubarPrimitive.Root>) {
+  return (
+    <MenubarPrimitive.Root
+      data-slot="menubar"
+      className={cn(
+        "bg-background flex h-9 items-center gap-1 rounded-md border p-1 shadow-xs",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function MenubarMenu({
+  ...props
+}: React.ComponentProps<typeof MenubarPrimitive.Menu>) {
+  return <MenubarPrimitive.Menu data-slot="menubar-menu" {...props} />
+}
+
+function MenubarGroup({
+  ...props
+}: React.ComponentProps<typeof MenubarPrimitive.Group>) {
+  return <MenubarPrimitive.Group data-slot="menubar-group" {...props} />
+}
+
+function MenubarPortal({
+  ...props
+}: React.ComponentProps<typeof MenubarPrimitive.Portal>) {
+  return <MenubarPrimitive.Portal data-slot="menubar-portal" {...props} />
+}
+
+function MenubarRadioGroup({
+  ...props
+}: React.ComponentProps<typeof MenubarPrimitive.RadioGroup>) {
+  return (
+    <MenubarPrimitive.RadioGroup data-slot="menubar-radio-group" {...props} />
+  )
+}
+
+function MenubarTrigger({
+  className,
+  ...props
+}: React.ComponentProps<typeof MenubarPrimitive.Trigger>) {
+  return (
+    <MenubarPrimitive.Trigger
+      data-slot="menubar-trigger"
+      className={cn(
+        "focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex items-center rounded-sm px-2 py-1 text-sm font-medium outline-hidden select-none",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function MenubarContent({
+  className,
+  align = "start",
+  alignOffset = -4,
+  sideOffset = 8,
+  ...props
+}: React.ComponentProps<typeof MenubarPrimitive.Content>) {
+  return (
+    <MenubarPortal>
+      <MenubarPrimitive.Content
+        data-slot="menubar-content"
+        align={align}
+        alignOffset={alignOffset}
+        sideOffset={sideOffset}
+        className={cn(
+          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[12rem] origin-(--radix-menubar-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-md",
+          className
+        )}
+        {...props}
+      />
+    </MenubarPortal>
+  )
+}
+
+function MenubarItem({
+  className,
+  inset,
+  variant = "default",
+  ...props
+}: React.ComponentProps<typeof MenubarPrimitive.Item> & {
+  inset?: boolean
+  variant?: "default" | "destructive"
+}) {
+  return (
+    <MenubarPrimitive.Item
+      data-slot="menubar-item"
+      data-inset={inset}
+      data-variant={variant}
+      className={cn(
+        "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function MenubarCheckboxItem({
+  className,
+  children,
+  checked,
+  ...props
+}: React.ComponentProps<typeof MenubarPrimitive.CheckboxItem>) {
+  return (
+    <MenubarPrimitive.CheckboxItem
+      data-slot="menubar-checkbox-item"
+      className={cn(
+        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-xs py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      checked={checked}
+      {...props}
+    >
+      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
+        <MenubarPrimitive.ItemIndicator>
+          <CheckIcon className="size-4" />
+        </MenubarPrimitive.ItemIndicator>
+      </span>
+      {children}
+    </MenubarPrimitive.CheckboxItem>
+  )
+}
+
+function MenubarRadioItem({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof MenubarPrimitive.RadioItem>) {
+  return (
+    <MenubarPrimitive.RadioItem
+      data-slot="menubar-radio-item"
+      className={cn(
+        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-xs py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      {...props}
+    >
+      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
+        <MenubarPrimitive.ItemIndicator>
+          <CircleIcon className="size-2 fill-current" />
+        </MenubarPrimitive.ItemIndicator>
+      </span>
+      {children}
+    </MenubarPrimitive.RadioItem>
+  )
+}
+
+function MenubarLabel({
+  className,
+  inset,
+  ...props
+}: React.ComponentProps<typeof MenubarPrimitive.Label> & {
+  inset?: boolean
+}) {
+  return (
+    <MenubarPrimitive.Label
+      data-slot="menubar-label"
+      data-inset={inset}
+      className={cn(
+        "px-2 py-1.5 text-sm font-medium data-[inset]:pl-8",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function MenubarSeparator({
+  className,
+  ...props
+}: React.ComponentProps<typeof MenubarPrimitive.Separator>) {
+  return (
+    <MenubarPrimitive.Separator
+      data-slot="menubar-separator"
+      className={cn("bg-border -mx-1 my-1 h-px", className)}
+      {...props}
+    />
+  )
+}
+
+function MenubarShortcut({
+  className,
+  ...props
+}: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="menubar-shortcut"
+      className={cn(
+        "text-muted-foreground ml-auto text-xs tracking-widest",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function MenubarSub({
+  ...props
+}: React.ComponentProps<typeof MenubarPrimitive.Sub>) {
+  return <MenubarPrimitive.Sub data-slot="menubar-sub" {...props} />
+}
+
+function MenubarSubTrigger({
+  className,
+  inset,
+  children,
+  ...props
+}: React.ComponentProps<typeof MenubarPrimitive.SubTrigger> & {
+  inset?: boolean
+}) {
+  return (
+    <MenubarPrimitive.SubTrigger
+      data-slot="menubar-sub-trigger"
+      data-inset={inset}
+      className={cn(
+        "focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none data-[inset]:pl-8",
+        className
+      )}
+      {...props}
+    >
+      {children}
+      <ChevronRightIcon className="ml-auto h-4 w-4" />
+    </MenubarPrimitive.SubTrigger>
+  )
+}
+
+function MenubarSubContent({
+  className,
+  ...props
+}: React.ComponentProps<typeof MenubarPrimitive.SubContent>) {
+  return (
+    <MenubarPrimitive.SubContent
+      data-slot="menubar-sub-content"
+      className={cn(
+        "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] origin-(--radix-menubar-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-lg",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export {
+  Menubar,
+  MenubarPortal,
+  MenubarMenu,
+  MenubarTrigger,
+  MenubarContent,
+  MenubarGroup,
+  MenubarSeparator,
+  MenubarLabel,
+  MenubarItem,
+  MenubarShortcut,
+  MenubarCheckboxItem,
+  MenubarRadioGroup,
+  MenubarRadioItem,
+  MenubarSub,
+  MenubarSubTrigger,
+  MenubarSubContent,
+}
+
+
+---
+
+
+## File: src__components__ui__navigation-menu.tsx__.txt
+
+# navigation-menu.tsx
+import * as React from "react"
+import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu"
+import { cva } from "class-variance-authority"
+import { ChevronDownIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+function NavigationMenu({
+  className,
+  children,
+  viewport = true,
+  ...props
+}: React.ComponentProps<typeof NavigationMenuPrimitive.Root> & {
+  viewport?: boolean
+}) {
+  return (
+    <NavigationMenuPrimitive.Root
+      data-slot="navigation-menu"
+      data-viewport={viewport}
+      className={cn(
+        "group/navigation-menu relative flex max-w-max flex-1 items-center justify-center",
+        className
+      )}
+      {...props}
+    >
+      {children}
+      {viewport && <NavigationMenuViewport />}
+    </NavigationMenuPrimitive.Root>
+  )
+}
+
+function NavigationMenuList({
+  className,
+  ...props
+}: React.ComponentProps<typeof NavigationMenuPrimitive.List>) {
+  return (
+    <NavigationMenuPrimitive.List
+      data-slot="navigation-menu-list"
+      className={cn(
+        "group flex flex-1 list-none items-center justify-center gap-1",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function NavigationMenuItem({
+  className,
+  ...props
+}: React.ComponentProps<typeof NavigationMenuPrimitive.Item>) {
+  return (
+    <NavigationMenuPrimitive.Item
+      data-slot="navigation-menu-item"
+      className={cn("relative", className)}
+      {...props}
+    />
+  )
+}
+
+const navigationMenuTriggerStyle = cva(
+  "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=open]:hover:bg-accent data-[state=open]:text-accent-foreground data-[state=open]:focus:bg-accent data-[state=open]:bg-accent/50 focus-visible:ring-ring/50 outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1"
+)
+
+function NavigationMenuTrigger({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof NavigationMenuPrimitive.Trigger>) {
+  return (
+    <NavigationMenuPrimitive.Trigger
+      data-slot="navigation-menu-trigger"
+      className={cn(navigationMenuTriggerStyle(), "group", className)}
+      {...props}
+    >
+      {children}{" "}
+      <ChevronDownIcon
+        className="relative top-[1px] ml-1 size-3 transition duration-300 group-data-[state=open]:rotate-180"
+        aria-hidden="true"
+      />
+    </NavigationMenuPrimitive.Trigger>
+  )
+}
+
+function NavigationMenuContent({
+  className,
+  ...props
+}: React.ComponentProps<typeof NavigationMenuPrimitive.Content>) {
+  return (
+    <NavigationMenuPrimitive.Content
+      data-slot="navigation-menu-content"
+      className={cn(
+        "data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 top-0 left-0 w-full p-2 pr-2.5 md:absolute md:w-auto",
+        "group-data-[viewport=false]/navigation-menu:bg-popover group-data-[viewport=false]/navigation-menu:text-popover-foreground group-data-[viewport=false]/navigation-menu:data-[state=open]:animate-in group-data-[viewport=false]/navigation-menu:data-[state=closed]:animate-out group-data-[viewport=false]/navigation-menu:data-[state=closed]:zoom-out-95 group-data-[viewport=false]/navigation-menu:data-[state=open]:zoom-in-95 group-data-[viewport=false]/navigation-menu:data-[state=open]:fade-in-0 group-data-[viewport=false]/navigation-menu:data-[state=closed]:fade-out-0 group-data-[viewport=false]/navigation-menu:top-full group-data-[viewport=false]/navigation-menu:mt-1.5 group-data-[viewport=false]/navigation-menu:overflow-hidden group-data-[viewport=false]/navigation-menu:rounded-md group-data-[viewport=false]/navigation-menu:border group-data-[viewport=false]/navigation-menu:shadow group-data-[viewport=false]/navigation-menu:duration-200 **:data-[slot=navigation-menu-link]:focus:ring-0 **:data-[slot=navigation-menu-link]:focus:outline-none",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function NavigationMenuViewport({
+  className,
+  ...props
+}: React.ComponentProps<typeof NavigationMenuPrimitive.Viewport>) {
+  return (
+    <div
+      className={cn(
+        "absolute top-full left-0 isolate z-50 flex justify-center"
+      )}
+    >
+      <NavigationMenuPrimitive.Viewport
+        data-slot="navigation-menu-viewport"
+        className={cn(
+          "origin-top-center bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border shadow md:w-[var(--radix-navigation-menu-viewport-width)]",
+          className
+        )}
+        {...props}
+      />
+    </div>
+  )
+}
+
+function NavigationMenuLink({
+  className,
+  ...props
+}: React.ComponentProps<typeof NavigationMenuPrimitive.Link>) {
+  return (
+    <NavigationMenuPrimitive.Link
+      data-slot="navigation-menu-link"
+      className={cn(
+        "data-[active=true]:focus:bg-accent data-[active=true]:hover:bg-accent data-[active=true]:bg-accent/50 data-[active=true]:text-accent-foreground hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col gap-1 rounded-sm p-2 text-sm transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function NavigationMenuIndicator({
+  className,
+  ...props
+}: React.ComponentProps<typeof NavigationMenuPrimitive.Indicator>) {
+  return (
+    <NavigationMenuPrimitive.Indicator
+      data-slot="navigation-menu-indicator"
+      className={cn(
+        "data-[state=visible]:animate-in data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:fade-in top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden",
+        className
+      )}
+      {...props}
+    >
+      <div className="bg-border relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm shadow-md" />
+    </NavigationMenuPrimitive.Indicator>
+  )
+}
+
+export {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuContent,
+  NavigationMenuTrigger,
+  NavigationMenuLink,
+  NavigationMenuIndicator,
+  NavigationMenuViewport,
+  navigationMenuTriggerStyle,
+}
+
+
+---
+
+
+## File: src__components__ui__pagination.tsx__.txt
+
+# pagination.tsx
+import * as React from "react"
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  MoreHorizontalIcon,
+} from "lucide-react"
+
+import { cn } from "@/lib/utils"
+import { Button, buttonVariants } from "@/components/ui/button"
+
+function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
+  return (
+    <nav
+      role="navigation"
+      aria-label="pagination"
+      data-slot="pagination"
+      className={cn("mx-auto flex w-full justify-center", className)}
+      {...props}
+    />
+  )
+}
+
+function PaginationContent({
+  className,
+  ...props
+}: React.ComponentProps<"ul">) {
+  return (
+    <ul
+      data-slot="pagination-content"
+      className={cn("flex flex-row items-center gap-1", className)}
+      {...props}
+    />
+  )
+}
+
+function PaginationItem({ ...props }: React.ComponentProps<"li">) {
+  return <li data-slot="pagination-item" {...props} />
+}
+
+type PaginationLinkProps = {
+  isActive?: boolean
+} & Pick<React.ComponentProps<typeof Button>, "size"> &
+  React.ComponentProps<"a">
+
+function PaginationLink({
+  className,
+  isActive,
+  size = "icon",
+  ...props
+}: PaginationLinkProps) {
+  return (
+    <a
+      aria-current={isActive ? "page" : undefined}
+      data-slot="pagination-link"
+      data-active={isActive}
+      className={cn(
+        buttonVariants({
+          variant: isActive ? "outline" : "ghost",
+          size,
+        }),
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function PaginationPrevious({
+  className,
+  ...props
+}: React.ComponentProps<typeof PaginationLink>) {
+  return (
+    <PaginationLink
+      aria-label="Go to previous page"
+      size="default"
+      className={cn("gap-1 px-2.5 sm:pl-2.5", className)}
+      {...props}
+    >
+      <ChevronLeftIcon />
+      <span className="hidden sm:block">Previous</span>
+    </PaginationLink>
+  )
+}
+
+function PaginationNext({
+  className,
+  ...props
+}: React.ComponentProps<typeof PaginationLink>) {
+  return (
+    <PaginationLink
+      aria-label="Go to next page"
+      size="default"
+      className={cn("gap-1 px-2.5 sm:pr-2.5", className)}
+      {...props}
+    >
+      <span className="hidden sm:block">Next</span>
+      <ChevronRightIcon />
+    </PaginationLink>
+  )
+}
+
+function PaginationEllipsis({
+  className,
+  ...props
+}: React.ComponentProps<"span">) {
+  return (
+    <span
+      aria-hidden
+      data-slot="pagination-ellipsis"
+      className={cn("flex size-9 items-center justify-center", className)}
+      {...props}
+    >
+      <MoreHorizontalIcon className="size-4" />
+      <span className="sr-only">More pages</span>
+    </span>
+  )
+}
+
+export {
+  Pagination,
+  PaginationContent,
+  PaginationLink,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+}
+
+
+---
+
+
+## File: src__components__ui__popover.tsx__.txt
+
+# popover.tsx
+"use client"
+
+import * as React from "react"
+import * as PopoverPrimitive from "@radix-ui/react-popover"
+
+import { cn } from "@/lib/utils"
+
+function Popover({
+  ...props
+}: React.ComponentProps<typeof PopoverPrimitive.Root>) {
+  return <PopoverPrimitive.Root data-slot="popover" {...props} />
+}
+
+function PopoverTrigger({
+  ...props
+}: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
+  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
+}
+
+function PopoverContent({
+  className,
+  align = "center",
+  sideOffset = 4,
+  ...props
+}: React.ComponentProps<typeof PopoverPrimitive.Content>) {
+  return (
+    <PopoverPrimitive.Portal>
+      <PopoverPrimitive.Content
+        data-slot="popover-content"
+        align={align}
+        sideOffset={sideOffset}
+        className={cn(
+          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border p-4 shadow-md outline-hidden",
+          className
+        )}
+        {...props}
+      />
+    </PopoverPrimitive.Portal>
+  )
+}
+
+function PopoverAnchor({
+  ...props
+}: React.ComponentProps<typeof PopoverPrimitive.Anchor>) {
+  return <PopoverPrimitive.Anchor data-slot="popover-anchor" {...props} />
+}
+
+export { Popover, PopoverTrigger, PopoverContent, PopoverAnchor }
+
+
+---
+
+
+## File: src__components__ui__progress.tsx__.txt
+
+# progress.tsx
+"use client"
+
+import * as React from "react"
+import * as ProgressPrimitive from "@radix-ui/react-progress"
+
+import { cn } from "@/lib/utils"
+
+function Progress({
+  className,
+  value,
+  ...props
+}: React.ComponentProps<typeof ProgressPrimitive.Root>) {
+  return (
+    <ProgressPrimitive.Root
+      data-slot="progress"
+      className={cn(
+        "bg-primary/20 relative h-2 w-full overflow-hidden rounded-full",
+        className
+      )}
+      {...props}
+    >
+      <ProgressPrimitive.Indicator
+        data-slot="progress-indicator"
+        className="bg-primary h-full w-full flex-1 transition-all"
+        style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
+      />
+    </ProgressPrimitive.Root>
+  )
+}
+
+export { Progress }
+
+
+---
+
+
+## File: src__components__ui__radio-group.tsx__.txt
+
+# radio-group.tsx
+"use client"
+
+import * as React from "react"
+import * as RadioGroupPrimitive from "@radix-ui/react-radio-group"
+import { CircleIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+function RadioGroup({
+  className,
+  ...props
+}: React.ComponentProps<typeof RadioGroupPrimitive.Root>) {
+  return (
+    <RadioGroupPrimitive.Root
+      data-slot="radio-group"
+      className={cn("grid gap-3", className)}
+      {...props}
+    />
+  )
+}
+
+function RadioGroupItem({
+  className,
+  ...props
+}: React.ComponentProps<typeof RadioGroupPrimitive.Item>) {
+  return (
+    <RadioGroupPrimitive.Item
+      data-slot="radio-group-item"
+      className={cn(
+        "border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+        className
+      )}
+      {...props}
+    >
+      <RadioGroupPrimitive.Indicator
+        data-slot="radio-group-indicator"
+        className="relative flex items-center justify-center"
+      >
+        <CircleIcon className="fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2" />
+      </RadioGroupPrimitive.Indicator>
+    </RadioGroupPrimitive.Item>
+  )
+}
+
+export { RadioGroup, RadioGroupItem }
+
+
+---
+
+
+## File: src__components__ui__resizable.tsx__.txt
+
+# resizable.tsx
+"use client"
+
+import * as React from "react"
+import { GripVerticalIcon } from "lucide-react"
+import * as ResizablePrimitive from "react-resizable-panels"
+
+import { cn } from "@/lib/utils"
+
+function ResizablePanelGroup({
+  className,
+  ...props
+}: React.ComponentProps<typeof ResizablePrimitive.PanelGroup>) {
+  return (
+    <ResizablePrimitive.PanelGroup
+      data-slot="resizable-panel-group"
+      className={cn(
+        "flex h-full w-full data-[panel-group-direction=vertical]:flex-col",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function ResizablePanel({
+  ...props
+}: React.ComponentProps<typeof ResizablePrimitive.Panel>) {
+  return <ResizablePrimitive.Panel data-slot="resizable-panel" {...props} />
+}
+
+function ResizableHandle({
+  withHandle,
+  className,
+  ...props
+}: React.ComponentProps<typeof ResizablePrimitive.PanelResizeHandle> & {
+  withHandle?: boolean
+}) {
+  return (
+    <ResizablePrimitive.PanelResizeHandle
+      data-slot="resizable-handle"
+      className={cn(
+        "bg-border focus-visible:ring-ring relative flex w-px items-center justify-center after:absolute after:inset-y-0 after:left-1/2 after:w-1 after:-translate-x-1/2 focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:outline-hidden data-[panel-group-direction=vertical]:h-px data-[panel-group-direction=vertical]:w-full data-[panel-group-direction=vertical]:after:left-0 data-[panel-group-direction=vertical]:after:h-1 data-[panel-group-direction=vertical]:after:w-full data-[panel-group-direction=vertical]:after:translate-x-0 data-[panel-group-direction=vertical]:after:-translate-y-1/2 [&[data-panel-group-direction=vertical]>div]:rotate-90",
+        className
+      )}
+      {...props}
+    >
+      {withHandle && (
+        <div className="bg-border z-10 flex h-4 w-3 items-center justify-center rounded-xs border">
+          <GripVerticalIcon className="size-2.5" />
+        </div>
+      )}
+    </ResizablePrimitive.PanelResizeHandle>
+  )
+}
+
+export { ResizablePanelGroup, ResizablePanel, ResizableHandle }
+
+
+---
+
+
+## File: src__components__ui__scroll-area.tsx__.txt
+
+# scroll-area.tsx
+"use client"
+
+import * as React from "react"
+import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area"
+
+import { cn } from "@/lib/utils"
+
+function ScrollArea({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof ScrollAreaPrimitive.Root>) {
+  return (
+    <ScrollAreaPrimitive.Root
+      data-slot="scroll-area"
+      className={cn("relative", className)}
+      {...props}
+    >
+      <ScrollAreaPrimitive.Viewport
+        data-slot="scroll-area-viewport"
+        className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
+      >
+        {children}
+      </ScrollAreaPrimitive.Viewport>
+      <ScrollBar />
+      <ScrollAreaPrimitive.Corner />
+    </ScrollAreaPrimitive.Root>
+  )
+}
+
+function ScrollBar({
+  className,
+  orientation = "vertical",
+  ...props
+}: React.ComponentProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>) {
+  return (
+    <ScrollAreaPrimitive.ScrollAreaScrollbar
+      data-slot="scroll-area-scrollbar"
+      orientation={orientation}
+      className={cn(
+        "flex touch-none p-px transition-colors select-none",
+        orientation === "vertical" &&
+          "h-full w-2.5 border-l border-l-transparent",
+        orientation === "horizontal" &&
+          "h-2.5 flex-col border-t border-t-transparent",
+        className
+      )}
+      {...props}
+    >
+      <ScrollAreaPrimitive.ScrollAreaThumb
+        data-slot="scroll-area-thumb"
+        className="bg-border relative flex-1 rounded-full"
+      />
+    </ScrollAreaPrimitive.ScrollAreaScrollbar>
+  )
+}
+
+export { ScrollArea, ScrollBar }
+
+
+---
+
+
+## File: src__components__ui__select.tsx__.txt
+
+# select.tsx
+"use client"
+
+import * as React from "react"
+import * as SelectPrimitive from "@radix-ui/react-select"
+import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+function Select({
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Root>) {
+  return <SelectPrimitive.Root data-slot="select" {...props} />
+}
+
+function SelectGroup({
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Group>) {
+  return <SelectPrimitive.Group data-slot="select-group" {...props} />
+}
+
+function SelectValue({
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Value>) {
+  return <SelectPrimitive.Value data-slot="select-value" {...props} />
+}
+
+function SelectTrigger({
+  className,
+  size = "default",
+  children,
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
+  size?: "sm" | "default"
+}) {
+  return (
+    <SelectPrimitive.Trigger
+      data-slot="select-trigger"
+      data-size={size}
+      className={cn(
+        "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex w-fit items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      {...props}
+    >
+      {children}
+      <SelectPrimitive.Icon asChild>
+        <ChevronDownIcon className="size-4 opacity-50" />
+      </SelectPrimitive.Icon>
+    </SelectPrimitive.Trigger>
+  )
+}
+
+function SelectContent({
+  className,
+  children,
+  position = "popper",
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Content>) {
+  return (
+    <SelectPrimitive.Portal>
+      <SelectPrimitive.Content
+        data-slot="select-content"
+        className={cn(
+          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border shadow-md",
+          position === "popper" &&
+            "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+          className
+        )}
+        position={position}
+        {...props}
+      >
+        <SelectScrollUpButton />
+        <SelectPrimitive.Viewport
+          className={cn(
+            "p-1",
+            position === "popper" &&
+              "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1"
+          )}
+        >
+          {children}
+        </SelectPrimitive.Viewport>
+        <SelectScrollDownButton />
+      </SelectPrimitive.Content>
+    </SelectPrimitive.Portal>
+  )
+}
+
+function SelectLabel({
+  className,
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Label>) {
+  return (
+    <SelectPrimitive.Label
+      data-slot="select-label"
+      className={cn("text-muted-foreground px-2 py-1.5 text-xs", className)}
+      {...props}
+    />
+  )
+}
+
+function SelectItem({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Item>) {
+  return (
+    <SelectPrimitive.Item
+      data-slot="select-item"
+      className={cn(
+        "focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        className
+      )}
+      {...props}
+    >
+      <span className="absolute right-2 flex size-3.5 items-center justify-center">
+        <SelectPrimitive.ItemIndicator>
+          <CheckIcon className="size-4" />
+        </SelectPrimitive.ItemIndicator>
+      </span>
+      <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+    </SelectPrimitive.Item>
+  )
+}
+
+function SelectSeparator({
+  className,
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Separator>) {
+  return (
+    <SelectPrimitive.Separator
+      data-slot="select-separator"
+      className={cn("bg-border pointer-events-none -mx-1 my-1 h-px", className)}
+      {...props}
+    />
+  )
+}
+
+function SelectScrollUpButton({
+  className,
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.ScrollUpButton>) {
+  return (
+    <SelectPrimitive.ScrollUpButton
+      data-slot="select-scroll-up-button"
+      className={cn(
+        "flex cursor-default items-center justify-center py-1",
+        className
+      )}
+      {...props}
+    >
+      <ChevronUpIcon className="size-4" />
+    </SelectPrimitive.ScrollUpButton>
+  )
+}
+
+function SelectScrollDownButton({
+  className,
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.ScrollDownButton>) {
+  return (
+    <SelectPrimitive.ScrollDownButton
+      data-slot="select-scroll-down-button"
+      className={cn(
+        "flex cursor-default items-center justify-center py-1",
+        className
+      )}
+      {...props}
+    >
+      <ChevronDownIcon className="size-4" />
+    </SelectPrimitive.ScrollDownButton>
+  )
+}
+
+export {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+}
+
+
+---
+
+
+## File: src__components__ui__separator.tsx__.txt
+
+# separator.tsx
+"use client"
+
+import * as React from "react"
+import * as SeparatorPrimitive from "@radix-ui/react-separator"
+
+import { cn } from "@/lib/utils"
+
+function Separator({
+  className,
+  orientation = "horizontal",
+  decorative = true,
+  ...props
+}: React.ComponentProps<typeof SeparatorPrimitive.Root>) {
+  return (
+    <SeparatorPrimitive.Root
+      data-slot="separator"
+      decorative={decorative}
+      orientation={orientation}
+      className={cn(
+        "bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Separator }
+
+
+---
+
+
+## File: src__components__ui__sheet.tsx__.txt
+
+# sheet.tsx
+"use client"
+
+import * as React from "react"
+import * as SheetPrimitive from "@radix-ui/react-dialog"
+import { XIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
+  return <SheetPrimitive.Root data-slot="sheet" {...props} />
+}
+
+function SheetTrigger({
+  ...props
+}: React.ComponentProps<typeof SheetPrimitive.Trigger>) {
+  return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />
+}
+
+function SheetClose({
+  ...props
+}: React.ComponentProps<typeof SheetPrimitive.Close>) {
+  return <SheetPrimitive.Close data-slot="sheet-close" {...props} />
+}
+
+function SheetPortal({
+  ...props
+}: React.ComponentProps<typeof SheetPrimitive.Portal>) {
+  return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />
+}
+
+function SheetOverlay({
+  className,
+  ...props
+}: React.ComponentProps<typeof SheetPrimitive.Overlay>) {
+  return (
+    <SheetPrimitive.Overlay
+      data-slot="sheet-overlay"
+      className={cn(
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function SheetContent({
+  className,
+  children,
+  side = "right",
+  ...props
+}: React.ComponentProps<typeof SheetPrimitive.Content> & {
+  side?: "top" | "right" | "bottom" | "left"
+}) {
+  return (
+    <SheetPortal>
+      <SheetOverlay />
+      <SheetPrimitive.Content
+        data-slot="sheet-content"
+        className={cn(
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+          side === "right" &&
+            "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm",
+          side === "left" &&
+            "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm",
+          side === "top" &&
+            "data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 h-auto border-b",
+          side === "bottom" &&
+            "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 h-auto border-t",
+          className
+        )}
+        {...props}
+      >
+        {children}
+        <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
+          <XIcon className="size-4" />
+          <span className="sr-only">Close</span>
+        </SheetPrimitive.Close>
+      </SheetPrimitive.Content>
+    </SheetPortal>
+  )
+}
+
+function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="sheet-header"
+      className={cn("flex flex-col gap-1.5 p-4", className)}
+      {...props}
+    />
+  )
+}
+
+function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="sheet-footer"
+      className={cn("mt-auto flex flex-col gap-2 p-4", className)}
+      {...props}
+    />
+  )
+}
+
+function SheetTitle({
+  className,
+  ...props
+}: React.ComponentProps<typeof SheetPrimitive.Title>) {
+  return (
+    <SheetPrimitive.Title
+      data-slot="sheet-title"
+      className={cn("text-foreground font-semibold", className)}
+      {...props}
+    />
+  )
+}
+
+function SheetDescription({
+  className,
+  ...props
+}: React.ComponentProps<typeof SheetPrimitive.Description>) {
+  return (
+    <SheetPrimitive.Description
+      data-slot="sheet-description"
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props}
+    />
+  )
+}
+
+export {
+  Sheet,
+  SheetTrigger,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetFooter,
+  SheetTitle,
+  SheetDescription,
+}
+
+
+---
+
+
+## File: src__components__ui__sidebar.tsx__.txt
+
+# sidebar.tsx
+"use client"
+
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, VariantProps } from "class-variance-authority"
+import { PanelLeftIcon } from "lucide-react"
+
+import { useIsMobile } from "@/hooks/use-mobile"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
+import { Skeleton } from "@/components/ui/skeleton"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+
+const SIDEBAR_COOKIE_NAME = "sidebar_state"
+const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
+const SIDEBAR_WIDTH = "16rem"
+const SIDEBAR_WIDTH_MOBILE = "18rem"
+const SIDEBAR_WIDTH_ICON = "3rem"
+const SIDEBAR_KEYBOARD_SHORTCUT = "b"
+
+type SidebarContextProps = {
+  state: "expanded" | "collapsed"
+  open: boolean
+  setOpen: (open: boolean) => void
+  openMobile: boolean
+  setOpenMobile: (open: boolean) => void
+  isMobile: boolean
+  toggleSidebar: () => void
+}
+
+const SidebarContext = React.createContext<SidebarContextProps | null>(null)
+
+function useSidebar() {
+  const context = React.useContext(SidebarContext)
+  if (!context) {
+    throw new Error("useSidebar must be used within a SidebarProvider.")
+  }
+
+  return context
+}
+
+function SidebarProvider({
+  defaultOpen = true,
+  open: openProp,
+  onOpenChange: setOpenProp,
+  className,
+  style,
+  children,
+  ...props
+}: React.ComponentProps<"div"> & {
+  defaultOpen?: boolean
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+}) {
+  const isMobile = useIsMobile()
+  const [openMobile, setOpenMobile] = React.useState(false)
+
+  // This is the internal state of the sidebar.
+  // We use openProp and setOpenProp for control from outside the component.
+  const [_open, _setOpen] = React.useState(defaultOpen)
+  const open = openProp ?? _open
+  const setOpen = React.useCallback(
+    (value: boolean | ((value: boolean) => boolean)) => {
+      const openState = typeof value === "function" ? value(open) : value
+      if (setOpenProp) {
+        setOpenProp(openState)
+      } else {
+        _setOpen(openState)
+      }
+
+      // This sets the cookie to keep the sidebar state.
+      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+    },
+    [setOpenProp, open]
+  )
+
+  // Helper to toggle the sidebar.
+  const toggleSidebar = React.useCallback(() => {
+    return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open)
+  }, [isMobile, setOpen, setOpenMobile])
+
+  // Adds a keyboard shortcut to toggle the sidebar.
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
+        (event.metaKey || event.ctrlKey)
+      ) {
+        event.preventDefault()
+        toggleSidebar()
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [toggleSidebar])
+
+  // We add a state so that we can do data-state="expanded" or "collapsed".
+  // This makes it easier to style the sidebar with Tailwind classes.
+  const state = open ? "expanded" : "collapsed"
+
+  const contextValue = React.useMemo<SidebarContextProps>(
+    () => ({
+      state,
+      open,
+      setOpen,
+      isMobile,
+      openMobile,
+      setOpenMobile,
+      toggleSidebar,
+    }),
+    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+  )
+
+  return (
+    <SidebarContext.Provider value={contextValue}>
+      <TooltipProvider delayDuration={0}>
+        <div
+          data-slot="sidebar-wrapper"
+          style={
+            {
+              "--sidebar-width": SIDEBAR_WIDTH,
+              "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
+              ...style,
+            } as React.CSSProperties
+          }
+          className={cn(
+            "group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full",
+            className
+          )}
+          {...props}
+        >
+          {children}
+        </div>
+      </TooltipProvider>
+    </SidebarContext.Provider>
+  )
+}
+
+function Sidebar({
+  side = "left",
+  variant = "sidebar",
+  collapsible = "offcanvas",
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"div"> & {
+  side?: "left" | "right"
+  variant?: "sidebar" | "floating" | "inset"
+  collapsible?: "offcanvas" | "icon" | "none"
+}) {
+  const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+
+  if (collapsible === "none") {
+    return (
+      <div
+        data-slot="sidebar"
+        className={cn(
+          "bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col",
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    )
+  }
+
+  if (isMobile) {
+    return (
+      <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+        <SheetContent
+          data-sidebar="sidebar"
+          data-slot="sidebar"
+          data-mobile="true"
+          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
+          style={
+            {
+              "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+            } as React.CSSProperties
+          }
+          side={side}
+        >
+          <SheetHeader className="sr-only">
+            <SheetTitle>Sidebar</SheetTitle>
+            <SheetDescription>Displays the mobile sidebar.</SheetDescription>
+          </SheetHeader>
+          <div className="flex h-full w-full flex-col">{children}</div>
+        </SheetContent>
+      </Sheet>
+    )
+  }
+
+  return (
+    <div
+      className="group peer text-sidebar-foreground hidden md:block"
+      data-state={state}
+      data-collapsible={state === "collapsed" ? collapsible : ""}
+      data-variant={variant}
+      data-side={side}
+      data-slot="sidebar"
+    >
+      {/* This is what handles the sidebar gap on desktop */}
+      <div
+        data-slot="sidebar-gap"
+        className={cn(
+          "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear",
+          "group-data-[collapsible=offcanvas]:w-0",
+          "group-data-[side=right]:rotate-180",
+          variant === "floating" || variant === "inset"
+            ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]"
+            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)"
+        )}
+      />
+      <div
+        data-slot="sidebar-container"
+        className={cn(
+          "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex",
+          side === "left"
+            ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
+            : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
+          // Adjust the padding for floating and inset variants.
+          variant === "floating" || variant === "inset"
+            ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
+            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
+          className
+        )}
+        {...props}
+      >
+        <div
+          data-sidebar="sidebar"
+          data-slot="sidebar-inner"
+          className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SidebarTrigger({
+  className,
+  onClick,
+  ...props
+}: React.ComponentProps<typeof Button>) {
+  const { toggleSidebar } = useSidebar()
+
+  return (
+    <Button
+      data-sidebar="trigger"
+      data-slot="sidebar-trigger"
+      variant="ghost"
+      size="icon"
+      className={cn("size-7", className)}
+      onClick={(event) => {
+        onClick?.(event)
+        toggleSidebar()
+      }}
+      {...props}
+    >
+      <PanelLeftIcon />
+      <span className="sr-only">Toggle Sidebar</span>
+    </Button>
+  )
+}
+
+function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
+  const { toggleSidebar } = useSidebar()
+
+  return (
+    <button
+      data-sidebar="rail"
+      data-slot="sidebar-rail"
+      aria-label="Toggle Sidebar"
+      tabIndex={-1}
+      onClick={toggleSidebar}
+      title="Toggle Sidebar"
+      className={cn(
+        "hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] sm:flex",
+        "in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize",
+        "[[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize",
+        "hover:group-data-[collapsible=offcanvas]:bg-sidebar group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full",
+        "[[data-side=left][data-collapsible=offcanvas]_&]:-right-2",
+        "[[data-side=right][data-collapsible=offcanvas]_&]:-left-2",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
+  return (
+    <main
+      data-slot="sidebar-inset"
+      className={cn(
+        "bg-background relative flex w-full flex-1 flex-col",
+        "md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function SidebarInput({
+  className,
+  ...props
+}: React.ComponentProps<typeof Input>) {
+  return (
+    <Input
+      data-slot="sidebar-input"
+      data-sidebar="input"
+      className={cn("bg-background h-8 w-full shadow-none", className)}
+      {...props}
+    />
+  )
+}
+
+function SidebarHeader({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="sidebar-header"
+      data-sidebar="header"
+      className={cn("flex flex-col gap-2 p-2", className)}
+      {...props}
+    />
+  )
+}
+
+function SidebarFooter({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="sidebar-footer"
+      data-sidebar="footer"
+      className={cn("flex flex-col gap-2 p-2", className)}
+      {...props}
+    />
+  )
+}
+
+function SidebarSeparator({
+  className,
+  ...props
+}: React.ComponentProps<typeof Separator>) {
+  return (
+    <Separator
+      data-slot="sidebar-separator"
+      data-sidebar="separator"
+      className={cn("bg-sidebar-border mx-2 w-auto", className)}
+      {...props}
+    />
+  )
+}
+
+function SidebarContent({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="sidebar-content"
+      data-sidebar="content"
+      className={cn(
+        "flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function SidebarGroup({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="sidebar-group"
+      data-sidebar="group"
+      className={cn("relative flex w-full min-w-0 flex-col p-2", className)}
+      {...props}
+    />
+  )
+}
+
+function SidebarGroupLabel({
+  className,
+  asChild = false,
+  ...props
+}: React.ComponentProps<"div"> & { asChild?: boolean }) {
+  const Comp = asChild ? Slot : "div"
+
+  return (
+    <Comp
+      data-slot="sidebar-group-label"
+      data-sidebar="group-label"
+      className={cn(
+        "text-sidebar-foreground/70 ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+        "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function SidebarGroupAction({
+  className,
+  asChild = false,
+  ...props
+}: React.ComponentProps<"button"> & { asChild?: boolean }) {
+  const Comp = asChild ? Slot : "button"
+
+  return (
+    <Comp
+      data-slot="sidebar-group-action"
+      data-sidebar="group-action"
+      className={cn(
+        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground absolute top-3.5 right-3 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-hidden transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+        // Increases the hit area of the button on mobile.
+        "after:absolute after:-inset-2 md:after:hidden",
+        "group-data-[collapsible=icon]:hidden",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function SidebarGroupContent({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="sidebar-group-content"
+      data-sidebar="group-content"
+      className={cn("w-full text-sm", className)}
+      {...props}
+    />
+  )
+}
+
+function SidebarMenu({ className, ...props }: React.ComponentProps<"ul">) {
+  return (
+    <ul
+      data-slot="sidebar-menu"
+      data-sidebar="menu"
+      className={cn("flex w-full min-w-0 flex-col gap-1", className)}
+      {...props}
+    />
+  )
+}
+
+function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
+  return (
+    <li
+      data-slot="sidebar-menu-item"
+      data-sidebar="menu-item"
+      className={cn("group/menu-item relative", className)}
+      {...props}
+    />
+  )
+}
+
+const sidebarMenuButtonVariants = cva(
+  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+  {
+    variants: {
+      variant: {
+        default: "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        outline:
+          "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]",
+      },
+      size: {
+        default: "h-8 text-sm",
+        sm: "h-7 text-xs",
+        lg: "h-12 text-sm group-data-[collapsible=icon]:p-0!",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+function SidebarMenuButton({
+  asChild = false,
+  isActive = false,
+  variant = "default",
+  size = "default",
+  tooltip,
+  className,
+  ...props
+}: React.ComponentProps<"button"> & {
+  asChild?: boolean
+  isActive?: boolean
+  tooltip?: string | React.ComponentProps<typeof TooltipContent>
+} & VariantProps<typeof sidebarMenuButtonVariants>) {
+  const Comp = asChild ? Slot : "button"
+  const { isMobile, state } = useSidebar()
+
+  const button = (
+    <Comp
+      data-slot="sidebar-menu-button"
+      data-sidebar="menu-button"
+      data-size={size}
+      data-active={isActive}
+      className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
+      {...props}
+    />
+  )
+
+  if (!tooltip) {
+    return button
+  }
+
+  if (typeof tooltip === "string") {
+    tooltip = {
+      children: tooltip,
+    }
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{button}</TooltipTrigger>
+      <TooltipContent
+        side="right"
+        align="center"
+        hidden={state !== "collapsed" || isMobile}
+        {...tooltip}
+      />
+    </Tooltip>
+  )
+}
+
+function SidebarMenuAction({
+  className,
+  asChild = false,
+  showOnHover = false,
+  ...props
+}: React.ComponentProps<"button"> & {
+  asChild?: boolean
+  showOnHover?: boolean
+}) {
+  const Comp = asChild ? Slot : "button"
+
+  return (
+    <Comp
+      data-slot="sidebar-menu-action"
+      data-sidebar="menu-action"
+      className={cn(
+        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer-hover/menu-button:text-sidebar-accent-foreground absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-hidden transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+        // Increases the hit area of the button on mobile.
+        "after:absolute after:-inset-2 md:after:hidden",
+        "peer-data-[size=sm]/menu-button:top-1",
+        "peer-data-[size=default]/menu-button:top-1.5",
+        "peer-data-[size=lg]/menu-button:top-2.5",
+        "group-data-[collapsible=icon]:hidden",
+        showOnHover &&
+          "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function SidebarMenuBadge({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="sidebar-menu-badge"
+      data-sidebar="menu-badge"
+      className={cn(
+        "text-sidebar-foreground pointer-events-none absolute right-1 flex h-5 min-w-5 items-center justify-center rounded-md px-1 text-xs font-medium tabular-nums select-none",
+        "peer-hover/menu-button:text-sidebar-accent-foreground peer-data-[active=true]/menu-button:text-sidebar-accent-foreground",
+        "peer-data-[size=sm]/menu-button:top-1",
+        "peer-data-[size=default]/menu-button:top-1.5",
+        "peer-data-[size=lg]/menu-button:top-2.5",
+        "group-data-[collapsible=icon]:hidden",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function SidebarMenuSkeleton({
+  className,
+  showIcon = false,
+  ...props
+}: React.ComponentProps<"div"> & {
+  showIcon?: boolean
+}) {
+  // Random width between 50 to 90%.
+  const width = React.useMemo(() => {
+    return `${Math.floor(Math.random() * 40) + 50}%`
+  }, [])
+
+  return (
+    <div
+      data-slot="sidebar-menu-skeleton"
+      data-sidebar="menu-skeleton"
+      className={cn("flex h-8 items-center gap-2 rounded-md px-2", className)}
+      {...props}
+    >
+      {showIcon && (
+        <Skeleton
+          className="size-4 rounded-md"
+          data-sidebar="menu-skeleton-icon"
+        />
+      )}
+      <Skeleton
+        className="h-4 max-w-(--skeleton-width) flex-1"
+        data-sidebar="menu-skeleton-text"
+        style={
+          {
+            "--skeleton-width": width,
+          } as React.CSSProperties
+        }
+      />
+    </div>
+  )
+}
+
+function SidebarMenuSub({ className, ...props }: React.ComponentProps<"ul">) {
+  return (
+    <ul
+      data-slot="sidebar-menu-sub"
+      data-sidebar="menu-sub"
+      className={cn(
+        "border-sidebar-border mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2.5 py-0.5",
+        "group-data-[collapsible=icon]:hidden",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function SidebarMenuSubItem({
+  className,
+  ...props
+}: React.ComponentProps<"li">) {
+  return (
+    <li
+      data-slot="sidebar-menu-sub-item"
+      data-sidebar="menu-sub-item"
+      className={cn("group/menu-sub-item relative", className)}
+      {...props}
+    />
+  )
+}
+
+function SidebarMenuSubButton({
+  asChild = false,
+  size = "md",
+  isActive = false,
+  className,
+  ...props
+}: React.ComponentProps<"a"> & {
+  asChild?: boolean
+  size?: "sm" | "md"
+  isActive?: boolean
+}) {
+  const Comp = asChild ? Slot : "a"
+
+  return (
+    <Comp
+      data-slot="sidebar-menu-sub-button"
+      data-sidebar="menu-sub-button"
+      data-size={size}
+      data-active={isActive}
+      className={cn(
+        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+        "data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground",
+        size === "sm" && "text-xs",
+        size === "md" && "text-sm",
+        "group-data-[collapsible=icon]:hidden",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInput,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuAction,
+  SidebarMenuBadge,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSkeleton,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarProvider,
+  SidebarRail,
+  SidebarSeparator,
+  SidebarTrigger,
+  useSidebar,
+}
+
+
+---
+
+
+## File: src__components__ui__skeleton.tsx__.txt
+
+# skeleton.tsx
+import { cn } from "@/lib/utils"
+
+function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="skeleton"
+      className={cn("bg-accent animate-pulse rounded-md", className)}
+      {...props}
+    />
+  )
+}
+
+export { Skeleton }
+
+
+---
+
+
+## File: src__components__ui__slider.tsx__.txt
+
+# slider.tsx
+"use client"
+
+import * as React from "react"
+import * as SliderPrimitive from "@radix-ui/react-slider"
+
+import { cn } from "@/lib/utils"
+
+function Slider({
+  className,
+  defaultValue,
+  value,
+  min = 0,
+  max = 100,
+  ...props
+}: React.ComponentProps<typeof SliderPrimitive.Root>) {
+  const _values = React.useMemo(
+    () =>
+      Array.isArray(value)
+        ? value
+        : Array.isArray(defaultValue)
+          ? defaultValue
+          : [min, max],
+    [value, defaultValue, min, max]
+  )
+
+  return (
+    <SliderPrimitive.Root
+      data-slot="slider"
+      defaultValue={defaultValue}
+      value={value}
+      min={min}
+      max={max}
+      className={cn(
+        "relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col",
+        className
+      )}
+      {...props}
+    >
+      <SliderPrimitive.Track
+        data-slot="slider-track"
+        className={cn(
+          "bg-muted relative grow overflow-hidden rounded-full data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5"
+        )}
+      >
+        <SliderPrimitive.Range
+          data-slot="slider-range"
+          className={cn(
+            "bg-primary absolute data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
+          )}
+        />
+      </SliderPrimitive.Track>
+      {Array.from({ length: _values.length }, (_, index) => (
+        <SliderPrimitive.Thumb
+          data-slot="slider-thumb"
+          key={index}
+          className="border-primary bg-background ring-ring/50 block size-4 shrink-0 rounded-full border shadow-sm transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
+        />
+      ))}
+    </SliderPrimitive.Root>
+  )
+}
+
+export { Slider }
+
+
+---
+
+
+## File: src__components__ui__sonner.tsx__.txt
+
+# sonner.tsx
+"use client"
+
+import { useTheme } from "next-themes"
+import { Toaster as Sonner, ToasterProps } from "sonner"
+
+const Toaster = ({ ...props }: ToasterProps) => {
+  const { theme = "system" } = useTheme()
+
+  return (
+    <Sonner
+      theme={theme as ToasterProps["theme"]}
+      className="toaster group"
+      style={
+        {
+          "--normal-bg": "var(--popover)",
+          "--normal-text": "var(--popover-foreground)",
+          "--normal-border": "var(--border)",
+        } as React.CSSProperties
+      }
+      {...props}
+    />
+  )
+}
+
+export { Toaster }
+
+
+---
+
+
+## File: src__components__ui__switch.tsx__.txt
+
+# switch.tsx
+"use client"
+
+import * as React from "react"
+import * as SwitchPrimitive from "@radix-ui/react-switch"
+
+import { cn } from "@/lib/utils"
+
+function Switch({
+  className,
+  ...props
+}: React.ComponentProps<typeof SwitchPrimitive.Root>) {
+  return (
+    <SwitchPrimitive.Root
+      data-slot="switch"
+      className={cn(
+        "peer data-[state=checked]:bg-primary data-[state=unchecked]:bg-input focus-visible:border-ring focus-visible:ring-ring/50 dark:data-[state=unchecked]:bg-input/80 inline-flex h-[1.15rem] w-8 shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+        className
+      )}
+      {...props}
+    >
+      <SwitchPrimitive.Thumb
+        data-slot="switch-thumb"
+        className={cn(
+          "bg-background dark:data-[state=unchecked]:bg-foreground dark:data-[state=checked]:bg-primary-foreground pointer-events-none block size-4 rounded-full ring-0 transition-transform data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0"
+        )}
+      />
+    </SwitchPrimitive.Root>
+  )
+}
+
+export { Switch }
+
+
+---
+
+
+## File: src__components__ui__table.tsx__.txt
+
+# table.tsx
+"use client"
+
+import * as React from "react"
+
+import { cn } from "@/lib/utils"
+
+function Table({ className, ...props }: React.ComponentProps<"table">) {
+  return (
+    <div
+      data-slot="table-container"
+      className="relative w-full overflow-x-auto"
+    >
+      <table
+        data-slot="table"
+        className={cn("w-full caption-bottom text-sm", className)}
+        {...props}
+      />
+    </div>
+  )
+}
+
+function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
+  return (
+    <thead
+      data-slot="table-header"
+      className={cn("[&_tr]:border-b", className)}
+      {...props}
+    />
+  )
+}
+
+function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
+  return (
+    <tbody
+      data-slot="table-body"
+      className={cn("[&_tr:last-child]:border-0", className)}
+      {...props}
+    />
+  )
+}
+
+function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
+  return (
+    <tfoot
+      data-slot="table-footer"
+      className={cn(
+        "bg-muted/50 border-t font-medium [&>tr]:last:border-b-0",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
+  return (
+    <tr
+      data-slot="table-row"
+      className={cn(
+        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function TableHead({ className, ...props }: React.ComponentProps<"th">) {
+  return (
+    <th
+      data-slot="table-head"
+      className={cn(
+        "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function TableCell({ className, ...props }: React.ComponentProps<"td">) {
+  return (
+    <td
+      data-slot="table-cell"
+      className={cn(
+        "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function TableCaption({
+  className,
+  ...props
+}: React.ComponentProps<"caption">) {
+  return (
+    <caption
+      data-slot="table-caption"
+      className={cn("text-muted-foreground mt-4 text-sm", className)}
+      {...props}
+    />
+  )
+}
+
+export {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
+}
+
+
+---
+
+
+## File: src__components__ui__tabs.tsx__.txt
+
+# tabs.tsx
+"use client"
+
+import * as React from "react"
+import * as TabsPrimitive from "@radix-ui/react-tabs"
+
+import { cn } from "@/lib/utils"
+
+function Tabs({
+  className,
+  ...props
+}: React.ComponentProps<typeof TabsPrimitive.Root>) {
+  return (
+    <TabsPrimitive.Root
+      data-slot="tabs"
+      className={cn("flex flex-col gap-2", className)}
+      {...props}
+    />
+  )
+}
+
+function TabsList({
+  className,
+  ...props
+}: React.ComponentProps<typeof TabsPrimitive.List>) {
+  return (
+    <TabsPrimitive.List
+      data-slot="tabs-list"
+      className={cn(
+        "bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function TabsTrigger({
+  className,
+  ...props
+}: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
+  return (
+    <TabsPrimitive.Trigger
+      data-slot="tabs-trigger"
+      className={cn(
+        "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function TabsContent({
+  className,
+  ...props
+}: React.ComponentProps<typeof TabsPrimitive.Content>) {
+  return (
+    <TabsPrimitive.Content
+      data-slot="tabs-content"
+      className={cn("flex-1 outline-none", className)}
+      {...props}
+    />
+  )
+}
+
+export { Tabs, TabsList, TabsTrigger, TabsContent }
+
+
+---
+
+
+## File: src__components__ui__textarea.tsx__.txt
+
+# textarea.tsx
+import * as React from "react"
+
+import { cn } from "@/lib/utils"
+
+function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
+  return (
+    <textarea
+      data-slot="textarea"
+      className={cn(
+        "border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Textarea }
+
+
+---
+
+
+## File: src__components__ui__toast.tsx__.txt
+
+# toast.tsx
+"use client"
+
+import * as React from "react"
+import * as ToastPrimitives from "@radix-ui/react-toast"
+import { cva, type VariantProps } from "class-variance-authority"
+import { X } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+const ToastProvider = ToastPrimitives.Provider
+
+const ToastViewport = React.forwardRef<
+  React.ElementRef<typeof ToastPrimitives.Viewport>,
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>
+>(({ className, ...props }, ref) => (
+  <ToastPrimitives.Viewport
+    ref={ref}
+    className={cn(
+      "fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
+      className
+    )}
+    {...props}
+  />
+))
+ToastViewport.displayName = ToastPrimitives.Viewport.displayName
+
+const toastVariants = cva(
+  "group pointer-events-auto relative flex w-full items-center justify-between space-x-2 overflow-hidden rounded-md border p-4 pr-6 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+  {
+    variants: {
+      variant: {
+        default: "border bg-background text-foreground",
+        destructive:
+          "destructive group border-destructive bg-destructive text-destructive-foreground",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+const Toast = React.forwardRef<
+  React.ElementRef<typeof ToastPrimitives.Root>,
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
+  VariantProps<typeof toastVariants>
+>(({ className, variant, ...props }, ref) => {
+  return (
+    <ToastPrimitives.Root
+      ref={ref}
+      className={cn(toastVariants({ variant }), className)}
+      {...props}
+    />
+  )
+})
+Toast.displayName = ToastPrimitives.Root.displayName
+
+const ToastAction = React.forwardRef<
+  React.ElementRef<typeof ToastPrimitives.Action>,
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Action>
+>(({ className, ...props }, ref) => (
+  <ToastPrimitives.Action
+    ref={ref}
+    className={cn(
+      "inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium transition-colors hover:bg-secondary focus:outline-none focus:ring-1 focus:ring-ring disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-muted/40 group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive",
+      className
+    )}
+    {...props}
+  />
+))
+ToastAction.displayName = ToastPrimitives.Action.displayName
+
+const ToastClose = React.forwardRef<
+  React.ElementRef<typeof ToastPrimitives.Close>,
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Close>
+>(({ className, ...props }, ref) => (
+  <ToastPrimitives.Close
+    ref={ref}
+    className={cn(
+      "absolute right-1 top-1 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-1 group-hover:opacity-100 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600",
+      className
+    )}
+    toast-close=""
+    {...props}
+  >
+    <X className="h-4 w-4" />
+  </ToastPrimitives.Close>
+))
+ToastClose.displayName = ToastPrimitives.Close.displayName
+
+const ToastTitle = React.forwardRef<
+  React.ElementRef<typeof ToastPrimitives.Title>,
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>
+>(({ className, ...props }, ref) => (
+  <ToastPrimitives.Title
+    ref={ref}
+    className={cn("text-sm font-semibold [&+div]:text-xs", className)}
+    {...props}
+  />
+))
+ToastTitle.displayName = ToastPrimitives.Title.displayName
+
+const ToastDescription = React.forwardRef<
+  React.ElementRef<typeof ToastPrimitives.Description>,
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
+>(({ className, ...props }, ref) => (
+  <ToastPrimitives.Description
+    ref={ref}
+    className={cn("text-sm opacity-90", className)}
+    {...props}
+  />
+))
+ToastDescription.displayName = ToastPrimitives.Description.displayName
+
+type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>
+
+type ToastActionElement = React.ReactElement<typeof ToastAction>
+
+export {
+  type ToastProps,
+  type ToastActionElement,
+  ToastProvider,
+  ToastViewport,
+  Toast,
+  ToastTitle,
+  ToastDescription,
+  ToastClose,
+  ToastAction,
+}
+
+---
+
+
+## File: src__components__ui__toaster.tsx__.txt
+
+# toaster.tsx
+"use client"
+
+import { useToast } from "@/hooks/use-toast"
+import {
+  Toast,
+  ToastClose,
+  ToastDescription,
+  ToastProvider,
+  ToastTitle,
+  ToastViewport,
+} from "@/components/ui/toast"
+
+export function Toaster() {
+  const { toasts } = useToast()
+
+  return (
+    <ToastProvider>
+      {toasts.map(function ({ id, title, description, action, ...props }) {
+        return (
+          <Toast key={id} {...props}>
+            <div className="grid gap-1">
+              {title && <ToastTitle>{title}</ToastTitle>}
+              {description && (
+                <ToastDescription>{description}</ToastDescription>
+              )}
+            </div>
+            {action}
+            <ToastClose />
+          </Toast>
+        )
+      })}
+      <ToastViewport />
+    </ToastProvider>
+  )
+}
+
+---
+
+
+## File: src__components__ui__toggle.tsx__.txt
+
+# toggle.tsx
+"use client"
+
+import * as React from "react"
+import * as TogglePrimitive from "@radix-ui/react-toggle"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+const toggleVariants = cva(
+  "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium hover:bg-muted hover:text-muted-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none transition-[color,box-shadow] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive whitespace-nowrap",
+  {
+    variants: {
+      variant: {
+        default: "bg-transparent",
+        outline:
+          "border border-input bg-transparent shadow-xs hover:bg-accent hover:text-accent-foreground",
+      },
+      size: {
+        default: "h-9 px-2 min-w-9",
+        sm: "h-8 px-1.5 min-w-8",
+        lg: "h-10 px-2.5 min-w-10",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+function Toggle({
+  className,
+  variant,
+  size,
+  ...props
+}: React.ComponentProps<typeof TogglePrimitive.Root> &
+  VariantProps<typeof toggleVariants>) {
+  return (
+    <TogglePrimitive.Root
+      data-slot="toggle"
+      className={cn(toggleVariants({ variant, size, className }))}
+      {...props}
+    />
+  )
+}
+
+export { Toggle, toggleVariants }
+
+
+---
+
+
+## File: src__components__ui__toggle-group.tsx__.txt
+
+# toggle-group.tsx
+"use client"
+
+import * as React from "react"
+import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group"
+import { type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+import { toggleVariants } from "@/components/ui/toggle"
+
+const ToggleGroupContext = React.createContext<
+  VariantProps<typeof toggleVariants>
+>({
+  size: "default",
+  variant: "default",
+})
+
+function ToggleGroup({
+  className,
+  variant,
+  size,
+  children,
+  ...props
+}: React.ComponentProps<typeof ToggleGroupPrimitive.Root> &
+  VariantProps<typeof toggleVariants>) {
+  return (
+    <ToggleGroupPrimitive.Root
+      data-slot="toggle-group"
+      data-variant={variant}
+      data-size={size}
+      className={cn(
+        "group/toggle-group flex w-fit items-center rounded-md data-[variant=outline]:shadow-xs",
+        className
+      )}
+      {...props}
+    >
+      <ToggleGroupContext.Provider value={{ variant, size }}>
+        {children}
+      </ToggleGroupContext.Provider>
+    </ToggleGroupPrimitive.Root>
+  )
+}
+
+function ToggleGroupItem({
+  className,
+  children,
+  variant,
+  size,
+  ...props
+}: React.ComponentProps<typeof ToggleGroupPrimitive.Item> &
+  VariantProps<typeof toggleVariants>) {
+  const context = React.useContext(ToggleGroupContext)
+
+  return (
+    <ToggleGroupPrimitive.Item
+      data-slot="toggle-group-item"
+      data-variant={context.variant || variant}
+      data-size={context.size || size}
+      className={cn(
+        toggleVariants({
+          variant: context.variant || variant,
+          size: context.size || size,
+        }),
+        "min-w-0 flex-1 shrink-0 rounded-none shadow-none first:rounded-l-md last:rounded-r-md focus:z-10 focus-visible:z-10 data-[variant=outline]:border-l-0 data-[variant=outline]:first:border-l",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </ToggleGroupPrimitive.Item>
+  )
+}
+
+export { ToggleGroup, ToggleGroupItem }
+
+
+---
+
+
+## File: src__components__ui__tooltip.tsx__.txt
+
+# tooltip.tsx
+"use client"
+
+import * as React from "react"
+import * as TooltipPrimitive from "@radix-ui/react-tooltip"
+
+import { cn } from "@/lib/utils"
+
+function TooltipProvider({
+  delayDuration = 0,
+  ...props
+}: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
+  return (
+    <TooltipPrimitive.Provider
+      data-slot="tooltip-provider"
+      delayDuration={delayDuration}
+      {...props}
+    />
+  )
+}
+
+function Tooltip({
+  ...props
+}: React.ComponentProps<typeof TooltipPrimitive.Root>) {
+  return (
+    <TooltipProvider>
+      <TooltipPrimitive.Root data-slot="tooltip" {...props} />
+    </TooltipProvider>
+  )
+}
+
+function TooltipTrigger({
+  ...props
+}: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
+  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
+}
+
+function TooltipContent({
+  className,
+  sideOffset = 0,
+  children,
+  ...props
+}: React.ComponentProps<typeof TooltipPrimitive.Content>) {
+  return (
+    <TooltipPrimitive.Portal>
+      <TooltipPrimitive.Content
+        data-slot="tooltip-content"
+        sideOffset={sideOffset}
+        className={cn(
+          "bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-fit origin-(--radix-tooltip-content-transform-origin) rounded-md px-3 py-1.5 text-xs text-balance",
+          className
+        )}
+        {...props}
+      >
+        {children}
+        <TooltipPrimitive.Arrow className="bg-primary fill-primary z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px]" />
+      </TooltipPrimitive.Content>
+    </TooltipPrimitive.Portal>
+  )
+}
+
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
+
+
+---
+
+
+## File: src__hooks__use-mobile.ts__.txt
+
+# use-mobile.ts
+import * as React from "react"
+
+const MOBILE_BREAKPOINT = 768
+
+export function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
+
+  React.useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
+    const onChange = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    }
+    mql.addEventListener("change", onChange)
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    return () => mql.removeEventListener("change", onChange)
+  }, [])
+
+  return !!isMobile
+}
+
+
+---
+
+
+## File: src__hooks__use-toast.ts__.txt
+
+# use-toast.ts
+"use client"
+
+// Inspired by react-hot-toast library
+import * as React from "react"
+
+import type {
+  ToastActionElement,
+  ToastProps,
+} from "@/components/ui/toast"
+
+const TOAST_LIMIT = 1
+const TOAST_REMOVE_DELAY = 1000000
+
+type ToasterToast = ToastProps & {
+  id: string
+  title?: React.ReactNode
+  description?: React.ReactNode
+  action?: ToastActionElement
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const actionTypes = {
+  ADD_TOAST: "ADD_TOAST",
+  UPDATE_TOAST: "UPDATE_TOAST",
+  DISMISS_TOAST: "DISMISS_TOAST",
+  REMOVE_TOAST: "REMOVE_TOAST",
+} as const
+
+let count = 0
+
+function genId() {
+  count = (count + 1) % Number.MAX_SAFE_INTEGER
+  return count.toString()
+}
+
+type ActionType = typeof actionTypes
+
+type Action =
+  | {
+    type: ActionType["ADD_TOAST"]
+    toast: ToasterToast
+  }
+  | {
+    type: ActionType["UPDATE_TOAST"]
+    toast: Partial<ToasterToast>
+  }
+  | {
+    type: ActionType["DISMISS_TOAST"]
+    toastId?: ToasterToast["id"]
+  }
+  | {
+    type: ActionType["REMOVE_TOAST"]
+    toastId?: ToasterToast["id"]
+  }
+
+interface State {
+  toasts: ToasterToast[]
+}
+
+const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
+
+const addToRemoveQueue = (toastId: string) => {
+  if (toastTimeouts.has(toastId)) {
+    return
+  }
+
+  const timeout = setTimeout(() => {
+    toastTimeouts.delete(toastId)
+    dispatch({
+      type: "REMOVE_TOAST",
+      toastId: toastId,
+    })
+  }, TOAST_REMOVE_DELAY)
+
+  toastTimeouts.set(toastId, timeout)
+}
+
+export const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case "ADD_TOAST":
+      return {
+        ...state,
+        toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
+      }
+
+    case "UPDATE_TOAST":
+      return {
+        ...state,
+        toasts: state.toasts.map((t) =>
+          t.id === action.toast.id ? { ...t, ...action.toast } : t
+        ),
+      }
+
+    case "DISMISS_TOAST": {
+      const { toastId } = action
+
+      // ! Side effects ! - This could be extracted into a dismissToast() action,
+      // but I'll keep it here for simplicity
+      if (toastId) {
+        addToRemoveQueue(toastId)
+      } else {
+        state.toasts.forEach((toast) => {
+          addToRemoveQueue(toast.id)
+        })
+      }
+
+      return {
+        ...state,
+        toasts: state.toasts.map((t) =>
+          t.id === toastId || toastId === undefined
+            ? {
+              ...t,
+              open: false,
+            }
+            : t
+        ),
+      }
+    }
+    case "REMOVE_TOAST":
+      if (action.toastId === undefined) {
+        return {
+          ...state,
+          toasts: [],
+        }
+      }
+      return {
+        ...state,
+        toasts: state.toasts.filter((t) => t.id !== action.toastId),
+      }
+  }
+}
+
+const listeners: Array<(state: State) => void> = []
+
+let memoryState: State = { toasts: [] }
+
+function dispatch(action: Action) {
+  memoryState = reducer(memoryState, action)
+  listeners.forEach((listener) => {
+    listener(memoryState)
+  })
+}
+
+type Toast = Omit<ToasterToast, "id">
+
+function toast({ ...props }: Toast) {
+  const id = genId()
+
+  const update = (props: ToasterToast) =>
+    dispatch({
+      type: "UPDATE_TOAST",
+      toast: { ...props, id },
+    })
+  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
+
+  dispatch({
+    type: "ADD_TOAST",
+    toast: {
+      ...props,
+      id,
+      open: true,
+      onOpenChange: (open) => {
+        if (!open) dismiss()
+      },
+    },
+  })
+
+  return {
+    id: id,
+    dismiss,
+    update,
+  }
+}
+
+function useToast() {
+  const [state, setState] = React.useState<State>(memoryState)
+
+  React.useEffect(() => {
+    listeners.push(setState)
+    return () => {
+      const index = listeners.indexOf(setState)
+      if (index > -1) {
+        listeners.splice(index, 1)
+      }
+    }
+  }, [state])
+
+  return {
+    ...state,
+    toast,
+    dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
+  }
+}
+
+export { useToast, toast }
+
+---
+
+
+## File: src__lib__db.ts__.txt
+
+# db.ts
+import { PrismaClient } from '@prisma/client'
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
+}
+
+export const db =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: ['query'],
+  })
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db
+
+---
+
+
+## File: src__lib__utils.ts__.txt
+
+# utils.ts
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+
+---
+
+
+## File: src__types__next-auth.d.ts__.txt
+
+# next-auth.d.ts
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string
+      name?: string | null
+      email?: string | null
+      image?: string | null
+      role?: string
+    }
+  }
+
+  interface User {
+    role?: string
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    role?: string
+  }
+}
+
+---
+
+
+## File: tailwind.config.ts__.txt
+
+# tailwind.config.ts
+import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
+
+const config: Config = {
+    darkMode: "class",
+    content: [
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+  	extend: {
+  		colors: {
+  			background: 'hsl(var(--background))',
+  			foreground: 'hsl(var(--foreground))',
+  			card: {
+  				DEFAULT: 'hsl(var(--card))',
+  				foreground: 'hsl(var(--card-foreground))'
+  			},
+  			popover: {
+  				DEFAULT: 'hsl(var(--popover))',
+  				foreground: 'hsl(var(--popover-foreground))'
+  			},
+  			primary: {
+  				DEFAULT: 'hsl(var(--primary))',
+  				foreground: 'hsl(var(--primary-foreground))'
+  			},
+  			secondary: {
+  				DEFAULT: 'hsl(var(--secondary))',
+  				foreground: 'hsl(var(--secondary-foreground))'
+  			},
+  			muted: {
+  				DEFAULT: 'hsl(var(--muted))',
+  				foreground: 'hsl(var(--muted-foreground))'
+  			},
+  			accent: {
+  				DEFAULT: 'hsl(var(--accent))',
+  				foreground: 'hsl(var(--accent-foreground))'
+  			},
+  			destructive: {
+  				DEFAULT: 'hsl(var(--destructive))',
+  				foreground: 'hsl(var(--destructive-foreground))'
+  			},
+  			border: 'hsl(var(--border))',
+  			input: 'hsl(var(--input))',
+  			ring: 'hsl(var(--ring))',
+  			chart: {
+  				'1': 'hsl(var(--chart-1))',
+  				'2': 'hsl(var(--chart-2))',
+  				'3': 'hsl(var(--chart-3))',
+  				'4': 'hsl(var(--chart-4))',
+  				'5': 'hsl(var(--chart-5))'
+  			}
+  		},
+  		borderRadius: {
+  			lg: 'var(--radius)',
+  			md: 'calc(var(--radius) - 2px)',
+  			sm: 'calc(var(--radius) - 4px)'
+  		}
+  	}
+  },
+  plugins: [tailwindcssAnimate],
+};
+export default config;
+
+
+---
+
+
+## File: tsconfig.json__.txt
+
+# tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+
+
+---
+

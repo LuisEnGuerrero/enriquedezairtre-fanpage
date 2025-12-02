@@ -1,0 +1,45 @@
+﻿# route.ts
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { db } from '@/lib/db'
+
+export async function GET() {
+  try {
+    const playlists = await db.playlist.findMany({
+      include: {
+        _count: {
+          select: { songs: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+    
+    return NextResponse.json(playlists)
+  } catch (error) {
+    return NextResponse.json({ error: 'Error fetching playlists' }, { status: 500 })
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession()
+    
+    if (!session || session.user?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const playlist = await db.playlist.create({
+      data: body,
+      include: {
+        _count: {
+          select: { songs: true }
+        }
+      }
+    })
+    
+    return NextResponse.json(playlist)
+  } catch (error) {
+    return NextResponse.json({ error: 'Error creating playlist' }, { status: 500 })
+  }
+}

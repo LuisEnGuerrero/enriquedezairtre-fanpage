@@ -1,0 +1,19 @@
+﻿# next.config.ts
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  output: "standalone",
+  /* config options here */
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  // ç¦ç”¨ Next.js çƒ­é‡è½½ï¼Œç”± nodemon å¤„ç†é‡ç¼–è¯‘
+  reactStrictMode: false,
+  eslint: {
+    // æž„å»ºæ—¶å¿½ç•¥ESLinté”™è¯¯
+    ignoreDuringBuilds: true,
+  },
+};
+
+export default nextConfig;
+

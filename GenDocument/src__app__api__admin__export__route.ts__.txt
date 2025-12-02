@@ -1,0 +1,38 @@
+﻿# route.ts
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { db } from '@/lib/db'
+
+export async function GET() {
+  try {
+    const session = await getServerSession()
+    
+    if (!session || session.user?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Export all data
+    const songs = await db.song.findMany()
+    const playlists = await db.playlist.findMany({
+      include: { songs: true }
+    })
+
+    const exportData = {
+      version: '1.0',
+      exportDate: new Date().toISOString(),
+      data: {
+        songs,
+        playlists
+      }
+    }
+
+    return new Response(JSON.stringify(exportData, null, 2), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Disposition': 'attachment; filename="enrique-zairtre-backup.json"'
+      }
+    })
+  } catch (error) {
+    return NextResponse.json({ error: 'Error exporting data' }, { status: 500 })
+  }
+}

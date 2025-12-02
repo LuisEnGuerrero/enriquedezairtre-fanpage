@@ -1,0 +1,81 @@
+﻿# AudioVisualizer.tsx
+'use client'
+
+import { useEffect, useRef } from 'react'
+
+interface AudioVisualizerProps {
+  audioRef: React.RefObject<HTMLAudioElement>
+  canvasRef: React.RefObject<HTMLCanvasElement>
+  isPlaying: boolean
+}
+
+export default function AudioVisualizer({ audioRef, canvasRef, isPlaying }: AudioVisualizerProps) {
+  const animationRef = useRef<number>()
+  const analyserRef = useRef<AnalyserNode | null>(null)
+  const audioContextRef = useRef<AudioContext | null>(null)
+
+  useEffect(() => {
+    if (!audioRef.current || !canvasRef.current) return
+
+    const setupAudioContext = () => {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)()
+        analyserRef.current = audioContextRef.current.createAnalyser()
+        analyserRef.current.fftSize = 256
+
+        const source = audioContextRef.current.createMediaElementSource(audioRef.current!)
+        source.connect(analyserRef.current)
+        analyserRef.current.connect(audioContextRef.current.destination)
+      }
+    }
+
+    const draw = () => {
+      if (!canvasRef.current || !analyserRef.current) return
+
+      const canvas = canvasRef.current
+      const ctx = canvas.getContext('2d')!
+      const bufferLength = analyserRef.current.frequencyBinCount
+      const dataArray = new Uint8Array(bufferLength)
+
+      analyserRef.current.getByteFrequencyData(dataArray)
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+      const barWidth = (canvas.width / bufferLength) * 2.5
+      let barHeight
+      let x = 0
+
+      for (let i = 0; i < bufferLength; i++) {
+        barHeight = (dataArray[i] / 255) * canvas.height * 0.7
+
+        const hue = (i / bufferLength) * 360
+        ctx.fillStyle = `hsl(${hue}, 100%, 50%)`
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight)
+
+        x += barWidth + 1
+      }
+
+      if (isPlaying) {
+        animationRef.current = requestAnimationFrame(draw)
+      }
+    }
+
+    if (isPlaying) {
+      setupAudioContext()
+      draw()
+    } else {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+  }, [isPlaying, audioRef, canvasRef])
+
+  return null
+}

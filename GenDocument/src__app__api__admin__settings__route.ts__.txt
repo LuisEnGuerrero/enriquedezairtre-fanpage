@@ -1,0 +1,57 @@
+﻿# route.ts
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+
+export async function GET() {
+  try {
+    const session = await getServerSession()
+    
+    if (!session || session.user?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Mock settings - in real app, you'd store these in database
+    const settings = {
+      siteName: 'Enrique de Zairtre',
+      siteDescription: 'Poeta, Artista, Productor y Estrella de Rock',
+      artistName: 'Enrique de Zairtre',
+      contactEmail: 'contacto@enriquezairtre.com',
+      socialLinks: {
+        facebook: '',
+        twitter: '',
+        instagram: '',
+        youtube: '',
+        spotify: ''
+      },
+      features: {
+        enableComments: true,
+        enableDownloads: false,
+        enableLyrics: true,
+        enablePlaylists: true
+      }
+    }
+
+    return NextResponse.json(settings)
+  } catch (error) {
+    return NextResponse.json({ error: 'Error fetching settings' }, { status: 500 })
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const session = await getServerSession()
+    
+    if (!session || session.user?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const settings = await request.json()
+    
+    // In real app, you'd save these to database
+    console.log('Settings saved:', settings)
+
+    return NextResponse.json({ message: 'Settings saved successfully' })
+  } catch (error) {
+    return NextResponse.json({ error: 'Error saving settings' }, { status: 500 })
+  }
+}

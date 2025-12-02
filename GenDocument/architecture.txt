@@ -1,0 +1,144 @@
+|-- .dockerignore
+|-- .env
+|-- .gitignore
+|-- ADMIN_SETUP.md
+|-- Caddyfile
+|-- components.json
+|-- docker-compose.yml
+|-- Dockerfile
+|-- eslint.config.mjs
+|-- middleware.ts
+|-- next.config.ts
+|-- package-lock.json
+|-- package.json
+|-- postcss.config.mjs
+|-- README.md
+|-- tailwind.config.ts
+|-- tsconfig.json
+|-- workspace-cb207cc8-54f2-4cba-b18e-449c2535ccfc
++-- db
+|   |-- custom.db
++-- examples
+|   +-- websocket
+|   |   |-- frontend.tsx
+|   |   |-- server.ts
++-- mini-services
+|   |-- .gitkeep
++-- prisma
+|   |-- schema.prisma
++-- public
+|   |-- logo.svg
+|   |-- robots.txt
++-- scripts
+|   |-- seed-songs.js
++-- src
+|   +-- app
+|   |   |-- globals.css
+|   |   |-- layout.tsx
+|   |   |-- page.tsx
+|   |   +-- admin
+|   |   |   |-- page.tsx
+|   |   |   +-- login
+|   |   |   |   |-- page.tsx
+|   |   +-- api
+|   |   |   |-- route.ts
+|   |   |   +-- admin
+|   |   |   |   +-- export
+|   |   |   |   |   |-- route.ts
+|   |   |   |   +-- fans
+|   |   |   |   |   |-- route.ts
+|   |   |   |   +-- settings
+|   |   |   |   |   |-- route.ts
+|   |   |   |   +-- stats
+|   |   |   |   |   |-- route.ts
+|   |   |   +-- auth
+|   |   |   |   +-- sync-user
+|   |   |   |   |   |-- route.ts
+|   |   |   |   +-- [...nextauth]
+|   |   |   +-- favorites
+|   |   |   |   |-- route.ts
+|   |   |   +-- playlists
+|   |   |   |   |-- route.ts
+|   |   |   |   +-- [id]
+|   |   |   +-- songs
+|   |   |   |   |-- route.ts
+|   |   |   |   +-- [id]
+|   |   |   +-- user
+|   |   |   |   +-- profile
+|   |   |   |   |   |-- route.ts
+|   |   |   |   +-- rewards
+|   |   |   |   |   |-- route.ts
+|   |   |   +-- user-playlists
+|   |   |   |   |-- route.ts
+|   |   |   |   +-- [id]
+|   |   +-- auth
+|   |   |   +-- signin
+|   |   |   |   |-- page.tsx
+|   |   +-- profile
+|   |   |   |-- page.tsx
+|   +-- components
+|   |   |-- AudioVisualizer.tsx
+|   |   +-- admin
+|   |   |   |-- FanManager.tsx
+|   |   |   |-- PlaylistManager.tsx
+|   |   |   |-- SettingsPanel.tsx
+|   |   |   |-- SongManager.tsx
+|   |   +-- providers
+|   |   |   |-- AuthProvider.tsx
+|   |   +-- ui
+|   |   |   |-- accordion.tsx
+|   |   |   |-- alert-dialog.tsx
+|   |   |   |-- alert.tsx
+|   |   |   |-- aspect-ratio.tsx
+|   |   |   |-- avatar.tsx
+|   |   |   |-- badge.tsx
+|   |   |   |-- breadcrumb.tsx
+|   |   |   |-- button.tsx
+|   |   |   |-- calendar.tsx
+|   |   |   |-- card.tsx
+|   |   |   |-- carousel.tsx
+|   |   |   |-- chart.tsx
+|   |   |   |-- checkbox.tsx
+|   |   |   |-- collapsible.tsx
+|   |   |   |-- command.tsx
+|   |   |   |-- context-menu.tsx
+|   |   |   |-- dialog.tsx
+|   |   |   |-- drawer.tsx
+|   |   |   |-- dropdown-menu.tsx
+|   |   |   |-- form.tsx
+|   |   |   |-- hover-card.tsx
+|   |   |   |-- input-otp.tsx
+|   |   |   |-- input.tsx
+|   |   |   |-- label.tsx
+|   |   |   |-- menubar.tsx
+|   |   |   |-- navigation-menu.tsx
+|   |   |   |-- pagination.tsx
+|   |   |   |-- popover.tsx
+|   |   |   |-- progress.tsx
+|   |   |   |-- radio-group.tsx
+|   |   |   |-- resizable.tsx
+|   |   |   |-- scroll-area.tsx
+|   |   |   |-- select.tsx
+|   |   |   |-- separator.tsx
+|   |   |   |-- sheet.tsx
+|   |   |   |-- sidebar.tsx
+|   |   |   |-- skeleton.tsx
+|   |   |   |-- slider.tsx
+|   |   |   |-- sonner.tsx
+|   |   |   |-- switch.tsx
+|   |   |   |-- table.tsx
+|   |   |   |-- tabs.tsx
+|   |   |   |-- textarea.tsx
+|   |   |   |-- toast.tsx
+|   |   |   |-- toaster.tsx
+|   |   |   |-- toggle-group.tsx
+|   |   |   |-- toggle.tsx
+|   |   |   |-- tooltip.tsx
+|   +-- hooks
+|   |   |-- use-mobile.ts
+|   |   |-- use-toast.ts
+|   +-- lib
+|   |   |-- db.ts
+|   |   |-- utils.ts
+|   +-- types
+|   |   |-- next-auth.d.ts
