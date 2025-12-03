@@ -1,18 +1,20 @@
 |-- .dockerignore
-|-- .env
 |-- .gitignore
 |-- ADMIN_SETUP.md
 |-- Caddyfile
 |-- components.json
 |-- docker-compose.yml
 |-- Dockerfile
+|-- env.doc
 |-- eslint.config.mjs
 |-- middleware.ts
+|-- next-env.d.ts
 |-- next.config.ts
 |-- package-lock.json
 |-- package.json
 |-- postcss.config.mjs
 |-- README.md
+|-- render.yaml
 |-- tailwind.config.ts
 |-- tsconfig.json
 |-- workspace-cb207cc8-54f2-4cba-b18e-449c2535ccfc
@@ -39,6 +41,7 @@
 |   |   +-- admin
 |   |   |   |-- page.tsx
 |   |   |   +-- login
+|   |   |   |   |-- ClientLogin.tsx
 |   |   |   |   |-- page.tsx
 |   |   +-- api
 |   |   |   |-- route.ts

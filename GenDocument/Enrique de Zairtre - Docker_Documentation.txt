@@ -3,20 +3,22 @@
 ### Project Architecture
 
 |-- .dockerignore
-|-- .env
 |-- .gitignore
 |-- ADMIN_SETUP.md
 |-- Caddyfile
 |-- components.json
 |-- docker-compose.yml
 |-- Dockerfile
+|-- env.doc
 |-- eslint.config.mjs
 |-- middleware.ts
+|-- next-env.d.ts
 |-- next.config.ts
 |-- package-lock.json
 |-- package.json
 |-- postcss.config.mjs
 |-- README.md
+|-- render.yaml
 |-- tailwind.config.ts
 |-- tsconfig.json
 |-- workspace-cb207cc8-54f2-4cba-b18e-449c2535ccfc
@@ -43,6 +45,7 @@
 |   |   +-- admin
 |   |   |   |-- page.tsx
 |   |   |   +-- login
+|   |   |   |   |-- ClientLogin.tsx
 |   |   |   |   |-- page.tsx
 |   |   +-- api
 |   |   |   |-- route.ts
@@ -367,7 +370,7 @@ npm run build
 # frontend.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { io } from 'socket.io-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -471,94 +474,96 @@ export default function SocketDemo() {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-2xl">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            WebSocket Demo
-            <span className={`text-sm px-2 py-1 rounded ${isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-              {isConnected ? 'Connected' : 'Disconnected'}
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {!isUsernameSet ? (
-            <div className="space-y-2">
-              <Input
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    handleJoin();
-                  }
-                }}
-                placeholder="Enter your username..."
-                disabled={!isConnected}
-                className="flex-1"
-              />
-              <Button
-                onClick={handleJoin}
-                disabled={!isConnected || !username.trim()}
-                className="w-full"
-              >
-                Join Chat
-              </Button>
-            </div>
-          ) : (
-            <>
-              <ScrollArea className="h-80 w-full border rounded-md p-4">
-                <div className="space-y-2">
-                  {messages.length === 0 ? (
-                    <p className="text-gray-500 text-center">No messages yet</p>
-                  ) : (
-                    messages.map((msg) => (
-                      <div key={msg.id} className="border-b pb-2 last:border-b-0">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <p className={`text-sm font-medium ${msg.type === 'system'
-                                ? 'text-blue-600 italic'
-                                : 'text-gray-700'
-                              }`}>
-                              {msg.username}
-                            </p>
-                            <p className={`${msg.type === 'system'
-                                ? 'text-blue-500 italic'
-                                : 'text-gray-900'
-                              }`}>
-                              {msg.content}
-                            </p>
-                          </div>
-                          <span className="text-xs text-gray-500">
-                            {new Date(msg.timestamp).toLocaleTimeString()}
-                          </span>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </ScrollArea>
-
-              <div className="flex space-x-2">
+    <Suspense fallback={<div>Cargando...</div>}>
+      <div className="container mx-auto p-4 max-w-2xl">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              WebSocket Demo
+              <span className={`text-sm px-2 py-1 rounded ${isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                {isConnected ? 'Connected' : 'Disconnected'}
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {!isUsernameSet ? (
+              <div className="space-y-2">
                 <Input
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Type a message..."
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleJoin();
+                    }
+                  }}
+                  placeholder="Enter your username..."
                   disabled={!isConnected}
                   className="flex-1"
                 />
                 <Button
-                  onClick={sendMessage}
-                  disabled={!isConnected || !inputMessage.trim()}
+                  onClick={handleJoin}
+                  disabled={!isConnected || !username.trim()}
+                  className="w-full"
                 >
-                  Send
+                  Join Chat
                 </Button>
               </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+            ) : (
+              <>
+                <ScrollArea className="h-80 w-full border rounded-md p-4">
+                  <div className="space-y-2">
+                    {messages.length === 0 ? (
+                      <p className="text-gray-500 text-center">No messages yet</p>
+                    ) : (
+                      messages.map((msg) => (
+                        <div key={msg.id} className="border-b pb-2 last:border-b-0">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <p className={`text-sm font-medium ${msg.type === 'system'
+                                  ? 'text-blue-600 italic'
+                                  : 'text-gray-700'
+                                }`}>
+                                {msg.username}
+                              </p>
+                              <p className={`${msg.type === 'system'
+                                  ? 'text-blue-500 italic'
+                                  : 'text-gray-900'
+                                }`}>
+                                {msg.content}
+                              </p>
+                            </div>
+                            <span className="text-xs text-gray-500">
+                              {new Date(msg.timestamp).toLocaleTimeString()}
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </ScrollArea>
+
+                <div className="flex space-x-2">
+                  <Input
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Type a message..."
+                    disabled={!isConnected}
+                    className="flex-1"
+                  />
+                  <Button
+                    onClick={sendMessage}
+                    disabled={!isConnected || !inputMessage.trim()}
+                  >
+                    Send
+                  </Button>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </Suspense>
   );
 }
 
@@ -771,6 +776,19 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+
+---
+
+
+## File: next-env.d.ts__.txt
+
+# next-env.d.ts
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
 
 
 ---
@@ -15118,23 +15136,23 @@ main()
 ---
 
 
-## File: src__app__admin__login__page.tsx__.txt
+## File: src__app__admin__login__ClientLogin.tsx__.txt
 
-# page.tsx
+# ClientLogin.tsx
 'use client'
 
 import { useState } from 'react'
-import { signIn, getSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Music, Lock } from 'lucide-react'
 
-export default function AdminLogin() {
+export default function ClientLogin() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/admin'
+  const callbackUrl = searchParams?.get('callbackUrl') || '/admin'
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
@@ -15207,11 +15225,28 @@ export default function AdminLogin() {
         
         <div className="mt-8 text-center">
           <p className="text-gray-400 text-sm">
-            Â© 2024 Enrique de Zairtre - Todos los derechos reservados
+            Â© 2025 Enrique de Zairtre - Todos los derechos reservados
           </p>
         </div>
       </div>
     </div>
+  )
+}
+
+---
+
+
+## File: src__app__admin__login__page.tsx__.txt
+
+# page.tsx
+import React, { Suspense  } from 'react'
+import ClientLogin from './ClientLogin'
+
+export default function AdminLogin() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Cargando . . .</div>}>
+      <ClientLogin />      
+    </Suspense>
   )
 }
 
@@ -15223,13 +15258,13 @@ export default function AdminLogin() {
 # page.tsx
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Music, Users, PlayList, Settings, LogOut, Plus, Edit, Trash2, Eye } from 'lucide-react'
+import { Music, Users, ListMusic, Settings, LogOut, Plus, Edit, Trash2, Eye } from 'lucide-react'
 import { SongManager } from '@/components/admin/SongManager'
 import { PlaylistManager } from '@/components/admin/PlaylistManager'
 import { SettingsPanel } from '@/components/admin/SettingsPanel'
@@ -15286,121 +15321,123 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header */}
-      <header className="bg-black/50 backdrop-blur-lg border-b border-gray-700">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
-                <Music className="w-5 h-5" />
+    <Suspense fallback={<div>Cargando...</div>}>
+      <div className="min-h-screen bg-gray-900 text-white">
+        {/* Header */}
+        <header className="bg-black/50 backdrop-blur-lg border-b border-gray-700">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
+                  <Music className="w-5 h-5" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold">Panel Administrativo</h1>
+                  <p className="text-sm text-gray-400">Enrique de Zairtre</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-xl font-bold">Panel Administrativo</h1>
-                <p className="text-sm text-gray-400">Enrique de Zairtre</p>
+              
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <img 
+                    src={session.user?.image || ''} 
+                    alt={session.user?.name || ''}
+                    className="w-8 h-8 rounded-full"
+                  />
+                  <span className="text-sm">{session.user?.name}</span>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleSignOut}
+                  className="border-gray-600 text-white hover:bg-gray-800"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Cerrar SesiÃ³n
+                </Button>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <img 
-                  src={session.user?.image || ''} 
-                  alt={session.user?.name || ''}
-                  className="w-8 h-8 rounded-full"
-                />
-                <span className="text-sm">{session.user?.name}</span>
-              </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleSignOut}
-                className="border-gray-600 text-white hover:bg-gray-800"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Cerrar SesiÃ³n
-              </Button>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-black/50 border-gray-700">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Canciones</CardTitle>
-              <Music className="h-4 w-4 text-purple-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalSongs}</div>
-              <p className="text-xs text-gray-400">En el catÃ¡logo</p>
-            </CardContent>
-          </Card>
+        {/* Main Content */}
+        <main className="container mx-auto px-4 py-8">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Card className="bg-black/50 border-gray-700">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Canciones</CardTitle>
+                <Music className="h-4 w-4 text-purple-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.totalSongs}</div>
+                <p className="text-xs text-gray-400">En el catÃ¡logo</p>
+              </CardContent>
+            </Card>
 
-          <Card className="bg-black/50 border-gray-700">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Playlists</CardTitle>
-              <PlayList className="h-4 w-4 text-purple-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalPlaylists}</div>
-              <p className="text-xs text-gray-400">Listas creadas</p>
-            </CardContent>
-          </Card>
+            <Card className="bg-black/50 border-gray-700">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Playlists</CardTitle>
+                <ListMusic className="h-4 w-4 text-purple-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.totalPlaylists}</div>
+                <p className="text-xs text-gray-400">Listas creadas</p>
+              </CardContent>
+            </Card>
 
-          <Card className="bg-black/50 border-gray-700">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Reproducciones</CardTitle>
-              <Users className="h-4 w-4 text-purple-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalPlays}</div>
-              <p className="text-xs text-gray-400">Total reproducciones</p>
-            </CardContent>
-          </Card>
-        </div>
+            <Card className="bg-black/50 border-gray-700">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Reproducciones</CardTitle>
+                <Users className="h-4 w-4 text-purple-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.totalPlays}</div>
+                <p className="text-xs text-gray-400">Total reproducciones</p>
+              </CardContent>
+            </Card>
+          </div>
 
-        {/* Management Tabs */}
-        <Tabs defaultValue="songs" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-black/50 border-gray-700">
-            <TabsTrigger value="songs" className="data-[state=active]:bg-purple-600">
-              <Music className="w-4 h-4 mr-2" />
-              Canciones
-            </TabsTrigger>
-            <TabsTrigger value="playlists" className="data-[state=active]:bg-purple-600">
-              <PlayList className="w-4 h-4 mr-2" />
-              Playlists
-            </TabsTrigger>
-            <TabsTrigger value="fans" className="data-[state=active]:bg-purple-600">
-              <Users className="w-4 h-4 mr-2" />
-              Fans SAC
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="data-[state=active]:bg-purple-600">
-              <Settings className="w-4 h-4 mr-2" />
-              ConfiguraciÃ³n
-            </TabsTrigger>
-          </TabsList>
+          {/* Management Tabs */}
+          <Tabs defaultValue="songs" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-4 bg-black/50 border-gray-700">
+              <TabsTrigger value="songs" className="data-[state=active]:bg-purple-600">
+                <Music className="w-4 h-4 mr-2" />
+                Canciones
+              </TabsTrigger>
+              <TabsTrigger value="playlists" className="data-[state=active]:bg-purple-600">
+                <ListMusic className="w-4 h-4 mr-2" />
+                Playlists
+              </TabsTrigger>
+              <TabsTrigger value="fans" className="data-[state=active]:bg-purple-600">
+                <Users className="w-4 h-4 mr-2" />
+                Fans SAC
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="data-[state=active]:bg-purple-600">
+                <Settings className="w-4 h-4 mr-2" />
+                ConfiguraciÃ³n
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="songs">
-            <SongManager />
-          </TabsContent>
+            <TabsContent value="songs">
+              <SongManager />
+            </TabsContent>
 
-          <TabsContent value="playlists">
-            <PlaylistManager />
-          </TabsContent>
+            <TabsContent value="playlists">
+              <PlaylistManager />
+            </TabsContent>
 
-          <TabsContent value="fans">
-            <FanManager />
-          </TabsContent>
+            <TabsContent value="fans">
+              <FanManager />
+            </TabsContent>
 
-          <TabsContent value="settings">
-            <SettingsPanel />
-          </TabsContent>
-        </Tabs>
-      </main>
-    </div>
+            <TabsContent value="settings">
+              <SettingsPanel />
+            </TabsContent>
+          </Tabs>
+        </main>
+      </div>
+    </Suspense>
   )
 }
 
@@ -16150,7 +16187,7 @@ export async function POST(request: Request) {
 # page.tsx
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { signIn, getSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -16175,80 +16212,82 @@ export default function SignIn() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-      
-      <div className="relative z-10 w-full max-w-md">
-        <Card className="bg-black/80 border-purple-500/20 text-white backdrop-blur-lg">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4 w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center">
-              <Music className="w-8 h-8" />
-            </div>
-            <CardTitle className="text-2xl font-bold">Bienvenido Fan</CardTitle>
-            <CardDescription className="text-gray-300">
-              Ãšnete a la comunidad de Enrique de Zairtre
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent className="space-y-6">
-            {/* Features */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 text-center">
-                <Heart className="w-6 h-6 mx-auto mb-2 text-red-400" />
-                <span className="text-xs">Favoritos</span>
-              </div>
-              <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 text-center">
-                <Users className="w-6 h-6 mx-auto mb-2 text-blue-400" />
-                <span className="text-xs">Playlists</span>
-              </div>
-              <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 text-center">
-                <Star className="w-6 h-6 mx-auto mb-2 text-yellow-400" />
-                <span className="text-xs">Recompensas</span>
-              </div>
-              <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 text-center">
-                <Music className="w-6 h-6 mx-auto mb-2 text-purple-400" />
-                <span className="text-xs">Exclusivo</span>
-              </div>
-            </div>
-
-            <Button 
-              onClick={handleGoogleSignIn}
-              disabled={isLoading}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-            >
-              {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Conectando...</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                  </svg>
-                  <span>Continuar con Google</span>
-                </div>
-              )}
-            </Button>
-
-            <div className="text-center">
-              <p className="text-xs text-gray-400">
-                Al iniciar sesiÃ³n, obtienes acceso a contenido exclusivo y puedes personalizar tu experiencia.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+    <Suspense fallback={<div>Cargando...</div>}>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-4">
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
         
-        <div className="mt-8 text-center">
-          <p className="text-gray-400 text-sm">
-            Â© 2024 Enrique de Zairtre - Todos los derechos reservados
-          </p>
+        <div className="relative z-10 w-full max-w-md">
+          <Card className="bg-black/80 border-purple-500/20 text-white backdrop-blur-lg">
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-4 w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center">
+                <Music className="w-8 h-8" />
+              </div>
+              <CardTitle className="text-2xl font-bold">Bienvenido Fan</CardTitle>
+              <CardDescription className="text-gray-300">
+                Ãšnete a la comunidad de Enrique de Zairtre
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent className="space-y-6">
+              {/* Features */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 text-center">
+                  <Heart className="w-6 h-6 mx-auto mb-2 text-red-400" />
+                  <span className="text-xs">Favoritos</span>
+                </div>
+                <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 text-center">
+                  <Users className="w-6 h-6 mx-auto mb-2 text-blue-400" />
+                  <span className="text-xs">Playlists</span>
+                </div>
+                <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 text-center">
+                  <Star className="w-6 h-6 mx-auto mb-2 text-yellow-400" />
+                  <span className="text-xs">Recompensas</span>
+                </div>
+                <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 text-center">
+                  <Music className="w-6 h-6 mx-auto mb-2 text-purple-400" />
+                  <span className="text-xs">Exclusivo</span>
+                </div>
+              </div>
+
+              <Button 
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+              >
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Conectando...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5" viewBox="0 0 24 24">
+                      <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                      <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                      <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                      <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    <span>Continuar con Google</span>
+                  </div>
+                )}
+              </Button>
+
+              <div className="text-center">
+                <p className="text-xs text-gray-400">
+                  Al iniciar sesiÃ³n, obtienes acceso a contenido exclusivo y puedes personalizar tu experiencia.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <div className="mt-8 text-center">
+            <p className="text-gray-400 text-sm">
+              Â© 2024 Enrique de Zairtre - Todos los derechos reservados
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </Suspense>
   )
 }
 
@@ -16390,7 +16429,7 @@ export default function SignIn() {
 # layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "./globals.css"
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 
@@ -16454,7 +16493,7 @@ export default function RootLayout({
 # page.tsx
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, List, Share2, Volume2, Heart, Music, User, LogIn } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -16654,315 +16693,317 @@ export default function Home() {
   }
 
   return (
-    <div 
-      className="min-h-screen transition-all duration-1000 relative overflow-hidden"
-      style={{ backgroundColor: getDynamicColor() }}
-    >
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div 
-          className="absolute w-96 h-96 rounded-full opacity-10 blur-3xl"
-          style={{ 
-            backgroundColor: getAccentColor(),
-            top: '10%',
-            left: '10%',
-            animation: 'float 20s infinite ease-in-out'
-          }}
-        />
-        <div 
-          className="absolute w-96 h-96 rounded-full opacity-10 blur-3xl"
-          style={{ 
-            backgroundColor: getAccentColor(),
-            bottom: '10%',
-            right: '10%',
-            animation: 'float 25s infinite ease-in-out reverse'
-          }}
-        />
-      </div>
+    <Suspense fallback={<div>Cargando...</div>}>
+      <div 
+        className="min-h-screen transition-all duration-1000 relative overflow-hidden"
+        style={{ backgroundColor: getDynamicColor() }}
+      >
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div 
+            className="absolute w-96 h-96 rounded-full opacity-10 blur-3xl"
+            style={{ 
+              backgroundColor: getAccentColor(),
+              top: '10%',
+              left: '10%',
+              animation: 'float 20s infinite ease-in-out'
+            }}
+          />
+          <div 
+            className="absolute w-96 h-96 rounded-full opacity-10 blur-3xl"
+            style={{ 
+              backgroundColor: getAccentColor(),
+              bottom: '10%',
+              right: '10%',
+              animation: 'float 25s infinite ease-in-out reverse'
+            }}
+          />
+        </div>
 
-      <div className="relative z-10 container mx-auto px-4 py-8">
-        {/* Header */}
-        <header className="text-center mb-12">
-          <div className="relative inline-block mb-6">
-            <div className="w-48 h-48 rounded-full overflow-hidden border-4 shadow-2xl"
-                 style={{ borderColor: getAccentColor() }}>
-              <img 
-                src="https://z-cdn-media.chatglm.cn/files/fe136bc7-0296-45b7-a567-82eb3e4072e4_Zairtre%20y%20Raltek.jpg?auth_key=1864304639-e6d63655667443888ad144ddaa27b31f-0-4b598a42d06e8256240c67561440c29f"
-                alt="Enrique de Zairtre"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="absolute -bottom-2 -right-2 bg-red-600 text-white rounded-full p-2">
-              <Music className="w-6 h-6" />
-            </div>
-          </div>
-          
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 tracking-wider"
-              style={{ textShadow: '0 0 20px rgba(255,255,255,0.3)' }}>
-            Enrique de Zairtre
-          </h1>
-          
-          <div className="flex flex-wrap justify-center gap-2 mb-6">
-            {['Poeta', 'Artista', 'Productor', 'Estrella de Rock'].map((role, index) => (
-              <span 
-                key={index}
-                className="px-4 py-2 rounded-full text-sm font-medium text-white border"
-                style={{ 
-                  borderColor: getAccentColor(),
-                  backgroundColor: `${getAccentColor()}20`
-                }}
-              >
-                {role}
-              </span>
-            ))}
-          </div>
-
-          {/* Auth Button */}
-          <div className="flex justify-center mb-6">
-            {session ? (
-              <div className="flex items-center gap-4">
-                <Button
-                  variant="outline"
-                  onClick={() => router.push('/profile')}
-                  className="border-gray-600 text-white hover:bg-gray-800"
-                >
-                  <User className="w-4 h-4 mr-2" />
-                  Mi Perfil
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => signOut({ callbackUrl: '/' })}
-                  className="border-gray-600 text-white hover:bg-gray-800"
-                >
-                  <LogIn className="w-4 h-4 mr-2" />
-                  Cerrar SesiÃ³n
-                </Button>
-              </div>
-            ) : (
-              <Button
-                onClick={() => signIn('google', { callbackUrl: '/' })}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                <LogIn className="w-4 h-4 mr-2" />
-                Iniciar SesiÃ³n
-              </Button>
-            )}
-          </div>
-        </header>
-
-        {/* Main Player */}
-        <Card className="max-w-4xl mx-auto bg-black/50 backdrop-blur-lg border-gray-700 text-white overflow-hidden">
-          <div className="grid md:grid-cols-2 gap-6 p-6">
-            {/* Album Cover and Visualizer */}
-            <div className="space-y-4">
-              <div className="relative aspect-square rounded-lg overflow-hidden">
+        <div className="relative z-10 container mx-auto px-4 py-8">
+          {/* Header */}
+          <header className="text-center mb-12">
+            <div className="relative inline-block mb-6">
+              <div className="w-48 h-48 rounded-full overflow-hidden border-4 shadow-2xl"
+                  style={{ borderColor: getAccentColor() }}>
                 <img 
-                  src={currentSong.coverImage}
-                  alt={currentSong.title}
+                  src="https://z-cdn-media.chatglm.cn/files/fe136bc7-0296-45b7-a567-82eb3e4072e4_Zairtre%20y%20Raltek.jpg?auth_key=1864304639-e6d63655667443888ad144ddaa27b31f-0-4b598a42d06e8256240c67561440c29f"
+                  alt="Enrique de Zairtre"
                   className="w-full h-full object-cover"
                 />
-                <canvas 
-                  ref={canvasRef}
-                  className="absolute inset-0 w-full h-full opacity-50"
-                />
-                <AudioVisualizer 
-                  audioRef={audioRef}
-                  canvasRef={canvasRef}
-                  isPlaying={isPlaying}
-                />
               </div>
-              
-              {/* Song Info */}
-              <div className="text-center">
-                <h2 className="text-2xl font-bold mb-2">{currentSong.title}</h2>
-                <p className="text-gray-300">{currentSong.artist}</p>
+              <div className="absolute -bottom-2 -right-2 bg-red-600 text-white rounded-full p-2">
+                <Music className="w-6 h-6" />
               </div>
             </div>
+            
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 tracking-wider"
+                style={{ textShadow: '0 0 20px rgba(255,255,255,0.3)' }}>
+              Enrique de Zairtre
+            </h1>
+            
+            <div className="flex flex-wrap justify-center gap-2 mb-6">
+              {['Poeta', 'Artista', 'Productor', 'Estrella de Rock'].map((role, index) => (
+                <span 
+                  key={index}
+                  className="px-4 py-2 rounded-full text-sm font-medium text-white border"
+                  style={{ 
+                    borderColor: getAccentColor(),
+                    backgroundColor: `${getAccentColor()}20`
+                  }}
+                >
+                  {role}
+                </span>
+              ))}
+            </div>
 
-            {/* Player Controls */}
-            <div className="space-y-6">
-              {/* Progress Bar */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm text-gray-300">
-                  <span>{formatTime(currentTime)}</span>
-                  <span>{formatTime(currentSong.duration)}</span>
+            {/* Auth Button */}
+            <div className="flex justify-center mb-6">
+              {session ? (
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push('/profile')}
+                    className="border-gray-600 text-white hover:bg-gray-800"
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    Mi Perfil
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => signOut({ callbackUrl: '/' })}
+                    className="border-gray-600 text-white hover:bg-gray-800"
+                  >
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Cerrar SesiÃ³n
+                  </Button>
                 </div>
-                <Slider
-                  value={[currentTime]}
-                  max={currentSong.duration}
-                  step={1}
-                  className="w-full"
-                  onValueChange={(value) => setCurrentTime(value[0])}
-                />
-              </div>
-
-              {/* Control Buttons */}
-              <div className="flex justify-center items-center gap-4">
+              ) : (
                 <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsShuffleOn(!isShuffleOn)}
-                  className={isShuffleOn ? 'text-purple-400' : 'text-gray-400'}
+                  onClick={() => signIn('google', { callbackUrl: '/' })}
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
                 >
-                  <Shuffle className="w-4 h-4" />
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Iniciar SesiÃ³n
                 </Button>
-                
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handlePrevious}
-                  className="text-white hover:text-purple-400"
-                >
-                  <SkipBack className="w-6 h-6" />
-                </Button>
-                
-                <Button
-                  onClick={handlePlayPause}
-                  className="w-16 h-16 rounded-full"
-                  style={{ backgroundColor: getAccentColor() }}
-                >
-                  {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-1" />}
-                </Button>
-                
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleNext}
-                  className="text-white hover:text-purple-400"
-                >
-                  <SkipForward className="w-6 h-6" />
-                </Button>
-                
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setRepeatMode(repeatMode === 'off' ? 'all' : repeatMode === 'all' ? 'one' : 'off')}
-                  className={repeatMode !== 'off' ? 'text-purple-400' : 'text-gray-400'}
-                >
-                  <Repeat className="w-4 h-4" />
-                </Button>
-              </div>
-
-              {/* Volume Control */}
-              <div className="flex items-center gap-3">
-                <Volume2 className="w-4 h-4 text-gray-400" />
-                <Slider
-                  value={[volume]}
-                  max={100}
-                  step={1}
-                  className="flex-1"
-                  onValueChange={(value) => setVolume(value[0])}
-                />
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={handleFavorite}
-                  className={`flex-1 border-gray-600 text-white hover:bg-gray-800 ${
-                    favorites.includes(currentSong.id.toString()) ? 'bg-red-900/30 border-red-600' : ''
-                  }`}
-                >
-                  <Heart className={`w-4 h-4 mr-2 ${favorites.includes(currentSong.id.toString()) ? 'fill-current' : ''}`} />
-                  {favorites.includes(currentSong.id.toString()) ? 'Favorito' : 'Favorito'}
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  onClick={() => setShowPlaylist(!showPlaylist)}
-                  className="flex-1 border-gray-600 text-white hover:bg-gray-800"
-                >
-                  <List className="w-4 h-4 mr-2" />
-                  Playlist
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  onClick={() => setShowLyrics(!showLyrics)}
-                  className="flex-1 border-gray-600 text-white hover:bg-gray-800"
-                >
-                  <Music className="w-4 h-4 mr-2" />
-                  Letras
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  onClick={handleShare}
-                  className="border-gray-600 text-white hover:bg-gray-800"
-                >
-                  <Share2 className="w-4 h-4" />
-                </Button>
-              </div>
+              )}
             </div>
-          </div>
+          </header>
 
-          {/* Playlist */}
-          {showPlaylist && (
-            <div className="border-t border-gray-700 p-4 max-h-64 overflow-y-auto">
-              <h3 className="text-lg font-semibold mb-3">Playlist</h3>
-              <div className="space-y-2">
-                {songs.map((song) => (
-                  <div
-                    key={song.id}
-                    onClick={() => setCurrentSong(song)}
-                    className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
-                      currentSong.id === song.id ? 'bg-purple-900/30' : 'hover:bg-gray-800'
+          {/* Main Player */}
+          <Card className="max-w-4xl mx-auto bg-black/50 backdrop-blur-lg border-gray-700 text-white overflow-hidden">
+            <div className="grid md:grid-cols-2 gap-6 p-6">
+              {/* Album Cover and Visualizer */}
+              <div className="space-y-4">
+                <div className="relative aspect-square rounded-lg overflow-hidden">
+                  <img 
+                    src={currentSong.coverImage}
+                    alt={currentSong.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <canvas 
+                    ref={canvasRef}
+                    className="absolute inset-0 w-full h-full opacity-50"
+                  />
+                  <AudioVisualizer 
+                    audioRef={audioRef}
+                    canvasRef={canvasRef}
+                    isPlaying={isPlaying}
+                  />
+                </div>
+                
+                {/* Song Info */}
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold mb-2">{currentSong.title}</h2>
+                  <p className="text-gray-300">{currentSong.artist}</p>
+                </div>
+              </div>
+
+              {/* Player Controls */}
+              <div className="space-y-6">
+                {/* Progress Bar */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm text-gray-300">
+                    <span>{formatTime(currentTime)}</span>
+                    <span>{formatTime(currentSong.duration)}</span>
+                  </div>
+                  <Slider
+                    value={[currentTime]}
+                    max={currentSong.duration}
+                    step={1}
+                    className="w-full"
+                    onValueChange={(value) => setCurrentTime(value[0])}
+                  />
+                </div>
+
+                {/* Control Buttons */}
+                <div className="flex justify-center items-center gap-4">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsShuffleOn(!isShuffleOn)}
+                    className={isShuffleOn ? 'text-purple-400' : 'text-gray-400'}
+                  >
+                    <Shuffle className="w-4 h-4" />
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handlePrevious}
+                    className="text-white hover:text-purple-400"
+                  >
+                    <SkipBack className="w-6 h-6" />
+                  </Button>
+                  
+                  <Button
+                    onClick={handlePlayPause}
+                    className="w-16 h-16 rounded-full"
+                    style={{ backgroundColor: getAccentColor() }}
+                  >
+                    {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-1" />}
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleNext}
+                    className="text-white hover:text-purple-400"
+                  >
+                    <SkipForward className="w-6 h-6" />
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setRepeatMode(repeatMode === 'off' ? 'all' : repeatMode === 'all' ? 'one' : 'off')}
+                    className={repeatMode !== 'off' ? 'text-purple-400' : 'text-gray-400'}
+                  >
+                    <Repeat className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                {/* Volume Control */}
+                <div className="flex items-center gap-3">
+                  <Volume2 className="w-4 h-4 text-gray-400" />
+                  <Slider
+                    value={[volume]}
+                    max={100}
+                    step={1}
+                    className="flex-1"
+                    onValueChange={(value) => setVolume(value[0])}
+                  />
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={handleFavorite}
+                    className={`flex-1 border-gray-600 text-white hover:bg-gray-800 ${
+                      favorites.includes(currentSong.id.toString()) ? 'bg-red-900/30 border-red-600' : ''
                     }`}
                   >
-                    <img src={song.coverImage} alt={song.title} className="w-12 h-12 rounded" />
-                    <div className="flex-1">
-                      <p className="font-medium">{song.title}</p>
-                      <p className="text-sm text-gray-400">{song.artist}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {favorites.includes(song.id.toString()) && (
-                        <Heart className="w-4 h-4 text-red-400 fill-current" />
-                      )}
-                      <span className="text-sm text-gray-400">{formatTime(song.duration)}</span>
-                    </div>
-                  </div>
-                ))}
+                    <Heart className={`w-4 h-4 mr-2 ${favorites.includes(currentSong.id.toString()) ? 'fill-current' : ''}`} />
+                    {favorites.includes(currentSong.id.toString()) ? 'Favorito' : 'Favorito'}
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowPlaylist(!showPlaylist)}
+                    className="flex-1 border-gray-600 text-white hover:bg-gray-800"
+                  >
+                    <List className="w-4 h-4 mr-2" />
+                    Playlist
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowLyrics(!showLyrics)}
+                    className="flex-1 border-gray-600 text-white hover:bg-gray-800"
+                  >
+                    <Music className="w-4 h-4 mr-2" />
+                    Letras
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    onClick={handleShare}
+                    className="border-gray-600 text-white hover:bg-gray-800"
+                  >
+                    <Share2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </div>
-          )}
 
-          {/* Lyrics */}
-          {showLyrics && (
-            <div className="border-t border-gray-700 p-4">
-              <h3 className="text-lg font-semibold mb-3">Letras</h3>
-              <div className="text-center space-y-2 text-gray-300 font-medium">
-                {currentSong.lyrics.split('\n').map((line, index) => (
-                  <p key={index}>{line}</p>
-                ))}
+            {/* Playlist */}
+            {showPlaylist && (
+              <div className="border-t border-gray-700 p-4 max-h-64 overflow-y-auto">
+                <h3 className="text-lg font-semibold mb-3">Playlist</h3>
+                <div className="space-y-2">
+                  {songs.map((song) => (
+                    <div
+                      key={song.id}
+                      onClick={() => setCurrentSong(song)}
+                      className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                        currentSong.id === song.id ? 'bg-purple-900/30' : 'hover:bg-gray-800'
+                      }`}
+                    >
+                      <img src={song.coverImage} alt={song.title} className="w-12 h-12 rounded" />
+                      <div className="flex-1">
+                        <p className="font-medium">{song.title}</p>
+                        <p className="text-sm text-gray-400">{song.artist}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {favorites.includes(song.id.toString()) && (
+                          <Heart className="w-4 h-4 text-red-400 fill-current" />
+                        )}
+                        <span className="text-sm text-gray-400">{formatTime(song.duration)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </Card>
+            )}
 
-        {/* Hidden Audio Element */}
-        <audio
-          ref={audioRef}
-          src={currentSong.audioUrl}
-          onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
-          onEnded={() => {
-            if (repeatMode === 'one') {
-              audioRef.current?.play()
-            } else if (repeatMode === 'all' || isShuffleOn) {
-              handleNext()
-            }
-          }}
-        />
+            {/* Lyrics */}
+            {showLyrics && (
+              <div className="border-t border-gray-700 p-4">
+                <h3 className="text-lg font-semibold mb-3">Letras</h3>
+                <div className="text-center space-y-2 text-gray-300 font-medium">
+                  {currentSong.lyrics.split('\n').map((line, index) => (
+                    <p key={index}>{line}</p>
+                  ))}
+                </div>
+              </div>
+            )}
+          </Card>
+
+          {/* Hidden Audio Element */}
+          <audio
+            ref={audioRef}
+            src={currentSong.audioUrl}
+            onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+            onEnded={() => {
+              if (repeatMode === 'one') {
+                audioRef.current?.play()
+              } else if (repeatMode === 'all' || isShuffleOn) {
+                handleNext()
+              }
+            }}
+          />
+        </div>
+
+        <style jsx>{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(120deg); }
+            66% { transform: translateY(30px) rotate(240deg); }
+          }
+        `}</style>
       </div>
-
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          33% { transform: translateY(-30px) rotate(120deg); }
-          66% { transform: translateY(30px) rotate(240deg); }
-        }
-      `}</style>
-    </div>
+    </Suspense>
   )
 }
 
@@ -16974,7 +17015,7 @@ export default function Home() {
 # page.tsx
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -17178,320 +17219,322 @@ export default function FanProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-4">
-      <div className="container mx-auto max-w-6xl">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
+    <Suspense fallback={<div>Cargando...</div>}>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-4">
+        <div className="container mx-auto max-w-6xl">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="outline" 
+                onClick={() => router.push('/')}
+                className="border-gray-600 text-white hover:bg-gray-800"
+              >
+                <Music className="w-4 h-4 mr-2" />
+                Volver
+              </Button>
+              <h1 className="text-3xl font-bold text-white">Mi Perfil</h1>
+            </div>
+            
             <Button 
               variant="outline" 
-              onClick={() => router.push('/')}
+              onClick={() => signOut({ callbackUrl: '/' })}
               className="border-gray-600 text-white hover:bg-gray-800"
             >
-              <Music className="w-4 h-4 mr-2" />
-              Volver
+              <LogOut className="w-4 h-4 mr-2" />
+              Cerrar SesiÃ³n
             </Button>
-            <h1 className="text-3xl font-bold text-white">Mi Perfil</h1>
           </div>
-          
-          <Button 
-            variant="outline" 
-            onClick={() => signOut({ callbackUrl: '/' })}
-            className="border-gray-600 text-white hover:bg-gray-800"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Cerrar SesiÃ³n
-          </Button>
-        </div>
 
-        {/* Profile Info */}
-        <Card className="bg-black/50 border-gray-700 text-white mb-8">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-6">
-              <img 
-                src={profile.image || '/default-avatar.png'} 
-                alt={profile.name || 'Fan'}
-                className="w-20 h-20 rounded-full border-2 border-purple-500"
-              />
-              <div className="flex-1">
-                <h2 className="text-2xl font-bold mb-2">{profile.name || 'Fan'}</h2>
-                <p className="text-gray-400 mb-4">{profile.email}</p>
-                <div className="flex items-center gap-4">
-                  <Badge className={`${getTierColor(profile.tier)} text-white`}>
-                    <div className="flex items-center gap-1">
-                      {getTierIcon(profile.tier)}
-                      {profile.tier.charAt(0).toUpperCase() + profile.tier.slice(1)}
-                    </div>
-                  </Badge>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 text-yellow-400" />
-                    <span>{profile.loyaltyPoints} puntos</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-sm text-gray-400">
-                    <Calendar className="w-4 h-4" />
-                    <span>Miembro desde {new Date(profile.joinDate).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-purple-900/20 border-purple-500/30">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <Heart className="w-5 h-5 text-red-400" />
-                <div>
-                  <p className="text-sm text-gray-400">Favoritos</p>
-                  <p className="text-xl font-bold text-white">{profile.favoriteCount}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-blue-900/20 border-blue-500/30">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-blue-400" />
-                <div>
-                  <p className="text-sm text-gray-400">Playlists</p>
-                  <p className="text-xl font-bold text-white">{profile.playlistCount}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-green-900/20 border-green-500/30">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-green-400" />
-                <div>
-                  <p className="text-sm text-gray-400">Reproducciones</p>
-                  <p className="text-xl font-bold text-white">{profile.totalPlays}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-yellow-900/20 border-yellow-500/30">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <Gift className="w-5 h-5 text-yellow-400" />
-                <div>
-                  <p className="text-sm text-gray-400">Recompensas</p>
-                  <p className="text-xl font-bold text-white">{rewards.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Main Content */}
-        <Tabs defaultValue="favorites" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-black/50 border-gray-700">
-            <TabsTrigger value="favorites" className="data-[state=active]:bg-purple-600">
-              <Heart className="w-4 h-4 mr-2" />
-              Favoritos
-            </TabsTrigger>
-            <TabsTrigger value="playlists" className="data-[state=active]:bg-purple-600">
-              <Users className="w-4 h-4 mr-2" />
-              Mis Playlists
-            </TabsTrigger>
-            <TabsTrigger value="rewards" className="data-[state=active]:bg-purple-600">
-              <Gift className="w-4 h-4 mr-2" />
-              Recompensas
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="favorites">
-            <Card className="bg-black/50 border-gray-700">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Heart className="w-5 h-5" />
-                  Mis Canciones Favoritas
-                </CardTitle>
-                <CardDescription>Canciones que has marcado como favoritas</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {favorites.length === 0 ? (
-                  <div className="text-center py-8 text-gray-400">
-                    <Heart className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>No tienes canciones favoritas aÃºn</p>
-                    <p className="text-sm">Explora el catÃ¡logo y aÃ±ade tus canciones preferidas</p>
-                  </div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>CanciÃ³n</TableHead>
-                        <TableHead>Artista</TableHead>
-                        <TableHead>DuraciÃ³n</TableHead>
-                        <TableHead>AÃ±adida</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {favorites.map((favorite) => (
-                        <TableRow key={favorite.id}>
-                          <TableCell className="font-medium">{favorite.song.title}</TableCell>
-                          <TableCell>{favorite.song.artist}</TableCell>
-                          <TableCell>{formatDuration(favorite.song.duration)}</TableCell>
-                          <TableCell>
-                            {new Date(favorite.createdAt).toLocaleDateString()}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="playlists">
-            <Card className="bg-black/50 border-gray-700">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Users className="w-5 h-5" />
-                      Mis Playlists
-                    </CardTitle>
-                    <CardDescription>Tus listas de reproducciÃ³n personalizadas</CardDescription>
-                  </div>
-                  <Dialog open={isPlaylistDialogOpen} onOpenChange={setIsPlaylistDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button className="bg-purple-600 hover:bg-purple-700">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Nueva Playlist
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="bg-gray-900 border-gray-700 text-white">
-                      <DialogHeader>
-                        <DialogTitle>Crear Nueva Playlist</DialogTitle>
-                        <DialogDescription>
-                          Crea tu propia lista de reproducciÃ³n personalizada
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <div>
-                          <Label htmlFor="name">Nombre</Label>
-                          <Input
-                            id="name"
-                            value={newPlaylist.name}
-                            onChange={(e) => setNewPlaylist({ ...newPlaylist, name: e.target.value })}
-                            className="bg-gray-800 border-gray-600"
-                            placeholder="Mi playlist favorita"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="description">DescripciÃ³n</Label>
-                          <Textarea
-                            id="description"
-                            value={newPlaylist.description}
-                            onChange={(e) => setNewPlaylist({ ...newPlaylist, description: e.target.value })}
-                            className="bg-gray-800 border-gray-600"
-                            rows={3}
-                            placeholder="Describe tu playlist..."
-                          />
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="isPublic"
-                            checked={newPlaylist.isPublic}
-                            onChange={(e) => setNewPlaylist({ ...newPlaylist, isPublic: e.target.checked })}
-                            className="rounded"
-                          />
-                          <Label htmlFor="isPublic">Hacer pÃºblica</Label>
-                        </div>
-                        <div className="flex justify-end space-x-2">
-                          <Button variant="outline" onClick={() => setIsPlaylistDialogOpen(false)}>
-                            Cancelar
-                          </Button>
-                          <Button onClick={handleCreatePlaylist} className="bg-purple-600 hover:bg-purple-700">
-                            Crear Playlist
-                          </Button>
-                        </div>
+          {/* Profile Info */}
+          <Card className="bg-black/50 border-gray-700 text-white mb-8">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-6">
+                <img 
+                  src={profile.image || '/default-avatar.png'} 
+                  alt={profile.name || 'Fan'}
+                  className="w-20 h-20 rounded-full border-2 border-purple-500"
+                />
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold mb-2">{profile.name || 'Fan'}</h2>
+                  <p className="text-gray-400 mb-4">{profile.email}</p>
+                  <div className="flex items-center gap-4">
+                    <Badge className={`${getTierColor(profile.tier)} text-white`}>
+                      <div className="flex items-center gap-1">
+                        {getTierIcon(profile.tier)}
+                        {profile.tier.charAt(0).toUpperCase() + profile.tier.slice(1)}
                       </div>
-                    </DialogContent>
-                  </Dialog>
+                    </Badge>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 text-yellow-400" />
+                      <span>{profile.loyaltyPoints} puntos</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-sm text-gray-400">
+                      <Calendar className="w-4 h-4" />
+                      <span>Miembro desde {new Date(profile.joinDate).toLocaleDateString()}</span>
+                    </div>
+                  </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                {playlists.length === 0 ? (
-                  <div className="text-center py-8 text-gray-400">
-                    <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>No tienes playlists aÃºn</p>
-                    <p className="text-sm">Crea tu primera playlist personalizada</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {playlists.map((playlist) => (
-                      <Card key={playlist.id} className="bg-gray-800 border-gray-600">
-                        <CardContent className="p-4">
-                          <h3 className="font-semibold mb-2">{playlist.name}</h3>
-                          <p className="text-sm text-gray-400 mb-3">
-                            {playlist.description || 'Sin descripciÃ³n'}
-                          </p>
-                          <div className="flex items-center justify-between">
-                            <Badge variant="outline" className="border-gray-500">
-                              {playlist._count.songs} canciones
-                            </Badge>
-                            {playlist.isPublic && (
-                              <Badge variant="outline" className="border-green-500 text-green-400">
-                                PÃºblica
-                              </Badge>
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </div>
+            </CardContent>
+          </Card>
 
-          <TabsContent value="rewards">
-            <Card className="bg-black/50 border-gray-700">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Gift className="w-5 h-5" />
-                  Mis Recompensas
-                </CardTitle>
-                <CardDescription>Insignias y premios ganados</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {rewards.length === 0 ? (
-                  <div className="text-center py-8 text-gray-400">
-                    <Gift className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>No tienes recompensas aÃºn</p>
-                    <p className="text-sm">Sigue interactuando para ganar premios</p>
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <Card className="bg-purple-900/20 border-purple-500/30">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <Heart className="w-5 h-5 text-red-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">Favoritos</p>
+                    <p className="text-xl font-bold text-white">{profile.favoriteCount}</p>
                   </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {rewards.map((reward) => (
-                      <Card key={reward.id} className="bg-gray-800 border-gray-600">
-                        <CardContent className="p-4 text-center">
-                          <div className="text-4xl mb-3">{reward.icon || 'ðŸ†'}</div>
-                          <h3 className="font-semibold mb-2">{reward.title}</h3>
-                          <p className="text-sm text-gray-400 mb-3">{reward.description}</p>
-                          <p className="text-xs text-gray-500">
-                            Desbloqueado el {new Date(reward.unlockedAt).toLocaleDateString()}
-                          </p>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                )}
+                </div>
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
+            
+            <Card className="bg-blue-900/20 border-blue-500/30">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <Users className="w-5 h-5 text-blue-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">Playlists</p>
+                    <p className="text-xl font-bold text-white">{profile.playlistCount}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-green-900/20 border-green-500/30">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-green-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">Reproducciones</p>
+                    <p className="text-xl font-bold text-white">{profile.totalPlays}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-yellow-900/20 border-yellow-500/30">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <Gift className="w-5 h-5 text-yellow-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">Recompensas</p>
+                    <p className="text-xl font-bold text-white">{rewards.length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Content */}
+          <Tabs defaultValue="favorites" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-3 bg-black/50 border-gray-700">
+              <TabsTrigger value="favorites" className="data-[state=active]:bg-purple-600">
+                <Heart className="w-4 h-4 mr-2" />
+                Favoritos
+              </TabsTrigger>
+              <TabsTrigger value="playlists" className="data-[state=active]:bg-purple-600">
+                <Users className="w-4 h-4 mr-2" />
+                Mis Playlists
+              </TabsTrigger>
+              <TabsTrigger value="rewards" className="data-[state=active]:bg-purple-600">
+                <Gift className="w-4 h-4 mr-2" />
+                Recompensas
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="favorites">
+              <Card className="bg-black/50 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Heart className="w-5 h-5" />
+                    Mis Canciones Favoritas
+                  </CardTitle>
+                  <CardDescription>Canciones que has marcado como favoritas</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {favorites.length === 0 ? (
+                    <div className="text-center py-8 text-gray-400">
+                      <Heart className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p>No tienes canciones favoritas aÃºn</p>
+                      <p className="text-sm">Explora el catÃ¡logo y aÃ±ade tus canciones preferidas</p>
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>CanciÃ³n</TableHead>
+                          <TableHead>Artista</TableHead>
+                          <TableHead>DuraciÃ³n</TableHead>
+                          <TableHead>AÃ±adida</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {favorites.map((favorite) => (
+                          <TableRow key={favorite.id}>
+                            <TableCell className="font-medium">{favorite.song.title}</TableCell>
+                            <TableCell>{favorite.song.artist}</TableCell>
+                            <TableCell>{formatDuration(favorite.song.duration)}</TableCell>
+                            <TableCell>
+                              {new Date(favorite.createdAt).toLocaleDateString()}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="playlists">
+              <Card className="bg-black/50 border-gray-700">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        <Users className="w-5 h-5" />
+                        Mis Playlists
+                      </CardTitle>
+                      <CardDescription>Tus listas de reproducciÃ³n personalizadas</CardDescription>
+                    </div>
+                    <Dialog open={isPlaylistDialogOpen} onOpenChange={setIsPlaylistDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button className="bg-purple-600 hover:bg-purple-700">
+                          <Plus className="w-4 h-4 mr-2" />
+                          Nueva Playlist
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="bg-gray-900 border-gray-700 text-white">
+                        <DialogHeader>
+                          <DialogTitle>Crear Nueva Playlist</DialogTitle>
+                          <DialogDescription>
+                            Crea tu propia lista de reproducciÃ³n personalizada
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="name">Nombre</Label>
+                            <Input
+                              id="name"
+                              value={newPlaylist.name}
+                              onChange={(e) => setNewPlaylist({ ...newPlaylist, name: e.target.value })}
+                              className="bg-gray-800 border-gray-600"
+                              placeholder="Mi playlist favorita"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="description">DescripciÃ³n</Label>
+                            <Textarea
+                              id="description"
+                              value={newPlaylist.description}
+                              onChange={(e) => setNewPlaylist({ ...newPlaylist, description: e.target.value })}
+                              className="bg-gray-800 border-gray-600"
+                              rows={3}
+                              placeholder="Describe tu playlist..."
+                            />
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="isPublic"
+                              checked={newPlaylist.isPublic}
+                              onChange={(e) => setNewPlaylist({ ...newPlaylist, isPublic: e.target.checked })}
+                              className="rounded"
+                            />
+                            <Label htmlFor="isPublic">Hacer pÃºblica</Label>
+                          </div>
+                          <div className="flex justify-end space-x-2">
+                            <Button variant="outline" onClick={() => setIsPlaylistDialogOpen(false)}>
+                              Cancelar
+                            </Button>
+                            <Button onClick={handleCreatePlaylist} className="bg-purple-600 hover:bg-purple-700">
+                              Crear Playlist
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {playlists.length === 0 ? (
+                    <div className="text-center py-8 text-gray-400">
+                      <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p>No tienes playlists aÃºn</p>
+                      <p className="text-sm">Crea tu primera playlist personalizada</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {playlists.map((playlist) => (
+                        <Card key={playlist.id} className="bg-gray-800 border-gray-600">
+                          <CardContent className="p-4">
+                            <h3 className="font-semibold mb-2">{playlist.name}</h3>
+                            <p className="text-sm text-gray-400 mb-3">
+                              {playlist.description || 'Sin descripciÃ³n'}
+                            </p>
+                            <div className="flex items-center justify-between">
+                              <Badge variant="outline" className="border-gray-500">
+                                {playlist._count.songs} canciones
+                              </Badge>
+                              {playlist.isPublic && (
+                                <Badge variant="outline" className="border-green-500 text-green-400">
+                                  PÃºblica
+                                </Badge>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="rewards">
+              <Card className="bg-black/50 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Gift className="w-5 h-5" />
+                    Mis Recompensas
+                  </CardTitle>
+                  <CardDescription>Insignias y premios ganados</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {rewards.length === 0 ? (
+                    <div className="text-center py-8 text-gray-400">
+                      <Gift className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p>No tienes recompensas aÃºn</p>
+                      <p className="text-sm">Sigue interactuando para ganar premios</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {rewards.map((reward) => (
+                        <Card key={reward.id} className="bg-gray-800 border-gray-600">
+                          <CardContent className="p-4 text-center">
+                            <div className="text-4xl mb-3">{reward.icon || 'ðŸ†'}</div>
+                            <h3 className="font-semibold mb-2">{reward.title}</h3>
+                            <p className="text-sm text-gray-400 mb-3">{reward.description}</p>
+                            <p className="text-xs text-gray-500">
+                              Desbloqueado el {new Date(reward.unlockedAt).toLocaleDateString()}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
-    </div>
+    </Suspense>
   )
 }
 
@@ -17503,7 +17546,7 @@ export default function FanProfile() {
 # FanManager.tsx
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17623,273 +17666,275 @@ export function FanManager() {
   }
 
   return (
-    <Card className="bg-black/50 border-gray-700">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="w-5 h-5" />
-              GestiÃ³n de Fans
-            </CardTitle>
-            <CardDescription>Sistema de AtenciÃ³n al Cliente (SAC) y Recompensas</CardDescription>
+    <Suspense fallback={<div>Cargando...</div>}>
+      <Card className="bg-black/50 border-gray-700">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="w-5 h-5" />
+                GestiÃ³n de Fans
+              </CardTitle>
+              <CardDescription>Sistema de AtenciÃ³n al Cliente (SAC) y Recompensas</CardDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="border-green-500 text-green-400">
+                {fans.length} Fans Activos
+              </Badge>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="border-green-500 text-green-400">
-              {fans.length} Fans Activos
-            </Badge>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card className="bg-purple-900/20 border-purple-500/30">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2">
-                  <Crown className="w-5 h-5 text-purple-400" />
-                  <div>
-                    <p className="text-sm text-gray-400">Platinum</p>
-                    <p className="text-xl font-bold">{fans.filter(f => f.tier === 'platinum').length}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-yellow-900/20 border-yellow-500/30">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2">
-                  <Star className="w-5 h-5 text-yellow-400" />
-                  <div>
-                    <p className="text-sm text-gray-400">Gold</p>
-                    <p className="text-xl font-bold">{fans.filter(f => f.tier === 'gold').length}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gray-900/20 border-gray-500/30">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2">
-                  <Award className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-400">Silver</p>
-                    <p className="text-xl font-bold">{fans.filter(f => f.tier === 'silver').length}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-orange-900/20 border-orange-500/30">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-orange-400" />
-                  <div>
-                    <p className="text-sm text-gray-400">Bronze</p>
-                    <p className="text-xl font-bold">{fans.filter(f => f.tier === 'bronze').length}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Fans Table */}
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Fan</TableHead>
-                <TableHead>Nivel</TableHead>
-                <TableHead>Puntos</TableHead>
-                <TableHead>Favoritos</TableHead>
-                <TableHead>Playlists</TableHead>
-                <TableHead>Registro</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {fans.map((fan) => (
-                <TableRow key={fan.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <img 
-                        src={fan.image || '/default-avatar.png'} 
-                        alt={fan.name || 'Fan'}
-                        className="w-8 h-8 rounded-full"
-                      />
-                      <div>
-                        <p className="font-medium">{fan.name || 'Sin nombre'}</p>
-                        <p className="text-sm text-gray-400">{fan.email}</p>
-                      </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <Card className="bg-purple-900/20 border-purple-500/30">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2">
+                    <Crown className="w-5 h-5 text-purple-400" />
+                    <div>
+                      <p className="text-sm text-gray-400">Platinum</p>
+                      <p className="text-xl font-bold">{fans.filter(f => f.tier === 'platinum').length}</p>
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={`${getTierColor(fan.tier)} text-white`}>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-yellow-900/20 border-yellow-500/30">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2">
+                    <Star className="w-5 h-5 text-yellow-400" />
+                    <div>
+                      <p className="text-sm text-gray-400">Gold</p>
+                      <p className="text-xl font-bold">{fans.filter(f => f.tier === 'gold').length}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-gray-900/20 border-gray-500/30">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2">
+                    <Award className="w-5 h-5 text-gray-400" />
+                    <div>
+                      <p className="text-sm text-gray-400">Silver</p>
+                      <p className="text-xl font-bold">{fans.filter(f => f.tier === 'silver').length}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-orange-900/20 border-orange-500/30">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-5 h-5 text-orange-400" />
+                    <div>
+                      <p className="text-sm text-gray-400">Bronze</p>
+                      <p className="text-xl font-bold">{fans.filter(f => f.tier === 'bronze').length}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Fans Table */}
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Fan</TableHead>
+                  <TableHead>Nivel</TableHead>
+                  <TableHead>Puntos</TableHead>
+                  <TableHead>Favoritos</TableHead>
+                  <TableHead>Playlists</TableHead>
+                  <TableHead>Registro</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead>Acciones</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {fans.map((fan) => (
+                  <TableRow key={fan.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <img 
+                          src={fan.image || '/default-avatar.png'} 
+                          alt={fan.name || 'Fan'}
+                          className="w-8 h-8 rounded-full"
+                        />
+                        <div>
+                          <p className="font-medium">{fan.name || 'Sin nombre'}</p>
+                          <p className="text-sm text-gray-400">{fan.email}</p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={`${getTierColor(fan.tier)} text-white`}>
+                        <div className="flex items-center gap-1">
+                          {getTierIcon(fan.tier)}
+                          {fan.tier.charAt(0).toUpperCase() + fan.tier.slice(1)}
+                        </div>
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
                       <div className="flex items-center gap-1">
-                        {getTierIcon(fan.tier)}
-                        {fan.tier.charAt(0).toUpperCase() + fan.tier.slice(1)}
+                        <Star className="w-4 h-4 text-yellow-400" />
+                        {fan.loyaltyPoints}
                       </div>
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-yellow-400" />
-                      {fan.loyaltyPoints}
-                    </div>
-                  </TableCell>
-                  <TableCell>{fan._count.favorites}</TableCell>
-                  <TableCell>{fan._count.playlists}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1 text-sm text-gray-400">
-                      <Calendar className="w-4 h-4" />
-                      {new Date(fan.joinDate).toLocaleDateString()}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={fan.isActive ? 'default' : 'secondary'}>
-                      {fan.isActive ? 'Activo' : 'Inactivo'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Dialog open={isDialogOpen && selectedFan?.id === fan.id} onOpenChange={setIsDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setSelectedFan(fan)}
-                          className="border-gray-600"
-                        >
-                          <Gift className="w-4 h-4 mr-1" />
-                          SAC
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-md">
-                        <DialogHeader>
-                          <DialogTitle className="flex items-center gap-2">
-                            <Users className="w-5 h-5" />
-                            AtenciÃ³n al Fan
-                          </DialogTitle>
-                          <DialogDescription>
-                            {selectedFan?.name || selectedFan?.email} - Nivel {selectedFan?.tier}
-                          </DialogDescription>
-                        </DialogHeader>
-                        
-                        <div className="space-y-4">
-                          <div>
-                            <Label htmlFor="action">AcciÃ³n</Label>
-                            <Select value={actionData.action} onValueChange={(value) => setActionData({ ...actionData, action: value })}>
-                              <SelectTrigger className="bg-gray-800 border-gray-600">
-                                <SelectValue placeholder="Selecciona una acciÃ³n" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="award_points">Otorgar Puntos</SelectItem>
-                                <SelectItem value="award_badge">Otorgar Insignia</SelectItem>
-                                <SelectItem value="upgrade_tier">Mejorar Nivel</SelectItem>
-                                <SelectItem value="activate">Activar Cuenta</SelectItem>
-                                <SelectItem value="deactivate">Desactivar Cuenta</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          {actionData.action === 'award_points' && (
+                    </TableCell>
+                    <TableCell>{fan._count.favorites}</TableCell>
+                    <TableCell>{fan._count.playlists}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 text-sm text-gray-400">
+                        <Calendar className="w-4 h-4" />
+                        {new Date(fan.joinDate).toLocaleDateString()}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={fan.isActive ? 'default' : 'secondary'}>
+                        {fan.isActive ? 'Activo' : 'Inactivo'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Dialog open={isDialogOpen && selectedFan?.id === fan.id} onOpenChange={setIsDialogOpen}>
+                        <DialogTrigger asChild>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setSelectedFan(fan)}
+                            className="border-gray-600"
+                          >
+                            <Gift className="w-4 h-4 mr-1" />
+                            SAC
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-md">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2">
+                              <Users className="w-5 h-5" />
+                              AtenciÃ³n al Fan
+                            </DialogTitle>
+                            <DialogDescription>
+                              {selectedFan?.name || selectedFan?.email} - Nivel {selectedFan?.tier}
+                            </DialogDescription>
+                          </DialogHeader>
+                          
+                          <div className="space-y-4">
                             <div>
-                              <Label htmlFor="type">Cantidad de Puntos</Label>
-                              <Input
-                                id="type"
-                                type="number"
-                                value={actionData.type}
-                                onChange={(e) => setActionData({ ...actionData, type: e.target.value })}
-                                className="bg-gray-800 border-gray-600"
-                                placeholder="100"
-                              />
-                            </div>
-                          )}
-
-                          {actionData.action === 'award_badge' && (
-                            <div>
-                              <Label htmlFor="type">Icono</Label>
-                              <Input
-                                id="type"
-                                value={actionData.type}
-                                onChange={(e) => setActionData({ ...actionData, type: e.target.value })}
-                                className="bg-gray-800 border-gray-600"
-                                placeholder="ðŸ†"
-                              />
-                            </div>
-                          )}
-
-                          {actionData.action === 'upgrade_tier' && (
-                            <div>
-                              <Label htmlFor="type">Nuevo Nivel</Label>
-                              <Select value={actionData.type} onValueChange={(value) => setActionData({ ...actionData, type: value })}>
+                              <Label htmlFor="action">AcciÃ³n</Label>
+                              <Select value={actionData.action} onValueChange={(value) => setActionData({ ...actionData, action: value })}>
                                 <SelectTrigger className="bg-gray-800 border-gray-600">
-                                  <SelectValue placeholder="Selecciona nivel" />
+                                  <SelectValue placeholder="Selecciona una acciÃ³n" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="silver">Silver</SelectItem>
-                                  <SelectItem value="gold">Gold</SelectItem>
-                                  <SelectItem value="platinum">Platinum</SelectItem>
+                                  <SelectItem value="award_points">Otorgar Puntos</SelectItem>
+                                  <SelectItem value="award_badge">Otorgar Insignia</SelectItem>
+                                  <SelectItem value="upgrade_tier">Mejorar Nivel</SelectItem>
+                                  <SelectItem value="activate">Activar Cuenta</SelectItem>
+                                  <SelectItem value="deactivate">Desactivar Cuenta</SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
-                          )}
 
-                          {(actionData.action === 'award_points' || actionData.action === 'award_badge' || actionData.action === 'upgrade_tier') && (
-                            <>
+                            {actionData.action === 'award_points' && (
                               <div>
-                                <Label htmlFor="title">TÃ­tulo</Label>
+                                <Label htmlFor="type">Cantidad de Puntos</Label>
                                 <Input
-                                  id="title"
-                                  value={actionData.title}
-                                  onChange={(e) => setActionData({ ...actionData, title: e.target.value })}
+                                  id="type"
+                                  type="number"
+                                  value={actionData.type}
+                                  onChange={(e) => setActionData({ ...actionData, type: e.target.value })}
                                   className="bg-gray-800 border-gray-600"
-                                  placeholder="TÃ­tulo de la recompensa"
+                                  placeholder="100"
                                 />
                               </div>
+                            )}
 
+                            {actionData.action === 'award_badge' && (
                               <div>
-                                <Label htmlFor="description">DescripciÃ³n</Label>
-                                <Textarea
-                                  id="description"
-                                  value={actionData.description}
-                                  onChange={(e) => setActionData({ ...actionData, description: e.target.value })}
+                                <Label htmlFor="type">Icono</Label>
+                                <Input
+                                  id="type"
+                                  value={actionData.type}
+                                  onChange={(e) => setActionData({ ...actionData, type: e.target.value })}
                                   className="bg-gray-800 border-gray-600"
-                                  rows={3}
-                                  placeholder="DescripciÃ³n detallada"
+                                  placeholder="ðŸ†"
                                 />
                               </div>
-                            </>
-                          )}
+                            )}
 
-                          <div className="flex justify-end space-x-2">
-                            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                              Cancelar
-                            </Button>
-                            <Button 
-                              onClick={handleAction}
-                              className="bg-purple-600 hover:bg-purple-700"
-                              disabled={!actionData.action}
-                            >
-                              {actionData.action === 'activate' ? (
-                                <><Power className="w-4 h-4 mr-2" /> Activar</>
-                              ) : actionData.action === 'deactivate' ? (
-                                <><PowerOff className="w-4 h-4 mr-2" /> Desactivar</>
-                              ) : (
-                                <><Gift className="w-4 h-4 mr-2" /> Otorgar</>
-                              )}
-                            </Button>
+                            {actionData.action === 'upgrade_tier' && (
+                              <div>
+                                <Label htmlFor="type">Nuevo Nivel</Label>
+                                <Select value={actionData.type} onValueChange={(value) => setActionData({ ...actionData, type: value })}>
+                                  <SelectTrigger className="bg-gray-800 border-gray-600">
+                                    <SelectValue placeholder="Selecciona nivel" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="silver">Silver</SelectItem>
+                                    <SelectItem value="gold">Gold</SelectItem>
+                                    <SelectItem value="platinum">Platinum</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            )}
+
+                            {(actionData.action === 'award_points' || actionData.action === 'award_badge' || actionData.action === 'upgrade_tier') && (
+                              <>
+                                <div>
+                                  <Label htmlFor="title">TÃ­tulo</Label>
+                                  <Input
+                                    id="title"
+                                    value={actionData.title}
+                                    onChange={(e) => setActionData({ ...actionData, title: e.target.value })}
+                                    className="bg-gray-800 border-gray-600"
+                                    placeholder="TÃ­tulo de la recompensa"
+                                  />
+                                </div>
+
+                                <div>
+                                  <Label htmlFor="description">DescripciÃ³n</Label>
+                                  <Textarea
+                                    id="description"
+                                    value={actionData.description}
+                                    onChange={(e) => setActionData({ ...actionData, description: e.target.value })}
+                                    className="bg-gray-800 border-gray-600"
+                                    rows={3}
+                                    placeholder="DescripciÃ³n detallada"
+                                  />
+                                </div>
+                              </>
+                            )}
+
+                            <div className="flex justify-end space-x-2">
+                              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                                Cancelar
+                              </Button>
+                              <Button 
+                                onClick={handleAction}
+                                className="bg-purple-600 hover:bg-purple-700"
+                                disabled={!actionData.action}
+                              >
+                                {actionData.action === 'activate' ? (
+                                  <><Power className="w-4 h-4 mr-2" /> Activar</>
+                                ) : actionData.action === 'deactivate' ? (
+                                  <><PowerOff className="w-4 h-4 mr-2" /> Desactivar</>
+                                ) : (
+                                  <><Gift className="w-4 h-4 mr-2" /> Otorgar</>
+                                )}
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+                        </DialogContent>
+                      </Dialog>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+    </Suspense>
   )
 }
 
@@ -17901,7 +17946,7 @@ export function FanManager() {
 # PlaylistManager.tsx
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -18021,122 +18066,124 @@ export function PlaylistManager() {
   }
 
   return (
-    <Card className="bg-black/50 border-gray-700">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>GestiÃ³n de Playlists</CardTitle>
-            <CardDescription>Administra las listas de reproducciÃ³n</CardDescription>
+    <Suspense fallback={<div>Cargando...</div>}>
+      <Card className="bg-black/50 border-gray-700">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>GestiÃ³n de Playlists</CardTitle>
+              <CardDescription>Administra las listas de reproducciÃ³n</CardDescription>
+            </div>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  onClick={() => {
+                    resetForm()
+                    setEditingPlaylist(null)
+                  }}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nueva Playlist
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-gray-900 border-gray-700 text-white">
+                <DialogHeader>
+                  <DialogTitle>
+                    {editingPlaylist ? 'Editar Playlist' : 'Nueva Playlist'}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {editingPlaylist ? 'Modifica los datos de la playlist' : 'Crea una nueva playlist'}
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="name">Nombre</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="bg-gray-800 border-gray-600"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="description">DescripciÃ³n</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      className="bg-gray-800 border-gray-600"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="flex justify-end space-x-2">
+                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                      Cancelar
+                    </Button>
+                    <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
+                      {editingPlaylist ? 'Actualizar' : 'Crear'}
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button 
-                onClick={() => {
-                  resetForm()
-                  setEditingPlaylist(null)
-                }}
-                className="bg-purple-600 hover:bg-purple-700"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Nueva Playlist
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-gray-900 border-gray-700 text-white">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingPlaylist ? 'Editar Playlist' : 'Nueva Playlist'}
-                </DialogTitle>
-                <DialogDescription>
-                  {editingPlaylist ? 'Modifica los datos de la playlist' : 'Crea una nueva playlist'}
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="name">Nombre</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="bg-gray-800 border-gray-600"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="description">DescripciÃ³n</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="bg-gray-800 border-gray-600"
-                    rows={3}
-                  />
-                </div>
-
-                <div className="flex justify-end space-x-2">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Cancelar
-                  </Button>
-                  <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
-                    {editingPlaylist ? 'Actualizar' : 'Crear'}
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nombre</TableHead>
-              <TableHead>DescripciÃ³n</TableHead>
-              <TableHead>Canciones</TableHead>
-              <TableHead>Fecha</TableHead>
-              <TableHead>Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {playlists.map((playlist) => (
-              <TableRow key={playlist.id}>
-                <TableCell className="font-medium">{playlist.name}</TableCell>
-                <TableCell>{playlist.description || 'Sin descripciÃ³n'}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1">
-                    <Music className="w-4 h-4" />
-                    {playlist._count?.songs || 0}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {new Date(playlist.createdAt).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  <div className="flex space-x-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleEdit(playlist)}
-                      className="border-gray-600"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleDelete(playlist.id)}
-                      className="border-red-600 text-red-400 hover:bg-red-900/20"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </TableCell>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nombre</TableHead>
+                <TableHead>DescripciÃ³n</TableHead>
+                <TableHead>Canciones</TableHead>
+                <TableHead>Fecha</TableHead>
+                <TableHead>Acciones</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            </TableHeader>
+            <TableBody>
+              {playlists.map((playlist) => (
+                <TableRow key={playlist.id}>
+                  <TableCell className="font-medium">{playlist.name}</TableCell>
+                  <TableCell>{playlist.description || 'Sin descripciÃ³n'}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Music className="w-4 h-4" />
+                      {playlist._count?.songs || 0}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {new Date(playlist.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex space-x-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEdit(playlist)}
+                        className="border-gray-600"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDelete(playlist.id)}
+                        className="border-red-600 text-red-400 hover:bg-red-900/20"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </Suspense>
   )
 }
 
@@ -18148,7 +18195,7 @@ export function PlaylistManager() {
 # SettingsPanel.tsx
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -18260,245 +18307,247 @@ export function SettingsPanel() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* General Settings */}
-      <Card className="bg-black/50 border-gray-700">
-        <CardHeader>
-          <CardTitle>ConfiguraciÃ³n General</CardTitle>
-          <CardDescription>InformaciÃ³n bÃ¡sica del sitio</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <Suspense fallback={<div>Cargando...</div>}>
+      <div className="space-y-6">
+        {/* General Settings */}
+        <Card className="bg-black/50 border-gray-700">
+          <CardHeader>
+            <CardTitle>ConfiguraciÃ³n General</CardTitle>
+            <CardDescription>InformaciÃ³n bÃ¡sica del sitio</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="siteName">Nombre del Sitio</Label>
+                <Input
+                  id="siteName"
+                  value={settings.siteName}
+                  onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
+                  className="bg-gray-800 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label htmlFor="artistName">Nombre del Artista</Label>
+                <Input
+                  id="artistName"
+                  value={settings.artistName}
+                  onChange={(e) => setSettings({ ...settings, artistName: e.target.value })}
+                  className="bg-gray-800 border-gray-600"
+                />
+              </div>
+            </div>
+
             <div>
-              <Label htmlFor="siteName">Nombre del Sitio</Label>
+              <Label htmlFor="siteDescription">DescripciÃ³n del Sitio</Label>
+              <Textarea
+                id="siteDescription"
+                value={settings.siteDescription}
+                onChange={(e) => setSettings({ ...settings, siteDescription: e.target.value })}
+                className="bg-gray-800 border-gray-600"
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="contactEmail">Email de Contacto</Label>
               <Input
-                id="siteName"
-                value={settings.siteName}
-                onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
+                id="contactEmail"
+                type="email"
+                value={settings.contactEmail}
+                onChange={(e) => setSettings({ ...settings, contactEmail: e.target.value })}
                 className="bg-gray-800 border-gray-600"
               />
             </div>
-            <div>
-              <Label htmlFor="artistName">Nombre del Artista</Label>
-              <Input
-                id="artistName"
-                value={settings.artistName}
-                onChange={(e) => setSettings({ ...settings, artistName: e.target.value })}
-                className="bg-gray-800 border-gray-600"
-              />
+          </CardContent>
+        </Card>
+
+        {/* Social Links */}
+        <Card className="bg-black/50 border-gray-700">
+          <CardHeader>
+            <CardTitle>Redes Sociales</CardTitle>
+            <CardDescription>Enlaces a perfiles sociales</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="facebook">Facebook</Label>
+                <Input
+                  id="facebook"
+                  value={settings.socialLinks.facebook}
+                  onChange={(e) => setSettings({ 
+                    ...settings, 
+                    socialLinks: { ...settings.socialLinks, facebook: e.target.value }
+                  })}
+                  className="bg-gray-800 border-gray-600"
+                  placeholder="https://facebook.com/..."
+                />
+              </div>
+              <div>
+                <Label htmlFor="twitter">Twitter/X</Label>
+                <Input
+                  id="twitter"
+                  value={settings.socialLinks.twitter}
+                  onChange={(e) => setSettings({ 
+                    ...settings, 
+                    socialLinks: { ...settings.socialLinks, twitter: e.target.value }
+                  })}
+                  className="bg-gray-800 border-gray-600"
+                  placeholder="https://twitter.com/..."
+                />
+              </div>
+              <div>
+                <Label htmlFor="instagram">Instagram</Label>
+                <Input
+                  id="instagram"
+                  value={settings.socialLinks.instagram}
+                  onChange={(e) => setSettings({ 
+                    ...settings, 
+                    socialLinks: { ...settings.socialLinks, instagram: e.target.value }
+                  })}
+                  className="bg-gray-800 border-gray-600"
+                  placeholder="https://instagram.com/..."
+                />
+              </div>
+              <div>
+                <Label htmlFor="youtube">YouTube</Label>
+                <Input
+                  id="youtube"
+                  value={settings.socialLinks.youtube}
+                  onChange={(e) => setSettings({ 
+                    ...settings, 
+                    socialLinks: { ...settings.socialLinks, youtube: e.target.value }
+                  })}
+                  className="bg-gray-800 border-gray-600"
+                  placeholder="https://youtube.com/..."
+                />
+              </div>
+              <div>
+                <Label htmlFor="spotify">Spotify</Label>
+                <Input
+                  id="spotify"
+                  value={settings.socialLinks.spotify}
+                  onChange={(e) => setSettings({ 
+                    ...settings, 
+                    socialLinks: { ...settings.socialLinks, spotify: e.target.value }
+                  })}
+                  className="bg-gray-800 border-gray-600"
+                  placeholder="https://spotify.com/..."
+                />
+              </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          <div>
-            <Label htmlFor="siteDescription">DescripciÃ³n del Sitio</Label>
-            <Textarea
-              id="siteDescription"
-              value={settings.siteDescription}
-              onChange={(e) => setSettings({ ...settings, siteDescription: e.target.value })}
-              className="bg-gray-800 border-gray-600"
-              rows={3}
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="contactEmail">Email de Contacto</Label>
-            <Input
-              id="contactEmail"
-              type="email"
-              value={settings.contactEmail}
-              onChange={(e) => setSettings({ ...settings, contactEmail: e.target.value })}
-              className="bg-gray-800 border-gray-600"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Social Links */}
-      <Card className="bg-black/50 border-gray-700">
-        <CardHeader>
-          <CardTitle>Redes Sociales</CardTitle>
-          <CardDescription>Enlaces a perfiles sociales</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="facebook">Facebook</Label>
-              <Input
-                id="facebook"
-                value={settings.socialLinks.facebook}
-                onChange={(e) => setSettings({ 
-                  ...settings, 
-                  socialLinks: { ...settings.socialLinks, facebook: e.target.value }
+        {/* Features */}
+        <Card className="bg-black/50 border-gray-700">
+          <CardHeader>
+            <CardTitle>CaracterÃ­sticas</CardTitle>
+            <CardDescription>Activar o desactivar funcionalidades</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label>Comentarios</Label>
+                <p className="text-sm text-gray-400">Permitir comentarios en canciones</p>
+              </div>
+              <Switch
+                checked={settings.features.enableComments}
+                onCheckedChange={(checked) => setSettings({
+                  ...settings,
+                  features: { ...settings.features, enableComments: checked }
                 })}
-                className="bg-gray-800 border-gray-600"
-                placeholder="https://facebook.com/..."
               />
             </div>
-            <div>
-              <Label htmlFor="twitter">Twitter/X</Label>
-              <Input
-                id="twitter"
-                value={settings.socialLinks.twitter}
-                onChange={(e) => setSettings({ 
-                  ...settings, 
-                  socialLinks: { ...settings.socialLinks, twitter: e.target.value }
+
+            <Separator />
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label>Descargas</Label>
+                <p className="text-sm text-gray-400">Permitir descarga de canciones</p>
+              </div>
+              <Switch
+                checked={settings.features.enableDownloads}
+                onCheckedChange={(checked) => setSettings({
+                  ...settings,
+                  features: { ...settings.features, enableDownloads: checked }
                 })}
-                className="bg-gray-800 border-gray-600"
-                placeholder="https://twitter.com/..."
               />
             </div>
-            <div>
-              <Label htmlFor="instagram">Instagram</Label>
-              <Input
-                id="instagram"
-                value={settings.socialLinks.instagram}
-                onChange={(e) => setSettings({ 
-                  ...settings, 
-                  socialLinks: { ...settings.socialLinks, instagram: e.target.value }
+
+            <Separator />
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label>Letras</Label>
+                <p className="text-sm text-gray-400">Mostrar letras de canciones</p>
+              </div>
+              <Switch
+                checked={settings.features.enableLyrics}
+                onCheckedChange={(checked) => setSettings({
+                  ...settings,
+                  features: { ...settings.features, enableLyrics: checked }
                 })}
-                className="bg-gray-800 border-gray-600"
-                placeholder="https://instagram.com/..."
               />
             </div>
-            <div>
-              <Label htmlFor="youtube">YouTube</Label>
-              <Input
-                id="youtube"
-                value={settings.socialLinks.youtube}
-                onChange={(e) => setSettings({ 
-                  ...settings, 
-                  socialLinks: { ...settings.socialLinks, youtube: e.target.value }
+
+            <Separator />
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label>Playlists</Label>
+                <p className="text-sm text-gray-400">Activar sistema de playlists</p>
+              </div>
+              <Switch
+                checked={settings.features.enablePlaylists}
+                onCheckedChange={(checked) => setSettings({
+                  ...settings,
+                  features: { ...settings.features, enablePlaylists: checked }
                 })}
-                className="bg-gray-800 border-gray-600"
-                placeholder="https://youtube.com/..."
               />
             </div>
-            <div>
-              <Label htmlFor="spotify">Spotify</Label>
-              <Input
-                id="spotify"
-                value={settings.socialLinks.spotify}
-                onChange={(e) => setSettings({ 
-                  ...settings, 
-                  socialLinks: { ...settings.socialLinks, spotify: e.target.value }
-                })}
-                className="bg-gray-800 border-gray-600"
-                placeholder="https://spotify.com/..."
-              />
+          </CardContent>
+        </Card>
+
+        {/* Actions */}
+        <Card className="bg-black/50 border-gray-700">
+          <CardHeader>
+            <CardTitle>Acciones</CardTitle>
+            <CardDescription>Operaciones de mantenimiento</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-wrap gap-4">
+              <Button 
+                onClick={handleSave}
+                disabled={loading}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {loading ? 'Guardando...' : 'Guardar Cambios'}
+              </Button>
+
+              <Button 
+                variant="outline"
+                onClick={handleExport}
+                className="border-gray-600"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Exportar Datos
+              </Button>
+
+              <Button 
+                variant="outline"
+                onClick={() => window.location.reload()}
+                className="border-gray-600"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Recargar
+              </Button>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Features */}
-      <Card className="bg-black/50 border-gray-700">
-        <CardHeader>
-          <CardTitle>CaracterÃ­sticas</CardTitle>
-          <CardDescription>Activar o desactivar funcionalidades</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <Label>Comentarios</Label>
-              <p className="text-sm text-gray-400">Permitir comentarios en canciones</p>
-            </div>
-            <Switch
-              checked={settings.features.enableComments}
-              onCheckedChange={(checked) => setSettings({
-                ...settings,
-                features: { ...settings.features, enableComments: checked }
-              })}
-            />
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <div>
-              <Label>Descargas</Label>
-              <p className="text-sm text-gray-400">Permitir descarga de canciones</p>
-            </div>
-            <Switch
-              checked={settings.features.enableDownloads}
-              onCheckedChange={(checked) => setSettings({
-                ...settings,
-                features: { ...settings.features, enableDownloads: checked }
-              })}
-            />
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <div>
-              <Label>Letras</Label>
-              <p className="text-sm text-gray-400">Mostrar letras de canciones</p>
-            </div>
-            <Switch
-              checked={settings.features.enableLyrics}
-              onCheckedChange={(checked) => setSettings({
-                ...settings,
-                features: { ...settings.features, enableLyrics: checked }
-              })}
-            />
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <div>
-              <Label>Playlists</Label>
-              <p className="text-sm text-gray-400">Activar sistema de playlists</p>
-            </div>
-            <Switch
-              checked={settings.features.enablePlaylists}
-              onCheckedChange={(checked) => setSettings({
-                ...settings,
-                features: { ...settings.features, enablePlaylists: checked }
-              })}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Actions */}
-      <Card className="bg-black/50 border-gray-700">
-        <CardHeader>
-          <CardTitle>Acciones</CardTitle>
-          <CardDescription>Operaciones de mantenimiento</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-wrap gap-4">
-            <Button 
-              onClick={handleSave}
-              disabled={loading}
-              className="bg-purple-600 hover:bg-purple-700"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {loading ? 'Guardando...' : 'Guardar Cambios'}
-            </Button>
-
-            <Button 
-              variant="outline"
-              onClick={handleExport}
-              className="border-gray-600"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Exportar Datos
-            </Button>
-
-            <Button 
-              variant="outline"
-              onClick={() => window.location.reload()}
-              className="border-gray-600"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Recargar
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          </CardContent>
+        </Card>
+      </div>
+    </Suspense>
   )
 }
 
@@ -18510,7 +18559,7 @@ export function SettingsPanel() {
 # SongManager.tsx
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -18672,185 +18721,187 @@ export function SongManager() {
   }
 
   return (
-    <Card className="bg-black/50 border-gray-700">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>GestiÃ³n de Canciones</CardTitle>
-            <CardDescription>Administra el catÃ¡logo musical</CardDescription>
+    <Suspense fallback={<div>Cargando...</div>}>
+      <Card className="bg-black/50 border-gray-700">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>GestiÃ³n de Canciones</CardTitle>
+              <CardDescription>Administra el catÃ¡logo musical</CardDescription>
+            </div>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  onClick={() => {
+                    resetForm()
+                    setEditingSong(null)
+                  }}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nueva CanciÃ³n
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>
+                    {editingSong ? 'Editar CanciÃ³n' : 'Nueva CanciÃ³n'}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {editingSong ? 'Modifica los datos de la canciÃ³n' : 'Agrega una nueva canciÃ³n al catÃ¡logo'}
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="title">TÃ­tulo</Label>
+                      <Input
+                        id="title"
+                        value={formData.title}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        className="bg-gray-800 border-gray-600"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="artist">Artista</Label>
+                      <Input
+                        id="artist"
+                        value={formData.artist}
+                        onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
+                        className="bg-gray-800 border-gray-600"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="duration">DuraciÃ³n (segundos)</Label>
+                      <Input
+                        id="duration"
+                        type="number"
+                        value={formData.duration}
+                        onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
+                        className="bg-gray-800 border-gray-600"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="coverImage">URL Imagen</Label>
+                      <Input
+                        id="coverImage"
+                        value={formData.coverImage}
+                        onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+                        className="bg-gray-800 border-gray-600"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="audioUrl">URL Audio</Label>
+                    <Input
+                      id="audioUrl"
+                      value={formData.audioUrl}
+                      onChange={(e) => setFormData({ ...formData, audioUrl: e.target.value })}
+                      className="bg-gray-800 border-gray-600"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="lyrics">Letras</Label>
+                    <Textarea
+                      id="lyrics"
+                      value={formData.lyrics}
+                      onChange={(e) => setFormData({ ...formData, lyrics: e.target.value })}
+                      className="bg-gray-800 border-gray-600"
+                      rows={4}
+                    />
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="published"
+                      checked={formData.published}
+                      onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
+                      className="rounded"
+                    />
+                    <Label htmlFor="published">Publicada</Label>
+                  </div>
+
+                  <div className="flex justify-end space-x-2">
+                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                      Cancelar
+                    </Button>
+                    <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
+                      {editingSong ? 'Actualizar' : 'Crear'}
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button 
-                onClick={() => {
-                  resetForm()
-                  setEditingSong(null)
-                }}
-                className="bg-purple-600 hover:bg-purple-700"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Nueva CanciÃ³n
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingSong ? 'Editar CanciÃ³n' : 'Nueva CanciÃ³n'}
-                </DialogTitle>
-                <DialogDescription>
-                  {editingSong ? 'Modifica los datos de la canciÃ³n' : 'Agrega una nueva canciÃ³n al catÃ¡logo'}
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="title">TÃ­tulo</Label>
-                    <Input
-                      id="title"
-                      value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      className="bg-gray-800 border-gray-600"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="artist">Artista</Label>
-                    <Input
-                      id="artist"
-                      value={formData.artist}
-                      onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
-                      className="bg-gray-800 border-gray-600"
-                      required
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="duration">DuraciÃ³n (segundos)</Label>
-                    <Input
-                      id="duration"
-                      type="number"
-                      value={formData.duration}
-                      onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
-                      className="bg-gray-800 border-gray-600"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="coverImage">URL Imagen</Label>
-                    <Input
-                      id="coverImage"
-                      value={formData.coverImage}
-                      onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-                      className="bg-gray-800 border-gray-600"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="audioUrl">URL Audio</Label>
-                  <Input
-                    id="audioUrl"
-                    value={formData.audioUrl}
-                    onChange={(e) => setFormData({ ...formData, audioUrl: e.target.value })}
-                    className="bg-gray-800 border-gray-600"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="lyrics">Letras</Label>
-                  <Textarea
-                    id="lyrics"
-                    value={formData.lyrics}
-                    onChange={(e) => setFormData({ ...formData, lyrics: e.target.value })}
-                    className="bg-gray-800 border-gray-600"
-                    rows={4}
-                  />
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="published"
-                    checked={formData.published}
-                    onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
-                    className="rounded"
-                  />
-                  <Label htmlFor="published">Publicada</Label>
-                </div>
-
-                <div className="flex justify-end space-x-2">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Cancelar
-                  </Button>
-                  <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
-                    {editingSong ? 'Actualizar' : 'Crear'}
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>TÃ­tulo</TableHead>
-              <TableHead>Artista</TableHead>
-              <TableHead>DuraciÃ³n</TableHead>
-              <TableHead>Estado</TableHead>
-              <TableHead>Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {songs.map((song) => (
-              <TableRow key={song.id}>
-                <TableCell className="font-medium">{song.title}</TableCell>
-                <TableCell>{song.artist}</TableCell>
-                <TableCell>{formatDuration(song.duration)}</TableCell>
-                <TableCell>
-                  <Badge variant={song.published ? 'default' : 'secondary'}>
-                    {song.published ? 'Publicada' : 'Borrador'}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex space-x-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleEdit(song)}
-                      className="border-gray-600"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => togglePublish(song.id, song.published)}
-                      className="border-gray-600"
-                    >
-                      {song.published ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleDelete(song.id)}
-                      className="border-red-600 text-red-400 hover:bg-red-900/20"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </TableCell>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>TÃ­tulo</TableHead>
+                <TableHead>Artista</TableHead>
+                <TableHead>DuraciÃ³n</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead>Acciones</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            </TableHeader>
+            <TableBody>
+              {songs.map((song) => (
+                <TableRow key={song.id}>
+                  <TableCell className="font-medium">{song.title}</TableCell>
+                  <TableCell>{song.artist}</TableCell>
+                  <TableCell>{formatDuration(song.duration)}</TableCell>
+                  <TableCell>
+                    <Badge variant={song.published ? 'default' : 'secondary'}>
+                      {song.published ? 'Publicada' : 'Borrador'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex space-x-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEdit(song)}
+                        className="border-gray-600"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => togglePublish(song.id, song.published)}
+                        className="border-gray-600"
+                      >
+                        {song.published ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDelete(song.id)}
+                        className="border-red-600 text-red-400 hover:bg-red-900/20"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </Suspense>
   )
 }
 

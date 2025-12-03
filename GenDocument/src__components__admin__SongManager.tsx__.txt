@@ -1,7 +1,7 @@
 ﻿# SongManager.tsx
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -163,184 +163,186 @@ export function SongManager() {
   }
 
   return (
-    <Card className="bg-black/50 border-gray-700">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>GestiÃ³n de Canciones</CardTitle>
-            <CardDescription>Administra el catÃ¡logo musical</CardDescription>
+    <Suspense fallback={<div>Cargando...</div>}>
+      <Card className="bg-black/50 border-gray-700">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>GestiÃ³n de Canciones</CardTitle>
+              <CardDescription>Administra el catÃ¡logo musical</CardDescription>
+            </div>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  onClick={() => {
+                    resetForm()
+                    setEditingSong(null)
+                  }}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nueva CanciÃ³n
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>
+                    {editingSong ? 'Editar CanciÃ³n' : 'Nueva CanciÃ³n'}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {editingSong ? 'Modifica los datos de la canciÃ³n' : 'Agrega una nueva canciÃ³n al catÃ¡logo'}
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="title">TÃ­tulo</Label>
+                      <Input
+                        id="title"
+                        value={formData.title}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        className="bg-gray-800 border-gray-600"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="artist">Artista</Label>
+                      <Input
+                        id="artist"
+                        value={formData.artist}
+                        onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
+                        className="bg-gray-800 border-gray-600"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="duration">DuraciÃ³n (segundos)</Label>
+                      <Input
+                        id="duration"
+                        type="number"
+                        value={formData.duration}
+                        onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
+                        className="bg-gray-800 border-gray-600"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="coverImage">URL Imagen</Label>
+                      <Input
+                        id="coverImage"
+                        value={formData.coverImage}
+                        onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+                        className="bg-gray-800 border-gray-600"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="audioUrl">URL Audio</Label>
+                    <Input
+                      id="audioUrl"
+                      value={formData.audioUrl}
+                      onChange={(e) => setFormData({ ...formData, audioUrl: e.target.value })}
+                      className="bg-gray-800 border-gray-600"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="lyrics">Letras</Label>
+                    <Textarea
+                      id="lyrics"
+                      value={formData.lyrics}
+                      onChange={(e) => setFormData({ ...formData, lyrics: e.target.value })}
+                      className="bg-gray-800 border-gray-600"
+                      rows={4}
+                    />
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="published"
+                      checked={formData.published}
+                      onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
+                      className="rounded"
+                    />
+                    <Label htmlFor="published">Publicada</Label>
+                  </div>
+
+                  <div className="flex justify-end space-x-2">
+                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                      Cancelar
+                    </Button>
+                    <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
+                      {editingSong ? 'Actualizar' : 'Crear'}
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button 
-                onClick={() => {
-                  resetForm()
-                  setEditingSong(null)
-                }}
-                className="bg-purple-600 hover:bg-purple-700"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Nueva CanciÃ³n
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingSong ? 'Editar CanciÃ³n' : 'Nueva CanciÃ³n'}
-                </DialogTitle>
-                <DialogDescription>
-                  {editingSong ? 'Modifica los datos de la canciÃ³n' : 'Agrega una nueva canciÃ³n al catÃ¡logo'}
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="title">TÃ­tulo</Label>
-                    <Input
-                      id="title"
-                      value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      className="bg-gray-800 border-gray-600"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="artist">Artista</Label>
-                    <Input
-                      id="artist"
-                      value={formData.artist}
-                      onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
-                      className="bg-gray-800 border-gray-600"
-                      required
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="duration">DuraciÃ³n (segundos)</Label>
-                    <Input
-                      id="duration"
-                      type="number"
-                      value={formData.duration}
-                      onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
-                      className="bg-gray-800 border-gray-600"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="coverImage">URL Imagen</Label>
-                    <Input
-                      id="coverImage"
-                      value={formData.coverImage}
-                      onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-                      className="bg-gray-800 border-gray-600"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="audioUrl">URL Audio</Label>
-                  <Input
-                    id="audioUrl"
-                    value={formData.audioUrl}
-                    onChange={(e) => setFormData({ ...formData, audioUrl: e.target.value })}
-                    className="bg-gray-800 border-gray-600"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="lyrics">Letras</Label>
-                  <Textarea
-                    id="lyrics"
-                    value={formData.lyrics}
-                    onChange={(e) => setFormData({ ...formData, lyrics: e.target.value })}
-                    className="bg-gray-800 border-gray-600"
-                    rows={4}
-                  />
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="published"
-                    checked={formData.published}
-                    onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
-                    className="rounded"
-                  />
-                  <Label htmlFor="published">Publicada</Label>
-                </div>
-
-                <div className="flex justify-end space-x-2">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Cancelar
-                  </Button>
-                  <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
-                    {editingSong ? 'Actualizar' : 'Crear'}
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>TÃ­tulo</TableHead>
-              <TableHead>Artista</TableHead>
-              <TableHead>DuraciÃ³n</TableHead>
-              <TableHead>Estado</TableHead>
-              <TableHead>Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {songs.map((song) => (
-              <TableRow key={song.id}>
-                <TableCell className="font-medium">{song.title}</TableCell>
-                <TableCell>{song.artist}</TableCell>
-                <TableCell>{formatDuration(song.duration)}</TableCell>
-                <TableCell>
-                  <Badge variant={song.published ? 'default' : 'secondary'}>
-                    {song.published ? 'Publicada' : 'Borrador'}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex space-x-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleEdit(song)}
-                      className="border-gray-600"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => togglePublish(song.id, song.published)}
-                      className="border-gray-600"
-                    >
-                      {song.published ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleDelete(song.id)}
-                      className="border-red-600 text-red-400 hover:bg-red-900/20"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </TableCell>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>TÃ­tulo</TableHead>
+                <TableHead>Artista</TableHead>
+                <TableHead>DuraciÃ³n</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead>Acciones</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            </TableHeader>
+            <TableBody>
+              {songs.map((song) => (
+                <TableRow key={song.id}>
+                  <TableCell className="font-medium">{song.title}</TableCell>
+                  <TableCell>{song.artist}</TableCell>
+                  <TableCell>{formatDuration(song.duration)}</TableCell>
+                  <TableCell>
+                    <Badge variant={song.published ? 'default' : 'secondary'}>
+                      {song.published ? 'Publicada' : 'Borrador'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex space-x-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEdit(song)}
+                        className="border-gray-600"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => togglePublish(song.id, song.published)}
+                        className="border-gray-600"
+                      >
+                        {song.published ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDelete(song.id)}
+                        className="border-red-600 text-red-400 hover:bg-red-900/20"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </Suspense>
   )
 }

@@ -46,4 +46,8 @@ dev.log
 test
 prompt
 
+# documentation
+/GenDocument/
+/GenDocument/*
+
 server.log
