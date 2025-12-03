@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Music, Lock } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default function AdminLogin() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
