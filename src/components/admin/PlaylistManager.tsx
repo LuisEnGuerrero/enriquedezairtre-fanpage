@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -120,121 +120,123 @@ export function PlaylistManager() {
   }
 
   return (
-    <Card className="bg-black/50 border-gray-700">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Gestión de Playlists</CardTitle>
-            <CardDescription>Administra las listas de reproducción</CardDescription>
+    <Suspense fallback={<div>Cargando...</div>}>
+      <Card className="bg-black/50 border-gray-700">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Gestión de Playlists</CardTitle>
+              <CardDescription>Administra las listas de reproducción</CardDescription>
+            </div>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  onClick={() => {
+                    resetForm()
+                    setEditingPlaylist(null)
+                  }}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nueva Playlist
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-gray-900 border-gray-700 text-white">
+                <DialogHeader>
+                  <DialogTitle>
+                    {editingPlaylist ? 'Editar Playlist' : 'Nueva Playlist'}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {editingPlaylist ? 'Modifica los datos de la playlist' : 'Crea una nueva playlist'}
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="name">Nombre</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="bg-gray-800 border-gray-600"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="description">Descripción</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      className="bg-gray-800 border-gray-600"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="flex justify-end space-x-2">
+                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                      Cancelar
+                    </Button>
+                    <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
+                      {editingPlaylist ? 'Actualizar' : 'Crear'}
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button 
-                onClick={() => {
-                  resetForm()
-                  setEditingPlaylist(null)
-                }}
-                className="bg-purple-600 hover:bg-purple-700"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Nueva Playlist
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-gray-900 border-gray-700 text-white">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingPlaylist ? 'Editar Playlist' : 'Nueva Playlist'}
-                </DialogTitle>
-                <DialogDescription>
-                  {editingPlaylist ? 'Modifica los datos de la playlist' : 'Crea una nueva playlist'}
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="name">Nombre</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="bg-gray-800 border-gray-600"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="description">Descripción</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="bg-gray-800 border-gray-600"
-                    rows={3}
-                  />
-                </div>
-
-                <div className="flex justify-end space-x-2">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Cancelar
-                  </Button>
-                  <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
-                    {editingPlaylist ? 'Actualizar' : 'Crear'}
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nombre</TableHead>
-              <TableHead>Descripción</TableHead>
-              <TableHead>Canciones</TableHead>
-              <TableHead>Fecha</TableHead>
-              <TableHead>Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {playlists.map((playlist) => (
-              <TableRow key={playlist.id}>
-                <TableCell className="font-medium">{playlist.name}</TableCell>
-                <TableCell>{playlist.description || 'Sin descripción'}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1">
-                    <Music className="w-4 h-4" />
-                    {playlist._count?.songs || 0}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {new Date(playlist.createdAt).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  <div className="flex space-x-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleEdit(playlist)}
-                      className="border-gray-600"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleDelete(playlist.id)}
-                      className="border-red-600 text-red-400 hover:bg-red-900/20"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </TableCell>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nombre</TableHead>
+                <TableHead>Descripción</TableHead>
+                <TableHead>Canciones</TableHead>
+                <TableHead>Fecha</TableHead>
+                <TableHead>Acciones</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            </TableHeader>
+            <TableBody>
+              {playlists.map((playlist) => (
+                <TableRow key={playlist.id}>
+                  <TableCell className="font-medium">{playlist.name}</TableCell>
+                  <TableCell>{playlist.description || 'Sin descripción'}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Music className="w-4 h-4" />
+                      {playlist._count?.songs || 0}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {new Date(playlist.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex space-x-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEdit(playlist)}
+                        className="border-gray-600"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDelete(playlist.id)}
+                        className="border-red-600 text-red-400 hover:bg-red-900/20"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </Suspense>
   )
 }

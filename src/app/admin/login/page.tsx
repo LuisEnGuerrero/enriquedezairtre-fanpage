@@ -25,7 +25,7 @@ export default function AdminLogin() {
   }
 
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Cargando . . .</div>}>
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-4">
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
         
