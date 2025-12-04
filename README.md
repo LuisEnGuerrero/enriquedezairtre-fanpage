@@ -1,6 +1,103 @@
-# 🚀 Welcome to Z.ai Code Scaffold
+# Enrique de Zairtre — FanPage (Sitio Oficial)
 
-A modern, production-ready web application scaffold powered by cutting-edge technologies, designed to accelerate your development with [Z.ai](https://chat.z.ai)'s AI-powered coding assistance.
+Sitio web oficial y FanPage de Enrique de Zairtre (Enrique Guerrero). Aquí se expone su música, su visión artística y herramientas para que los fans escuchen, organicen y creen listas de reproducción personalizadas.
+
+Enrique de Zairtre es la encarnación artística de Enrique Guerrero: poeta y arquitecto de sonidos épicos, originario de los Andes de Nariño, Colombia. Su música mezcla hard rock y thrash con melodías orientales y folk latino. Su álbum conceptual "Vórtice" explora temas transdimensionales, amor y justicia social.
+
+---
+
+## Características principales
+
+- Reproductor integrado para escuchar las canciones directamente desde la FanPage.
+- Gestión de favoritos: marcar/desmarcar canciones.
+- Creación y edición de listas de reproducción personalizadas por cada usuario.
+- Panel administrativo para subir y organizar contenido (áreas protegidas).
+- Responsive y con modo oscuro claro/oscuro.
+- Compatibilidad con autenticación (NextAuth) y persistencia via Prisma.
+
+---
+
+## Tecnologías
+
+- Next.js (App Router)
+- TypeScript
+- Tailwind CSS
+- shadcn/ui + Lucide React
+- NextAuth.js para autenticación
+- Prisma para acceso a base de datos
+- TanStack Query / Axios para sincronización de datos
+- Reproductor personalizado (HTML5 / APIs de audio)
+
+---
+
+## Estructura del proyecto (resumen)
+
+```
+src/
+├─ app/                # Rutas con App Router (páginas y layouts)
+│  ├─ admin/           # Panel administrativo
+│  └─ player/          # UI del reproductor y listas
+├─ components/         # Componentes reutilizables (ui/)
+├─ lib/                # Utilidades y configuración
+├─ prisma/             # Esquema y migraciones Prisma
+└─ public/             # Activos públicos (audio, imágenes)
+```
+
+---
+
+## Quick start (desarrollo)
+
+```bash
+# Instalar dependencias
+npm install
+
+# Desarrollo
+npm run dev
+
+# Build producción
+npm run build
+
+# Test / arranque de producción (según configuración)
+npm start
+```
+
+Abrir http://localhost:3000
+
+---
+
+## Deploy
+
+- El proyecto puede desplegarse en plataformas que soporten Next.js (Vercel, Render, Railway, etc.).
+- Asegurar variables de entorno:
+  - DATABASE_URL (Prisma)
+  - NEXTAUTH_URL / NEXTAUTH_SECRET
+  - PROVIDER_* (credenciales OAuth si aplica)
+- Ejecutar migraciones y prisma generate en el build/deploy según proveedor.
+
+---
+
+## Notas de contenido y voz
+
+- Este sitio es la FanPage oficial de Enrique de Zairtre. Todo el contenido artístico debe referenciar correctamente al autor (Enrique Guerrero).
+- "Vórtice" y el material protegido deben respetar derechos de autor según corresponda.
+
+---
+
+## Contribuir
+
+1. Hacer fork / branch.
+2. Implementar cambios y pruebas.
+3. Abrir pull request con descripción clara.
+
+---
+
+## Créditos
+
+- Música y letras: Enrique Guerrero (Enrique de Zairtre)
+- Diseño y scaffold: base técnica del proyecto (Next.js + shadcn/ui)
+- Este repositorio contiene materiales del proyecto web; revisar licencias internas para uso público.
+
+---
 
 ## ✨ Technology Stack
 

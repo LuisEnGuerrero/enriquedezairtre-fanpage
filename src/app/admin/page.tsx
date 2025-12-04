@@ -4,9 +4,10 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Music, Users, ListMusic, Settings, LogOut, Plus, Edit, Trash2, Eye } from 'lucide-react'
+import { Music, Users, ListMusic, Settings, LogOut } from 'lucide-react'
+
 import { SongManager } from '@/components/admin/SongManager'
 import { PlaylistManager } from '@/components/admin/PlaylistManager'
 import { SettingsPanel } from '@/components/admin/SettingsPanel'
@@ -15,20 +16,32 @@ import { FanManager } from '@/components/admin/FanManager'
 export default function AdminDashboard() {
   const { data: session, status } = useSession()
   const router = useRouter()
+
   const [stats, setStats] = useState({
     totalSongs: 0,
     totalPlaylists: 0,
-    totalPlays: 0
+    totalPlays: 0,
   })
 
+  //
+  // 🔒 1. Protección de acceso en /admin
+  //
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/admin/login')
+      router.replace('/auth/signin')
+      return
     }
-  }, [status, router])
 
+    if (status === 'authenticated' && session?.user?.role !== 'admin') {
+      router.replace('/auth/error?error=AccessDenied')
+      return
+    }
+  }, [status, session, router])
+
+  //
+  // 📊 2. Cargar estadísticas del panel
+  //
   useEffect(() => {
-    // Fetch stats from API
     const fetchStats = async () => {
       try {
         const response = await fetch('/api/admin/stats')
@@ -40,142 +53,132 @@ export default function AdminDashboard() {
         console.error('Error fetching stats:', error)
       }
     }
-    
-    if (session) {
+
+    if (session?.user?.role === 'admin') {
       fetchStats()
     }
   }, [session])
 
-  const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/' })
-  }
-
-  if (status === 'loading') {
+  //
+  // 🔄 Loader mientras se verifica la sesión
+  //
+  if (status === 'loading' || !session) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="text-white">Cargando...</div>
+        <div className="text-white text-lg">Verificando sesión...</div>
       </div>
     )
   }
 
-  if (!session) {
+  //
+  // 🔑 Si no es admin, evitamos renderizar el panel
+  //
+  if (session.user.role !== 'admin') {
     return null
   }
 
+  //
+  // ✅ Panel administrativo
+  //
   return (
     <Suspense fallback={<div>Cargando...</div>}>
       <div className="min-h-screen bg-gray-900 text-white">
+
         {/* Header */}
         <header className="bg-black/50 backdrop-blur-lg border-b border-gray-700">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
-                  <Music className="w-5 h-5" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold">Panel Administrativo</h1>
-                  <p className="text-sm text-gray-400">Enrique de Zairtre</p>
-                </div>
+          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
+                <Music className="w-5 h-5" />
               </div>
-              
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <img 
-                    src={session.user?.image || ''} 
-                    alt={session.user?.name || ''}
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <span className="text-sm">{session.user?.name}</span>
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleSignOut}
-                  className="border-gray-600 text-white hover:bg-gray-800"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Cerrar Sesión
-                </Button>
+              <div>
+                <h1 className="text-xl font-bold">Panel Administrativo</h1>
+                <p className="text-sm text-gray-400">Enrique de Zairtre</p>
               </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <img
+                  src={session.user?.image || ''}
+                  alt={session.user?.name || ''}
+                  className="w-8 h-8 rounded-full"
+                />
+                <span className="text-sm">{session.user?.name}</span>
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Cerrar Sesión
+              </Button>
             </div>
           </div>
         </header>
 
         {/* Main Content */}
         <main className="container mx-auto px-4 py-8">
-          {/* Stats Cards */}
+
+          {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
             <Card className="bg-black/50 border-gray-700">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader>
                 <CardTitle className="text-sm font-medium">Total Canciones</CardTitle>
-                <Music className="h-4 w-4 text-purple-400" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.totalSongs}</div>
-                <p className="text-xs text-gray-400">En el catálogo</p>
               </CardContent>
             </Card>
 
             <Card className="bg-black/50 border-gray-700">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader>
                 <CardTitle className="text-sm font-medium">Playlists</CardTitle>
-                <ListMusic className="h-4 w-4 text-purple-400" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.totalPlaylists}</div>
-                <p className="text-xs text-gray-400">Listas creadas</p>
               </CardContent>
             </Card>
 
             <Card className="bg-black/50 border-gray-700">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader>
                 <CardTitle className="text-sm font-medium">Reproducciones</CardTitle>
-                <Users className="h-4 w-4 text-purple-400" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.totalPlays}</div>
-                <p className="text-xs text-gray-400">Total reproducciones</p>
               </CardContent>
             </Card>
+
           </div>
 
-          {/* Management Tabs */}
+          {/* Tabs */}
           <Tabs defaultValue="songs" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 bg-black/50 border-gray-700">
+
+            <TabsList className="grid grid-cols-4 bg-black/50 border-gray-700">
               <TabsTrigger value="songs" className="data-[state=active]:bg-purple-600">
-                <Music className="w-4 h-4 mr-2" />
-                Canciones
+                <Music className="w-4 h-4 mr-2" /> Canciones
               </TabsTrigger>
               <TabsTrigger value="playlists" className="data-[state=active]:bg-purple-600">
-                <ListMusic className="w-4 h-4 mr-2" />
-                Playlists
+                <ListMusic className="w-4 h-4 mr-2" /> Playlists
               </TabsTrigger>
               <TabsTrigger value="fans" className="data-[state=active]:bg-purple-600">
-                <Users className="w-4 h-4 mr-2" />
-                Fans SAC
+                <Users className="w-4 h-4 mr-2" /> Fans SAC
               </TabsTrigger>
               <TabsTrigger value="settings" className="data-[state=active]:bg-purple-600">
-                <Settings className="w-4 h-4 mr-2" />
-                Configuración
+                <Settings className="w-4 h-4 mr-2" /> Configuración
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="songs">
-              <SongManager />
-            </TabsContent>
+            <TabsContent value="songs"><SongManager /></TabsContent>
+            <TabsContent value="playlists"><PlaylistManager /></TabsContent>
+            <TabsContent value="fans"><FanManager /></TabsContent>
+            <TabsContent value="settings"><SettingsPanel /></TabsContent>
 
-            <TabsContent value="playlists">
-              <PlaylistManager />
-            </TabsContent>
-
-            <TabsContent value="fans">
-              <FanManager />
-            </TabsContent>
-
-            <TabsContent value="settings">
-              <SettingsPanel />
-            </TabsContent>
           </Tabs>
         </main>
       </div>

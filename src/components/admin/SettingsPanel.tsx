@@ -325,7 +325,7 @@ export function SettingsPanel() {
               <Button 
                 onClick={handleSave}
                 disabled={loading}
-                className="bg-purple-600 hover:bg-purple-700"
+                className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
               >
                 <Save className="w-4 h-4 mr-2" />
                 {loading ? 'Guardando...' : 'Guardar Cambios'}
@@ -334,7 +334,7 @@ export function SettingsPanel() {
               <Button 
                 variant="outline"
                 onClick={handleExport}
-                className="border-gray-600"
+                className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Exportar Datos
@@ -343,7 +343,7 @@ export function SettingsPanel() {
               <Button 
                 variant="outline"
                 onClick={() => window.location.reload()}
-                className="border-gray-600"
+                className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Recargar

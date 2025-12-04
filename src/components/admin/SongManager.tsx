@@ -177,7 +177,7 @@ export function SongManager() {
                     resetForm()
                     setEditingSong(null)
                   }}
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Nueva Canción
@@ -277,7 +277,7 @@ export function SongManager() {
                     <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                       Cancelar
                     </Button>
-                    <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
+                    <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400">
                       {editingSong ? 'Actualizar' : 'Crear'}
                     </Button>
                   </div>
@@ -314,7 +314,7 @@ export function SongManager() {
                         size="sm"
                         variant="outline"
                         onClick={() => handleEdit(song)}
-                        className="border-gray-600"
+                        className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
@@ -322,7 +322,7 @@ export function SongManager() {
                         size="sm"
                         variant="outline"
                         onClick={() => togglePublish(song.id, song.published)}
-                        className="border-gray-600"
+                        className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
                       >
                         {song.published ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                       </Button>
@@ -330,7 +330,7 @@ export function SongManager() {
                         size="sm"
                         variant="outline"
                         onClick={() => handleDelete(song.id)}
-                        className="border-red-600 text-red-400 hover:bg-red-900/20"
+                        className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>

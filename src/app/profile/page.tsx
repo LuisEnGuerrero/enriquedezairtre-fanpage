@@ -213,7 +213,7 @@ export default function FanProfile() {
               <Button 
                 variant="outline" 
                 onClick={() => router.push('/')}
-                className="border-gray-600 text-white hover:bg-gray-800"
+                className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
               >
                 <Music className="w-4 h-4 mr-2" />
                 Volver
@@ -224,7 +224,7 @@ export default function FanProfile() {
             <Button 
               variant="outline" 
               onClick={() => signOut({ callbackUrl: '/' })}
-              className="border-gray-600 text-white hover:bg-gray-800"
+              className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
             >
               <LogOut className="w-4 h-4 mr-2" />
               Cerrar Sesión
@@ -389,7 +389,7 @@ export default function FanProfile() {
                     </div>
                     <Dialog open={isPlaylistDialogOpen} onOpenChange={setIsPlaylistDialogOpen}>
                       <DialogTrigger asChild>
-                        <Button className="bg-purple-600 hover:bg-purple-700">
+                        <Button className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400">
                           <Plus className="w-4 h-4 mr-2" />
                           Nueva Playlist
                         </Button>
@@ -434,10 +434,10 @@ export default function FanProfile() {
                             <Label htmlFor="isPublic">Hacer pública</Label>
                           </div>
                           <div className="flex justify-end space-x-2">
-                            <Button variant="outline" onClick={() => setIsPlaylistDialogOpen(false)}>
+                            <Button className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400" variant="outline" onClick={() => setIsPlaylistDialogOpen(false)}>
                               Cancelar
                             </Button>
-                            <Button onClick={handleCreatePlaylist} className="bg-purple-600 hover:bg-purple-700">
+                            <Button onClick={handleCreatePlaylist} className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400">
                               Crear Playlist
                             </Button>
                           </div>

@@ -15,25 +15,44 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Z.ai Code Scaffold - AI-Powered Development",
-  description: "Modern Next.js scaffold optimized for AI-powered development with Z.ai. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
-  keywords: ["Z.ai", "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "AI development", "React"],
-  authors: [{ name: "Z.ai Team" }],
+  title: "Enrique de Zairtre — FanPage Oficial",
+  description: "FanPage oficial de Enrique de Zairtre (Enrique Guerrero). Reproductor integrado, gestión de favoritos y creación de listas de reproducción. Música: metal de fusión épica; álbum conceptual «Vórtice».",
+  keywords: [
+    "Enrique de Zairtre",
+    "Enrique Guerrero",
+    "FanPage",
+    "música",
+    "reproductor",
+    "listas de reproducción",
+    "favoritos",
+    "metal de fusión",
+    "Vórtice"
+  ],
+  authors: [{ name: "Luis Enrique Guerrero" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/favicon.ico"
   },
   openGraph: {
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
-    url: "https://chat.z.ai",
-    siteName: "Z.ai",
+    title: "Enrique de Zairtre — FanPage Oficial",
+    description: "Sitio oficial de Enrique de Zairtre: escucha su música, organiza favoritos y crea listas de reproducción personalizadas. Álbum destacado: «Vórtice».",
+    url: "https://zairtre-fanpage.onreder.com",
+    siteName: "Enrique de Zairtre",
     type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Enrique de Zairtre — FanPage"
+      }
+    ]
   },
   twitter: {
     card: "summary_large_image",
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
-  },
+    title: "Enrique de Zairtre — FanPage Oficial",
+    description: "Escucha a Enrique de Zairtre, crea playlists y organiza tus favoritos en su FanPage oficial.",
+    images: ["/og-image.png"]
+  }
 };
 
 export default function RootLayout({
