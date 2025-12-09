@@ -1,10 +1,10 @@
 |-- .dockerignore
 |-- .gitignore
-|-- ADMIN_SETUP.md
 |-- Caddyfile
 |-- components.json
 |-- docker-compose.yml
 |-- Dockerfile
+|-- entrypoint.sh
 |-- env.doc
 |-- eslint.config.mjs
 |-- middleware.ts
@@ -26,13 +26,25 @@
 |   |   |-- server.ts
 +-- mini-services
 |   |-- .gitkeep
-+-- prisma
-|   |-- schema.prisma
 +-- public
+|   |-- favicon.ico
 |   |-- logo.svg
+|   |-- og-image.png
 |   |-- robots.txt
+|   +-- assets
+|   |   |-- IMG_5472.MP4
+|   |   |-- IMG_5473.MP4
+|   |   |-- photo.jpg
+|   |   |-- Vortex.jpg
+|   |   |-- VORTEX.mp3
+|   |   |-- Zairtre.jpg
 +-- scripts
-|   |-- seed-songs.js
+|   |-- check-bucket.js
+|   |-- check-storage-bucket.js
+|   |-- firebase-admin.js
+|   |-- reset-firestore.js
+|   |-- seed-firestore.js
+|   |-- test-firestore.js
 +-- src
 |   +-- app
 |   |   |-- globals.css
@@ -49,6 +61,8 @@
 |   |   |   |   +-- export
 |   |   |   |   |   |-- route.ts
 |   |   |   |   +-- fans
+|   |   |   |   |   |-- route.ts
+|   |   |   |   +-- import
 |   |   |   |   |   |-- route.ts
 |   |   |   |   +-- settings
 |   |   |   |   |   |-- route.ts
@@ -71,12 +85,17 @@
 |   |   |   |   |   |-- route.ts
 |   |   |   |   +-- rewards
 |   |   |   |   |   |-- route.ts
+|   |   |   |   |   +-- check
+|   |   |   |   |   |   |-- route.ts
 |   |   |   +-- user-playlists
 |   |   |   |   |-- route.ts
 |   |   |   |   +-- [id]
 |   |   +-- auth
 |   |   |   +-- signin
+|   |   |   |   |-- ClientSignIn.tsx
 |   |   |   |   |-- page.tsx
+|   |   +-- healthz
+|   |   |   |-- route.ts
 |   |   +-- profile
 |   |   |   |-- page.tsx
 |   +-- components
@@ -141,7 +160,11 @@
 |   |   |-- use-mobile.ts
 |   |   |-- use-toast.ts
 |   +-- lib
+|   |   |-- auth.ts
+|   |   |-- cache.ts
 |   |   |-- db.ts
+|   |   |-- firebase.ts
+|   |   |-- songs.ts
 |   |   |-- utils.ts
 |   +-- types
 |   |   |-- next-auth.d.ts

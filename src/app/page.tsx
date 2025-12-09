@@ -24,57 +24,36 @@ import { Slider } from '@/components/ui/slider'
 import { toast } from 'sonner'
 import AudioVisualizer from '@/components/AudioVisualizer'
 
+// 👇 Tipo alineado con lo que guardas en Firestore (coverUrl, audioUrl)
 interface Song {
-  id: number
+  id: string
   title: string
   artist: string
   duration: number
-  coverImage: string
+  coverUrl: string
   audioUrl: string
   lyrics: string
+  published?: boolean
 }
 
-// Fallback temporal (solo si no hay canciones en la DB)
-const mockSongs: Song[] = [
-  {
-    id: 1,
-    title: "Noches de Sangre",
-    artist: "Enrique de Zairtre",
-    duration: 245,
-    coverImage:
-      "https://z-cdn-media.chatglm.cn/files/fe136bc7-0296-45b7-a567-82eb3e4072e4_Zairtre%20y%20Raltek.jpg",
-    audioUrl: "/audio/song1.mp3",
-    lyrics: "En la oscuridad de la noche..."
-  },
-  {
-    id: 2,
-    title: "Dragón Dorado",
-    artist: "Enrique de Zairtre",
-    duration: 198,
-    coverImage:
-      "https://z-cdn-media.chatglm.cn/files/fe136bc7-0296-45b7-a567-82eb3e4072e4_Zairtre%20y%20Raltek.jpg",
-    audioUrl: "/audio/song2.mp3",
-    lyrics: "Alas de oro flamean..."
-  },
-  {
-    id: 3,
-    title: "Reino de las Sombras",
-    artist: "Enrique de Zairtre",
-    duration: 312,
-    coverImage:
-      "https://z-cdn-media.chatglm.cn/files/fe136bc7-0296-45b7-a567-82eb3e4072e4_Zairtre%20y%20Raltek.jpg",
-    audioUrl: "/audio/song3.mp3",
-    lyrics: "En el reino donde la luz muere..."
-  }
-]
+// Mock temporal si algo falla
+const fallbackSong: Song = {
+  id: 'fallback-1',
+  title: 'Canción de Ejemplo',
+  artist: 'Artista',
+  duration: 200,
+  coverUrl: '../public/assets/vortex.jpg',
+  audioUrl: '../public/assets/vortex.mp3',
+  lyrics: 'Letra de ejemplo...\nPrueba de línea 2...'
+}
 
 export default function Home() {
   const { data: session } = useSession()
   const router = useRouter()
 
-  const [songs, setSongs] = useState<Song[]>(mockSongs)
+  const [songs, setSongs] = useState<Song[]>([])
   const [favorites, setFavorites] = useState<string[]>([])
-  const [currentSong, setCurrentSong] = useState<Song>(mockSongs[0])
+  const [currentSong, setCurrentSong] = useState<Song>(fallbackSong)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [volume, setVolume] = useState(75)
@@ -84,145 +63,198 @@ export default function Home() {
   const [showLyrics, setShowLyrics] = useState(false)
   const [colorPhase, setColorPhase] = useState(0)
 
+  // rotación de fotos del header
+  const heroImages = ['/assets/Zairtre.jpg', '/assets/photo.jpg']
+  const [heroIndex, setHeroIndex] = useState(0)
+
   const audioRef = useRef<HTMLAudioElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
+  // Fondo animado
   useEffect(() => {
     const interval = setInterval(() => {
       setColorPhase(prev => (prev + 1) % 360)
     }, 50)
     return () => clearInterval(interval)
   }, [])
+  
+  // Rotar imágenes de cabecera cada 22s
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroIndex(prev => (prev + 1) % heroImages.length)
+    }, 22000)
+    return () => clearInterval(interval)
+  }, [heroImages.length])
 
+  // Volumen
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume / 100
     }
   }, [volume])
 
+  // Cargar canciones y favoritos
   useEffect(() => {
     const loadData = async () => {
       try {
         const songsResponse = await fetch('/api/songs')
+
         if (songsResponse.ok) {
           const songsData = await songsResponse.json()
 
-          // solo si DB tiene canciones, reemplaza los mock
-          if (songsData.length > 0) {
-            setSongs(songsData)
-            setCurrentSong(songsData[0])
+          if (Array.isArray(songsData) && songsData.length > 0) {
+            // Normalizamos las canciones para asegurar coverImage
+            const normalized: Song[] = songsData.map((s: any) => ({
+              id: s.id,
+              title: s.title,
+              artist: s.artist,
+              duration: s.duration ?? 0,
+              coverImage: s.coverImage ?? s.coverUrl ?? '/assets/Zairtre.jpg',
+              coverUrl: s.coverUrl,
+              audioUrl: s.audioUrl,
+              lyrics: s.lyrics ?? ''
+            }))
+
+            setSongs(normalized)
+            setCurrentSong(normalized[0])
+          } else {
+            setSongs([fallbackSong])
+            setCurrentSong(fallbackSong)
           }
+        } else {
+          setSongs([fallbackSong])
+          setCurrentSong(fallbackSong)
         }
 
-        if (session?.user?.id) {
+        // Cargar favoritos del usuario
+        if (session?.user && (session.user as any).id) {
           const favResponse = await fetch('/api/favorites')
           if (favResponse.ok) {
             const favData = await favResponse.json()
-            setFavorites(favData.map((f: any) => f.songId))
+            setFavorites(favData.map((f: any) => f.songId.toString()))
           }
         }
       } catch (error) {
-        console.error("Error loading data:", error)
+        console.error('Error loading data:', error)
+        setSongs([fallbackSong])
+        setCurrentSong(fallbackSong)
       }
     }
 
     loadData()
   }, [session])
 
+  // Format time
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = Math.floor(seconds % 60)
+    const secsNum = Number.isFinite(seconds) ? seconds : 0
+    const mins = Math.floor(secsNum / 60)
+    const secs = Math.floor(secsNum % 60)
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
   const handlePlayPause = () => {
-    if (audioRef.current) {
-      if (isPlaying) audioRef.current.pause()
-      else audioRef.current.play()
+    if (!audioRef.current) return
 
-      setIsPlaying(!isPlaying)
-    }
+    if (isPlaying) audioRef.current.pause()
+    else audioRef.current.play()
+
+    setIsPlaying(!isPlaying)
   }
 
   const handleNext = () => {
+    if (!songs.length) return
+
     const index = songs.findIndex(s => s.id === currentSong.id)
-    let next = index + 1
-    if (isShuffleOn) {
-      next = Math.floor(Math.random() * songs.length)
-    } else if (next >= songs.length) {
-      next = 0
-    }
+
+    let next = isShuffleOn
+      ? Math.floor(Math.random() * songs.length)
+      : index + 1 >= songs.length
+      ? 0
+      : index + 1
+
     setCurrentSong(songs[next])
     setCurrentTime(0)
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0
+      if (isPlaying) audioRef.current.play()
+    }
   }
 
   const handlePrevious = () => {
+    if (!songs.length) return
+
     const index = songs.findIndex(s => s.id === currentSong.id)
-    let prev = index - 1 < 0 ? songs.length - 1 : index - 1
-    setCurrentSong(songs[prev])
+
+    const previous = index - 1 < 0 ? songs.length - 1 : index - 1
+    setCurrentSong(songs[previous])
     setCurrentTime(0)
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0
+      if (isPlaying) audioRef.current.play()
+    }
   }
 
   const handleFavorite = async () => {
-    if (!session?.user?.id) {
-      toast.error("Debes iniciar sesión")
+    // Si no hay auth, solo mostramos mensaje, la UI igual dibuja el corazón según estado
+    if (!session?.user || !(session.user as any).id) {
+      toast.error('Debes iniciar sesión')
       return
     }
 
     try {
       const response = await fetch('/api/favorites', {
         method: 'POST',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ songId: currentSong.id.toString() })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ songId: currentSong.id })
       })
 
       if (response.ok) {
         const data = await response.json()
 
         if (data.favorited) {
-          setFavorites(prev => [...prev, currentSong.id.toString()])
-          toast.success("Añadido a favoritos")
+          setFavorites(prev => [...prev, currentSong.id])
+          toast.success('Añadido a favoritos')
         } else {
-          setFavorites(prev =>
-            prev.filter(id => id !== currentSong.id.toString())
-          )
-          toast.info("Eliminado de favoritos")
+          setFavorites(prev => prev.filter(id => id !== currentSong.id))
+          toast.info('Eliminado de favoritos')
         }
       }
-    } catch (err) {
-      toast.error("Error al gestionar favorito")
+    } catch {
+      toast.error('Error al gestionar favorito')
     }
   }
 
   const handleShare = async () => {
     if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `${currentSong.title} - ${currentSong.artist}`,
-          text: `Escucha "${currentSong.title}"`,
-          url: window.location.href
-        })
-      } catch (err) {}
+      await navigator.share({
+        title: `${currentSong.title} - ${currentSong.artist}`,
+        text: `Escucha "${currentSong.title}"`,
+        url: window.location.href
+      })
+    } else {
+      navigator.clipboard
+        .writeText(window.location.href)
+        .then(() => toast.success('Enlace copiado'))
+        .catch(() => toast.error('No se pudo copiar el enlace'))
     }
   }
 
-  const getDynamicColor = () => {
-    const hue = (colorPhase + 240) % 360
-    return `hsl(${hue}, 70%, 15%)`
-  }
+  const getDynamicColor = () =>
+    `hsl(${(colorPhase + 240) % 360}, 70%, 15%)`
 
-  const getAccentColor = () => {
-    const hue = (colorPhase + 280) % 360
-    return `hsl(${hue}, 90%, 55%)`
-  }
+  const getAccentColor = () =>
+    `hsl(${(colorPhase + 280) % 360}, 90%, 55%)`
+
+  const currentCoverSrc =
+    currentSong.coverUrl || '/assets/Zairtre.jpg'
 
   return (
-    <Suspense fallback={<div>Cargando...</div>}>
+    <Suspense fallback={<div className="text-white p-8">Cargando...</div>}>
       <div
-        className="min-h-screen relative overflow-hidden transition-all duration-1000"
+        className="min-h-screen transition-all duration-1000 relative overflow-hidden"
         style={{ backgroundColor: getDynamicColor() }}
       >
-        {/* Background Animation */}
+        {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div
             className="absolute w-96 h-96 rounded-full opacity-10 blur-3xl"
@@ -245,7 +277,7 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 container mx-auto px-4 py-8">
-          {/* HEADER */}
+          {/* Header */}
           <header className="text-center mb-12">
             <div className="relative inline-block mb-6">
               <div
@@ -253,7 +285,7 @@ export default function Home() {
                 style={{ borderColor: getAccentColor() }}
               >
                 <img
-                  src="https://z-cdn-media.chatglm.cn/files/fe136bc7-0296-45b7-a567-82eb3e4072e4_Zairtre%20y%20Raltek.jpg"
+                  src={heroImages[heroIndex]}
                   alt="Enrique de Zairtre"
                   className="w-full h-full object-cover"
                 />
@@ -264,58 +296,77 @@ export default function Home() {
             </div>
 
             <h1
-              className="text-6xl md:text-7xl font-bold text-white mb-4"
+              className="text-5xl md:text-7xl font-bold text-white mb-4 tracking-wider"
               style={{ textShadow: '0 0 20px rgba(255,255,255,0.3)' }}
             >
               Enrique de Zairtre
             </h1>
 
-            {/* Auth Buttons */}
+            <div className="flex flex-wrap justify-center gap-2 mb-6">
+              {['Poeta', 'Artista', 'Productor', 'Estrella de Rock'].map(
+                (role, index) => (
+                  <span
+                    key={index}
+                    className="px-4 py-2 rounded-full text-sm font-medium text-white border"
+                    style={{
+                      borderColor: getAccentColor(),
+                      backgroundColor: `${getAccentColor()}20`
+                    }}
+                  >
+                    {role}
+                  </span>
+                )
+              )}
+            </div>
+
+            {/* Auth Button */}
             <div className="flex justify-center mb-6">
               {session ? (
                 <div className="flex items-center gap-4">
                   <Button
+                    variant="outline"
                     onClick={() => router.push('/profile')}
-                    className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
+                    className="border-gray-600 text-white hover:bg-gray-800"
                   >
-                    <User className="w-4 h-4 mr-2" /> Mi Perfil
+                    <User className="w-4 h-4 mr-2" />
+                    Mi Perfil
                   </Button>
-
                   <Button
+                    variant="outline"
                     onClick={() => signOut({ callbackUrl: '/' })}
-                    className="bg-red-600 hover:bg-red-700 text-white border border-red-400"
+                    className="border-gray-600 text-white hover:bg-gray-800"
                   >
-                    <LogIn className="w-4 h-4 mr-2" /> Cerrar Sesión
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Cerrar Sesión
                   </Button>
                 </div>
               ) : (
                 <Button
                   onClick={() => signIn('google', { callbackUrl: '/' })}
-                  className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
                 >
-                  <LogIn className="w-4 h-4 mr-2" /> Iniciar Sesión
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Iniciar Sesión
                 </Button>
               )}
             </div>
           </header>
 
-          {/* PLAYER */}
-          <Card className="max-w-4xl mx-auto bg-black/50 backdrop-blur-lg border-gray-600 text-white">
+          {/* Main Player */}
+          <Card className="max-w-4xl mx-auto bg-black/50 backdrop-blur-lg border-gray-700 text-white overflow-hidden">
             <div className="grid md:grid-cols-2 gap-6 p-6">
-              {/* COVER */}
+              {/* Album Cover and Visualizer */}
               <div className="space-y-4">
                 <div className="relative aspect-square rounded-lg overflow-hidden">
                   <img
-                    src={currentSong.coverImage}
+                    src={currentCoverSrc}
                     alt={currentSong.title}
                     className="w-full h-full object-cover"
                   />
-
                   <canvas
                     ref={canvasRef}
                     className="absolute inset-0 w-full h-full opacity-50"
                   />
-
                   <AudioVisualizer
                     audioRef={audioRef}
                     canvasRef={canvasRef}
@@ -323,68 +374,84 @@ export default function Home() {
                   />
                 </div>
 
+                {/* Song Info */}
                 <div className="text-center">
-                  <h2 className="text-2xl font-bold">{currentSong.title}</h2>
+                  <h2 className="text-2xl font-bold mb-2">
+                    {currentSong.title}
+                  </h2>
                   <p className="text-gray-300">{currentSong.artist}</p>
                 </div>
               </div>
 
-              {/* CONTROLS */}
+              {/* Player Controls */}
               <div className="space-y-6">
-                {/* Progress */}
+                {/* Progress Bar */}
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm text-gray-300">
                     <span>{formatTime(currentTime)}</span>
                     <span>{formatTime(currentSong.duration)}</span>
                   </div>
-
                   <Slider
                     value={[currentTime]}
-                    max={currentSong.duration}
+                    max={currentSong.duration || 0}
                     step={1}
-                    onValueChange={value => setCurrentTime(value[0])}
+                    className="w-full"
+                    onValueChange={value => {
+                      const newTime = value[0]
+                      setCurrentTime(newTime)
+                      if (audioRef.current) {
+                        audioRef.current.currentTime = newTime
+                      }
+                    }}
                   />
                 </div>
 
-                {/* Buttons */}
+                {/* Control Buttons */}
                 <div className="flex justify-center items-center gap-4">
                   <Button
                     variant="ghost"
-                    className={isShuffleOn ? 'text-purple-400' : 'text-gray-400'}
+                    size="sm"
                     onClick={() => setIsShuffleOn(!isShuffleOn)}
+                    className={
+                      isShuffleOn ? 'text-purple-400' : 'text-gray-400'
+                    }
                   >
                     <Shuffle className="w-4 h-4" />
                   </Button>
 
                   <Button
                     variant="ghost"
-                    className="text-white hover:text-purple-400"
+                    size="sm"
                     onClick={handlePrevious}
+                    className="text-white hover:text-purple-400"
                   >
                     <SkipBack className="w-6 h-6" />
                   </Button>
 
                   <Button
-                    className="w-16 h-16 rounded-full text-white"
-                    style={{ backgroundColor: getAccentColor() }}
                     onClick={handlePlayPause}
+                    className="w-16 h-16 rounded-full"
+                    style={{ backgroundColor: getAccentColor() }}
                   >
-                    {isPlaying
-                      ? <Pause className="w-6 h-6" />
-                      : <Play className="w-6 h-6 ml-1" />}
+                    {isPlaying ? (
+                      <Pause className="w-6 h-6" />
+                    ) : (
+                      <Play className="w-6 h-6 ml-1" />
+                    )}
                   </Button>
 
                   <Button
                     variant="ghost"
-                    className="text-white hover:text-purple-400"
+                    size="sm"
                     onClick={handleNext}
+                    className="text-white hover:text-purple-400"
                   >
                     <SkipForward className="w-6 h-6" />
                   </Button>
 
                   <Button
                     variant="ghost"
-                    className={repeatMode !== 'off' ? 'text-purple-400' : 'text-gray-400'}
+                    size="sm"
                     onClick={() =>
                       setRepeatMode(
                         repeatMode === 'off'
@@ -394,12 +461,17 @@ export default function Home() {
                           : 'off'
                       )
                     }
+                    className={
+                      repeatMode !== 'off'
+                        ? 'text-purple-400'
+                        : 'text-gray-400'
+                    }
                   >
                     <Repeat className="w-4 h-4" />
                   </Button>
                 </div>
 
-                {/* Volume */}
+                {/* Volume Control */}
                 <div className="flex items-center gap-3">
                   <Volume2 className="w-4 h-4 text-gray-400" />
                   <Slider
@@ -414,17 +486,18 @@ export default function Home() {
                 {/* Action Buttons */}
                 <div className="flex gap-2">
                   <Button
-                    className={`flex-1 border ${
-                      favorites.includes(currentSong.id.toString())
-                        ? 'bg-red-900/40 border-red-600'
-                        : 'border-purple-500'
-                    } text-white hover:bg-purple-700`}
+                    variant="outline"
                     onClick={handleFavorite}
+                    className={`flex-1 border-gray-600 text-white hover:bg-gray-800 ${
+                      favorites.includes(currentSong.id)
+                        ? 'bg-red-900/30 border-red-600'
+                        : ''
+                    }`}
                   >
                     <Heart
                       className={`w-4 h-4 mr-2 ${
-                        favorites.includes(currentSong.id.toString())
-                          ? 'fill-red-500 text-red-500'
+                        favorites.includes(currentSong.id)
+                          ? 'fill-current'
                           : ''
                       }`}
                     />
@@ -432,22 +505,27 @@ export default function Home() {
                   </Button>
 
                   <Button
-                    className="flex-1 border border-purple-500 text-white hover:bg-purple-700"
+                    variant="outline"
                     onClick={() => setShowPlaylist(!showPlaylist)}
+                    className="flex-1 border-gray-600 text-white hover:bg-gray-800"
                   >
-                    <List className="w-4 h-4 mr-2" /> Playlist
+                    <List className="w-4 h-4 mr-2" />
+                    Playlist
                   </Button>
 
                   <Button
-                    className="flex-1 border border-purple-500 text-white hover:bg-purple-700"
+                    variant="outline"
                     onClick={() => setShowLyrics(!showLyrics)}
+                    className="flex-1 border-gray-600 text-white hover:bg-gray-800"
                   >
-                    <Music className="w-4 h-4 mr-2" /> Letras
+                    <Music className="w-4 h-4 mr-2" />
+                    Letras
                   </Button>
 
                   <Button
-                    className="border border-purple-500 text-white hover:bg-purple-700"
+                    variant="outline"
                     onClick={handleShare}
+                    className="border-gray-600 text-white hover:bg-gray-800"
                   >
                     <Share2 className="w-4 h-4" />
                   </Button>
@@ -459,40 +537,43 @@ export default function Home() {
             {showPlaylist && (
               <div className="border-t border-gray-700 p-4 max-h-64 overflow-y-auto">
                 <h3 className="text-lg font-semibold mb-3">Playlist</h3>
-
                 <div className="space-y-2">
-                  {songs.map(song => (
-                    <div
-                      key={song.id}
-                      onClick={() => setCurrentSong(song)}
-                      className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
-                        currentSong.id === song.id
-                          ? 'bg-purple-900/40 border border-purple-700'
-                          : 'hover:bg-gray-800'
-                      }`}
-                    >
-                      <img
-                        src={song.coverImage}
-                        alt={song.title}
-                        className="w-12 h-12 rounded"
-                      />
-
-                      <div className="flex-1">
-                        <p className="font-medium">{song.title}</p>
-                        <p className="text-sm text-gray-400">{song.artist}</p>
+                  {songs.map(song => {
+                    const coverSrc =
+                      song.coverUrl ||
+                      '/assets/Zairtre.jpg'
+                    return (
+                      <div
+                        key={song.id}
+                        onClick={() => setCurrentSong(song)}
+                        className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                          currentSong.id === song.id
+                            ? 'bg-purple-900/30'
+                            : 'hover:bg-gray-800'
+                        }`}
+                      >
+                        <img
+                          src={coverSrc}
+                          alt={song.title}
+                          className="w-12 h-12 rounded"
+                        />
+                        <div className="flex-1">
+                          <p className="font-medium">{song.title}</p>
+                          <p className="text-sm text-gray-400">
+                            {song.artist}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {favorites.includes(song.id) && (
+                            <Heart className="w-4 h-4 text-red-400 fill-current" />
+                          )}
+                          <span className="text-sm text-gray-400">
+                            {formatTime(song.duration)}
+                          </span>
+                        </div>
                       </div>
-
-                      <div className="flex items-center gap-2">
-                        {favorites.includes(song.id.toString()) && (
-                          <Heart className="w-4 h-4 text-red-400 fill-current" />
-                        )}
-
-                        <span className="text-sm text-gray-400">
-                          {formatTime(song.duration)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             )}
@@ -502,23 +583,26 @@ export default function Home() {
               <div className="border-t border-gray-700 p-4">
                 <h3 className="text-lg font-semibold mb-3">Letras</h3>
                 <div className="text-center space-y-2 text-gray-300 font-medium">
-                  {currentSong.lyrics
-                    .split('\n')
-                    .map((line, i) => <p key={i}>{line}</p>)}
+                  {(currentSong.lyrics || '').split('\n').map((line, index) => (
+                    <p key={index}>{line}</p>
+                  ))}
                 </div>
               </div>
             )}
           </Card>
 
+          {/* Hidden Audio Element */}
           <audio
             ref={audioRef}
             src={currentSong.audioUrl}
-            onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+            onTimeUpdate={e => setCurrentTime(e.currentTarget.currentTime)}
             onEnded={() => {
               if (repeatMode === 'one') {
                 audioRef.current?.play()
               } else if (repeatMode === 'all' || isShuffleOn) {
                 handleNext()
+              } else {
+                setIsPlaying(false)
               }
             }}
           />
@@ -526,9 +610,16 @@ export default function Home() {
 
         <style jsx>{`
           @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-30px) rotate(120deg); }
-            66% { transform: translateY(30px) rotate(240deg); }
+            0%,
+            100% {
+              transform: translateY(0px) rotate(0deg);
+            }
+            33% {
+              transform: translateY(-30px) rotate(120deg);
+            }
+            66% {
+              transform: translateY(30px) rotate(240deg);
+            }
           }
         `}</style>
       </div>

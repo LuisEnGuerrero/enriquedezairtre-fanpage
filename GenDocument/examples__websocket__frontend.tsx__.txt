@@ -134,7 +134,7 @@ export default function SocketDemo() {
                 <Button
                   onClick={handleJoin}
                   disabled={!isConnected || !username.trim()}
-                  className="w-full"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
                 >
                   Join Chat
                 </Button>
@@ -185,6 +185,7 @@ export default function SocketDemo() {
                   <Button
                     onClick={sendMessage}
                     disabled={!isConnected || !inputMessage.trim()}
+                    className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
                   >
                     Send
                   </Button>

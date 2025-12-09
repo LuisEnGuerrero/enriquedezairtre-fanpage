@@ -52,3 +52,8 @@ prompt
 /GenDocument/*
 
 server.log
+
+# firebase
+/secrets/*
+secrets
+secrets/*.json

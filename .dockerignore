@@ -10,3 +10,19 @@ pnpm-lock.yaml
 test
 *.log
 local-*
+
+# documentation
+/GenDocument/
+/GenDocument/*
+
+server.log
+
+# firebase
+# firebase
+/secrets/*
+secrets
+
+
+.gitignore
+secrets/*.json
+.env*

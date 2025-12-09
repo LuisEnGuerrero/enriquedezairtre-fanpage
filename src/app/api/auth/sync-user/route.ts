@@ -1,68 +1,134 @@
-import { NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+// src/app/api/auth/sync-user/route.ts
 
-const ADMIN_EMAIL = process.env.ADM1N_EM41L || 'enrique.zairtre@example.com'
+import { NextResponse } from "next/server";
+import {
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 
+import { firestore } from "@/lib/firebase";
+
+// Email del administrador
+const ADMIN_EMAIL = (process.env.ADM1N_EM41L || "enrique.zairtre@example.com").toLowerCase();
+
+/* ------------------------------------------------------------
+   🔹 Limpia cadenas para evitar nulls o espacios basura
+------------------------------------------------------------ */
+function cleanValue(value: any, fallback: string = "") {
+  if (!value || typeof value !== "string") return fallback;
+  return value.trim();
+}
+
+/* ------------------------------------------------------------
+   🔥 Sincronización REAL del usuario con Firestore
+------------------------------------------------------------ */
 export async function syncUserDirect({
   email,
   name,
   image,
 }: {
-  email: string
-  name?: string | null
-  image?: string | null
+  email: string;
+  name?: string | null;
+  image?: string | null;
 }) {
-  if (!email) {
-    throw new Error('Email is required')
+  if (!email) throw new Error("Email is required");
+
+  const cleanEmail = email.toLowerCase().trim();
+  const userRef = doc(firestore, "users", cleanEmail);
+  const snap = await getDoc(userRef);
+
+  const isAdmin = cleanEmail === ADMIN_EMAIL;
+
+  /* --------------------------------------------------------
+     SI EL USUARIO YA EXISTE
+  -------------------------------------------------------- */
+  if (snap.exists()) {
+    const existing = snap.data();
+
+    const updatedUser = {
+      ...existing,
+      lastLogin: serverTimestamp(),
+      name: cleanValue(name, existing.name ?? "Fan"),
+      image: cleanValue(image, existing.image ?? ""),
+      role: existing.role || (isAdmin ? "admin" : "fan"),
+    };
+
+    await updateDoc(userRef, updatedUser);
+
+    // Registrar actividad
+    await setDoc(
+      doc(collection(firestore, "activities")),
+      {
+        userId: cleanEmail,
+        type: "login",
+        metadata: { provider: "google" },
+        createdAt: serverTimestamp(),
+      }
+    );
+
+    return { id: cleanEmail, ...updatedUser };
   }
 
-  // Check if user exists
-  let user = await db.user.findUnique({
-    where: { email },
-  })
+  /* --------------------------------------------------------
+     SI EL USUARIO NO EXISTE → CREARLO
+  -------------------------------------------------------- */
+  const newUser = {
+    email: cleanEmail,
+    name: cleanValue(name, "Fan"),
+    image: cleanValue(image, ""),
+    role: isAdmin ? "admin" : "fan",
+    isActive: true,
+    joinDate: serverTimestamp(),
+    lastLogin: serverTimestamp(),
+    favoriteCount: 0,
+    playlistCount: 0,
+    loyaltyPoints: 0,
+    tier: "bronze",
+  };
 
-  if (user) {
-    // Update existing user
-    user = await db.user.update({
-      where: { email },
-      data: {
-        lastLogin: new Date(),
-        name: name || user.name,
-        image: image || user.image,
-      },
-    })
-  } else {
-    // Create new user
-    const isAdmin = email === ADMIN_EMAIL
-    user = await db.user.create({
-      data: {
-        email,
-        name: name || 'Unknown User',
-        image: image || '',
-        role: isAdmin ? 'admin' : 'fan',
-        isActive: true,
-        joinDate: new Date(),
-        lastLogin: new Date(),
-      },
-    })
-  }
+  await setDoc(userRef, newUser);
 
-  return user
+  // Registrar actividad
+  await setDoc(
+    doc(collection(firestore, "activities")),
+    {
+      userId: cleanEmail,
+      type: "login",
+      metadata: { provider: "google" },
+      createdAt: serverTimestamp(),
+    }
+  );
+
+  return { id: cleanEmail, ...newUser };
 }
 
-// Handler HTTP (si algún día quieres llamarlo vía API)
+/* ------------------------------------------------------------
+   🔹 POST → Para debug / pruebas manuales
+------------------------------------------------------------ */
 export async function POST(request: Request) {
   try {
-    const { email, name, image } = await request.json()
+    const body = await request.json();
+    const { email, name, image } = body;
 
-    const user = await syncUserDirect({ email, name, image })
+    if (!email) {
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+    }
 
-    return NextResponse.json(user)
-  } catch (error) {
-    console.error('Error syncing user (POST handler):', error)
+    const user = await syncUserDirect({ email, name, image });
+
+    return NextResponse.json(user);
+  } catch (error: any) {
+    console.error("🔥 Error syncing user (POST handler):", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    )
+      {
+        error: "Internal server error",
+        detail: error.message,
+      },
+      { status: 500 }
+    );
   }
 }

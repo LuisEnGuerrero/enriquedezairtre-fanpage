@@ -1,43 +1,118 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { db } from '@/lib/db'
+// src/app/api/songs/route.ts
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 
+import { firestore } from "@/lib/firebase";
+import {
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+} from "firebase/firestore";
+
+const now = () => Date.now();
+
+/* ============================================================
+   GET → Obtener todas las canciones publicadas
+   ============================================================ */
 export async function GET() {
   try {
-    const songs = await db.song.findMany({
-      where: { published: true },
-      orderBy: { createdAt: 'desc' }
-    })
-    
-    return Response.json(songs)
+    const songsRef = collection(firestore, "songs");
+
+    // Solo canciones publicadas
+    const q = query(songsRef, where("published", "==", true));
+
+    const snapshot = await getDocs(q);
+
+    const songs = snapshot.docs.map((d) => ({
+      id: d.id,
+      ...(d.data() as Record<string, any>),
+    }));
+
+    return NextResponse.json(songs);
   } catch (error) {
-    return Response.json({ error: 'Error fetching songs' }, { status: 500 })
+    console.error("🔥 Error fetching songs:", error);
+    return NextResponse.json(
+      { error: "Error fetching songs" },
+      { status: 500 }
+    );
   }
 }
 
-export async function POST(request: Request) {
+/* ============================================================
+   PUT → Actualizar canción (ADMIN)
+   ============================================================ */
+export async function PUT(request: Request) {
   try {
-    const session = await getServerSession()
-    
-    if (!session || session.user?.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const session = await getServerSession(authOptions);
+
+    // Validación ADMIN
+    if (!session || session.user?.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json()
-    const song = await db.song.create({
-      data: {
-        title: body.title,
-        artist: body.artist,
-        duration: body.duration,
-        coverImage: body.coverImage,
-        audioUrl: body.audioUrl,
-        lyrics: body.lyrics,
-        published: body.published
-      }
-    })
-    
-    return Response.json(song)
+    const body = await request.json();
+    const { id, ...rest } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Song ID is required for update" },
+        { status: 400 }
+      );
+    }
+
+    const songRef = doc(firestore, "songs", id);
+
+    await updateDoc(songRef, {
+      ...rest,
+      updatedAt: now(),
+    });
+
+    return NextResponse.json({ id, ...rest });
   } catch (error) {
-    return Response.json({ error: 'Error creating song' }, { status: 500 })
+    console.error("🔥 Error updating song:", error);
+    return NextResponse.json(
+      { error: "Error updating song" },
+      { status: 500 }
+    );
+  }
+}
+
+/* ============================================================
+   DELETE → Eliminar canción (ADMIN)
+   ============================================================ */
+export async function DELETE(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    // Validación ADMIN
+    if (!session || session.user?.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await request.json();
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Song ID is required" },
+        { status: 400 }
+      );
+    }
+
+    await deleteDoc(doc(firestore, "songs", id));
+
+    return NextResponse.json({
+      message: "Song deleted successfully",
+    });
+  } catch (error) {
+    console.error("🔥 Error deleting song:", error);
+    return NextResponse.json(
+      { error: "Error deleting song" },
+      { status: 500 }
+    );
   }
 }

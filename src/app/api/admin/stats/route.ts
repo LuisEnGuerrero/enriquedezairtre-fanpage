@@ -1,27 +1,47 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { db } from '@/lib/db'
+// src/app/api/admin/stats/route.ts
+
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/route";
+
+import { firestore } from "@/lib/firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 export async function GET() {
   try {
-    const session = await getServerSession()
-    
-    if (!session || session.user?.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const session = await getServerSession(authOptions);
+
+    if (!session || session.user?.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const totalSongs = await db.song.count()
-    const totalPlaylists = await db.playlist.count()
-    
-    // Mock plays count - in real app, you'd have a plays table
-    const totalPlays = Math.floor(Math.random() * 10000)
+    // 🔹 1. Total de canciones
+    const songsSnap = await getDocs(collection(firestore, "songs"));
+    const totalSongs = songsSnap.size;
+
+    // 🔹 2. Total de playlists oficiales
+    const playlistsSnap = await getDocs(collection(firestore, "playlists"));
+    const totalPlaylists = playlistsSnap.size;
+
+    // 🔹 3. Total de reproducciones (sumando totalPlays desde users)
+    const usersSnap = await getDocs(collection(firestore, "users"));
+    let totalPlays = 0;
+
+    usersSnap.forEach((docSnap) => {
+      const data = docSnap.data() as { totalPlays?: number };
+      totalPlays += data.totalPlays ?? 0;
+    });
 
     return NextResponse.json({
       totalSongs,
       totalPlaylists,
-      totalPlays
-    })
+      totalPlays,
+    });
   } catch (error) {
-    return NextResponse.json({ error: 'Error fetching stats' }, { status: 500 })
+    console.error("🔥 Error fetching admin stats:", error);
+    return NextResponse.json(
+      { error: "Error fetching stats" },
+      { status: 500 }
+    );
   }
 }

@@ -1,36 +1,177 @@
 ﻿# route.ts
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { db } from '@/lib/db'
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/route";
+import { firestore } from "@/lib/firebase";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 
+// ------------------------------------------------------
+// Helper para serializar fechas de Firestore/Date/number
+// de forma segura a string ISO (lo que el frontend ya usa)
+// ------------------------------------------------------
+function serializeDate(value: any): string | null {
+  if (!value) return null;
+
+  // Ya viene como string ISO
+  if (typeof value === "string") return value;
+
+  // Viene como timestamp numÃ©rico (Date.now())
+  if (typeof value === "number") {
+    return new Date(value).toISOString();
+  }
+
+  // Firestore Timestamp
+  if (typeof value === "object" && value.toDate) {
+    try {
+      return value.toDate().toISOString();
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+}
+
+/* ============================================================
+   GET  â†’  Obtener perfil del usuario desde Firestore
+   ============================================================ */
 export async function GET() {
   try {
-    const session = await getServerSession()
-    
+    const session = await getServerSession(authOptions);
+
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await db.user.findUnique({
-      where: { id: session.user.id },
-      include: {
-        _count: {
-          select: {
-            favorites: true,
-            playlists: true,
-            activities: true,
-            rewards: true
-          }
-        }
-      }
-    })
+    const userId = session.user.id;
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    // 1) Leer documento del usuario
+    const userRef = doc(firestore, "users", userId);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json(user)
+    const userData = userSnap.data() || {};
+
+    // 2) Traer recompensas asociadas al usuario
+    //    (colecciÃ³n "rewards" con campo userId)
+    const rewardsRef = collection(firestore, "rewards");
+    const rewardsQuery = query(rewardsRef, where("userId", "==", userId));
+    const rewardsSnap = await getDocs(rewardsQuery);
+
+    const rewards = rewardsSnap.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    }));
+
+    // 3) Normalizar fechas para que el front pueda hacer new Date(...)
+    const joinDate = serializeDate(userData.joinDate);
+    const lastLogin = serializeDate(userData.lastLogin);
+
+    // 4) Construir respuesta similar a la que devolvÃ­a Prisma
+    return NextResponse.json({
+      id: userSnap.id,
+      name: userData.name ?? null,
+      email: userData.email ?? null,
+      image: userData.image ?? null,
+      role: userData.role ?? "fan",
+
+      joinDate,
+      lastLogin,
+
+      loyaltyPoints: userData.loyaltyPoints ?? 0,
+      tier: userData.tier ?? "bronze",
+
+      // Campos adicionales
+      phone: userData.phone ?? "",
+      bio: userData.bio ?? "",
+
+      // MÃ©tricas almacenadas en el doc de usuario
+      favoriteCount: userData.favoriteCount ?? 0,
+      playlistCount: userData.playlistCount ?? 0,
+      totalPlays: userData.totalPlays ?? 0,
+
+      // Lista completa de recompensas
+      rewards,
+    });
   } catch (error) {
-    return NextResponse.json({ error: 'Error fetching profile' }, { status: 500 })
+    console.error("ðŸ”¥ Error GET /api/user/profile (Firestore):", error);
+    return NextResponse.json(
+      { error: "Server error fetching profile" },
+      { status: 500 }
+    );
   }
 }
+
+/* ============================================================
+   PUT â†’ Actualizar perfil del usuario en Firestore
+   ============================================================ */
+export async function PUT(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const body = await request.json();
+
+    const userRef = doc(firestore, "users", userId);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Actualizar solo algunos campos de perfil
+    await updateDoc(userRef, {
+      name: body.name ?? null,
+      phone: body.phone ?? "",
+      bio: body.bio ?? "",
+      // Si quieres registrar la fecha de Ãºltima actualizaciÃ³n del perfil:
+      profileUpdatedAt: Date.now(),
+    });
+
+    // Volver a leer el usuario para devolver datos actualizados
+    const updatedSnap = await getDoc(userRef);
+    const updatedData = updatedSnap.data() || {};
+
+    const joinDate = serializeDate(updatedData.joinDate);
+    const lastLogin = serializeDate(updatedData.lastLogin);
+
+    return NextResponse.json({
+      id: updatedSnap.id,
+      name: updatedData.name ?? null,
+      email: updatedData.email ?? null,
+      image: updatedData.image ?? null,
+      role: updatedData.role ?? "fan",
+      joinDate,
+      lastLogin,
+      loyaltyPoints: updatedData.loyaltyPoints ?? 0,
+      tier: updatedData.tier ?? "bronze",
+      phone: updatedData.phone ?? "",
+      bio: updatedData.bio ?? "",
+      favoriteCount: updatedData.favoriteCount ?? 0,
+      playlistCount: updatedData.playlistCount ?? 0,
+      totalPlays: updatedData.totalPlays ?? 0,
+    });
+  } catch (error) {
+    console.error("ðŸ”¥ Error PUT /api/user/profile (Firestore):", error);
+    return NextResponse.json(
+      { error: "Error updating profile" },
+      { status: 500 }
+    );
+  }
+}
+

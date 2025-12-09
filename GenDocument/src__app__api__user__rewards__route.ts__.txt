@@ -1,23 +1,83 @@
 ﻿# route.ts
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { db } from '@/lib/db'
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/route";
+import { firestore } from "@/lib/firebase";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy,
+} from "firebase/firestore";
 
+// ------------------------------------------------------
+// Helper para convertir fechas Firestore / number / string
+// ------------------------------------------------------
+function serializeDate(value: any): string | null {
+  if (!value) return null;
+
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return new Date(value).toISOString();
+  if (typeof value === "object" && value.toDate) {
+    try {
+      return value.toDate().toISOString();
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
+/* ============================================================
+   GET â†’ Obtener recompensas del usuario desde Firestore
+   ============================================================ */
 export async function GET() {
   try {
-    const session = await getServerSession()
-    
+    const session = await getServerSession(authOptions);
+
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      console.warn("âŒ Unauthorized request to /api/user/rewards");
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const rewards = await db.reward.findMany({
-      where: { userId: session.user.id },
-      orderBy: { unlockedAt: 'desc' }
-    })
-    
-    return NextResponse.json(rewards)
+    const userId = session.user.id;
+
+    // 1) Referencia a la colecciÃ³n rewards
+    const rewardsRef = collection(firestore, "rewards");
+
+    // 2) Filtrar por userId y ordenar por fecha de desbloqueo
+    const rewardsQuery = query(
+      rewardsRef,
+      where("userId", "==", userId),
+      orderBy("unlockedAt", "desc")
+    );
+
+    const snap = await getDocs(rewardsQuery);
+
+    // 3) Construir arreglo normalizado
+    const rewards = snap.docs.map((doc) => {
+      const data = doc.data();
+
+      return {
+        id: doc.id,
+        ...data,
+        unlockedAt: serializeDate(data.unlockedAt),
+        expiresAt: serializeDate(data.expiresAt),
+      };
+    });
+
+    return NextResponse.json({
+      userId,
+      total: rewards.length,
+      rewards,
+    });
   } catch (error) {
-    return NextResponse.json({ error: 'Error fetching rewards' }, { status: 500 })
+    console.error("ðŸ”¥ Error GET /api/user/rewards (Firestore):", error);
+    return NextResponse.json(
+      { error: "Server error fetching rewards" },
+      { status: 500 }
+    );
   }
 }
+

@@ -1,85 +1,105 @@
-// src/app/api/auth/[...nextauth]/route.ts
+import NextAuth, { NextAuthOptions } from 'next-auth'
+import GoogleProvider from 'next-auth/providers/google'
+import { syncUserDirect } from '@/app/api/auth/sync-user/route'
 
-import NextAuth, { NextAuthOptions } from "next-auth"
-import GoogleProvider from "next-auth/providers/google"
-import { syncUserDB } from "@/lib/syncUser"
-
-const ADMIN_EMAIL = process.env.ADM1N_EM41L
+/**
+ * Normalizar el email del ADMIN para evitar fallos por mayúsculas
+ */
+const ADMIN_EMAIL = (process.env.ADM1N_EM41L || 'enrique.zairtre@example.com').toLowerCase().trim()
 
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
     }),
   ],
 
+  /**
+   * 🔐 JWT Callback:
+   * Se ejecuta:
+   *  - en el primer login
+   *  - en cada refresh del token
+   *  - al obtener session en server components
+   */
   callbacks: {
-    // 🔐 1. Se ejecuta en cada request para el token JWT
     async jwt({ token, user }) {
-      // En el primer login, NextAuth pasa `user`
-      if (user) {
-        // Aseguramos que el token tenga el id de la DB, no el de Google
-        if (user.id) {
-          token.id = user.id
-        }
-
-        if (user.email) {
-          // Si viene rol desde la DB, úsalo; si no, cae al correo admin
-          const userRole =
-            user.role || (user.email === ADMIN_EMAIL ? "admin" : "fan")
-          token.role = userRole
-        }
+      // SOLO el primer login trae "user"
+      if (user?.email) {
+        const cleanEmail = user.email.toLowerCase().trim()
+        token.role = cleanEmail === ADMIN_EMAIL ? 'admin' : 'fan'
       }
 
-      // Fallback por seguridad
-      if (!token.role) {
-        token.role = "fan"
-      }
+      // fallback por seguridad
+      if (!token.role) token.role = 'fan'
 
       return token
     },
 
-    // 🧠 2. Se ejecuta cuando construye la session enviada al cliente
+    /**
+     * 🧠 Session Callback:
+     * Lo que llegue aquí es lo que recibes en useSession()
+     */
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = (token.id as string) || token.sub || ""
-        session.user.role = (token.role as string) || "fan"
+      if (token) {
+        session.user.id = token.sub!
+        session.user.role = token.role as string
       }
       return session
     },
 
-    // 🚀 3. Se ejecuta al hacer signIn
+    /**
+     * 🚀 signIn Callback:
+     * 1) Valida ingreso
+     * 2) Sincroniza DB automáticamente
+     */
     async signIn({ user, account }) {
-      if (account?.provider === "google" && user.email) {
+      if (account?.provider === 'google' && user.email) {
         try {
-          // Sincronizamos usuario en la DB (fans y admin)
-          const dbUser = await syncUserDB(user.email, user.name, user.image)
+          const dbUser = await syncUserDirect({
+            email: user.email,
+            name: user.name,
+            image: user.image,
+          })
 
-          // Nos aseguramos de que NextAuth conozca el id y el rol de la DB
+          // Vincular info DB → sesión NextAuth
           user.id = dbUser.id
           user.role = dbUser.role
-        } catch (error) {
-          console.error("Error en syncUserDB:", error)
 
-          // Si la DB falla, NO bloqueamos login, pero inferimos rol por correo
-          user.role = user.email === ADMIN_EMAIL ? "admin" : "fan"
+        } catch (error) {
+          console.error('🔥 Error syncing user via direct DB call:', error)
+
+          // fallback para no romper login
+          const cleanEmail = user.email.toLowerCase().trim()
+          user.role = cleanEmail === ADMIN_EMAIL ? 'admin' : 'fan'
         }
       }
 
-      // Si quisieras bloquear por dominio, sería aquí
-      // if (!user.email?.endsWith("@midominio.com")) return false;
-
-      return true
+      return true // permitir login siempre
     },
   },
 
+  /**
+   * Páginas personalizadas
+   */
   pages: {
-    signIn: "/auth/signin",
-    error: "/auth/error",
+    signIn: '/auth/signin',
+    error: '/auth/error',
   },
 
+  /**
+   * Clave secreta del JWT
+   */
   secret: process.env.NEXTAUTH_SECRET,
+
+  /**
+   * Importante para evitar errores de `session.strategy`
+   * (por defecto usa 'jwt', que aquí es lo correcto)
+   */
+  session: {
+    strategy: 'jwt',
+  },
 }
 
 const handler = NextAuth(authOptions)

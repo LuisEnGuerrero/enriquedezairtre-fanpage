@@ -4,8 +4,8 @@
 import { useEffect, useRef } from 'react'
 
 interface AudioVisualizerProps {
-  audioRef: React.RefObject<HTMLAudioElement>
-  canvasRef: React.RefObject<HTMLCanvasElement>
+  audioRef: React.RefObject<HTMLAudioElement | null>
+  canvasRef: React.RefObject<HTMLCanvasElement | null>
   isPlaying: boolean
 }
 

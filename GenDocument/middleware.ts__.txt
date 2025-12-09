@@ -1,34 +1,40 @@
 ﻿# middleware.ts
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { getToken } from 'next-auth/jwt'
+// middleware.ts
+
+import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
+import { getToken } from "next-auth/jwt"
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Protect admin routes
-  if (pathname.startsWith('/admin')) {
-    const token = await getToken({ 
-      req: request, 
-      secret: process.env.NEXTAUTH_SECRET 
+  // Solo aplicamos lÃ³gica a rutas /admin/*
+  if (pathname.startsWith("/admin")) {
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
     })
 
-    // Allow access to login page
-    if (pathname === '/admin/login') {
-      return NextResponse.next()
+    // 1) No autenticado â†’ enviar a login
+    if (!token) {
+      const loginUrl = new URL("/auth/signin", request.url)
+      loginUrl.searchParams.set("callbackUrl", pathname)
+      return NextResponse.redirect(loginUrl)
     }
 
-    // Check if user is authenticated and is admin
-    if (!token || token.role !== 'admin') {
-      const loginUrl = new URL('/admin/login', request.url)
-      loginUrl.searchParams.set('callbackUrl', pathname)
-      return NextResponse.redirect(loginUrl)
+    // 2) Autenticado pero sin rol admin â†’ AccessDenied
+    if (token.role !== "admin") {
+      const deniedUrl = new URL("/auth/error", request.url)
+      deniedUrl.searchParams.set("error", "AccessDenied")
+      return NextResponse.redirect(deniedUrl)
     }
   }
 
+  // Todas las demÃ¡s rutas pasan normal
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/admin/:path*']
+  matcher: ["/admin/:path*"],
 }
+
