@@ -30,7 +30,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Luis Enrique Guerrero" }],
   icons: {
-    icon: "/favicon.ico"
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/logo.svg",    
   },
   openGraph: {
     title: "Enrique de Zairtre — FanPage Oficial",
@@ -50,7 +52,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Enrique de Zairtre — FanPage Oficial",
-    description: "Escucha a Enrique de Zairtre, crea playlists y organiza tus favoritos en su FanPage oficial.",
+    description: "Escucha a la Banda Zairtre, crea playlists y organiza tus favoritos en su FanPage oficial.",
     images: ["/og-image.png"]
   }
 };
@@ -61,7 +63,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >

@@ -16,41 +16,59 @@ import {
   Heart,
   Music,
   User,
-  LogIn
+  LogIn,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Slider } from '@/components/ui/slider'
 import { toast } from 'sonner'
-import AudioVisualizer from '@/components/AudioVisualizer'
+import { Plus } from 'lucide-react'
 
-// 👇 Tipo alineado con lo que guardas en Firestore (coverUrl, audioUrl)
+type RepeatMode = 'off' | 'all' | 'one'
+
 interface Song {
   id: string
   title: string
   artist: string
   duration: number
-  coverUrl: string
+  coverUrl?: string
   audioUrl: string
   lyrics: string
   published?: boolean
 }
 
-// Mock temporal si algo falla
+interface PlaylistSummary {
+  id: string
+  name: string
+  description?: string
+  isOfficial?: boolean
+  songCount?: number
+  songIds?: string[]
+}
+
 const fallbackSong: Song = {
   id: 'fallback-1',
   title: 'Canción de Ejemplo',
   artist: 'Artista',
   duration: 200,
-  coverUrl: '../public/assets/vortex.jpg',
-  audioUrl: '../public/assets/vortex.mp3',
-  lyrics: 'Letra de ejemplo...\nPrueba de línea 2...'
+  coverUrl: '/vortex.jpg',
+  audioUrl: '/vortex.mp3',
+  lyrics: 'Letra de ejemplo...',
 }
 
-export default function Home() {
+// este tipo es para las playlists del usuario
+type UserPlaylist = {
+  id: string
+  name: string
+  description?: string
+  songIds?: string[]
+}
+
+
+export default function HomePage() {
   const { data: session } = useSession()
   const router = useRouter()
-
+  
   const [songs, setSongs] = useState<Song[]>([])
   const [favorites, setFavorites] = useState<string[]>([])
   const [currentSong, setCurrentSong] = useState<Song>(fallbackSong)
@@ -58,45 +76,46 @@ export default function Home() {
   const [currentTime, setCurrentTime] = useState(0)
   const [volume, setVolume] = useState(75)
   const [isShuffleOn, setIsShuffleOn] = useState(false)
-  const [repeatMode, setRepeatMode] = useState<'off' | 'one' | 'all'>('off')
-  const [showPlaylist, setShowPlaylist] = useState(false)
+  const [repeatMode, setRepeatMode] = useState<RepeatMode>('off')
+  const [showPlaylistPanel, setShowPlaylistPanel] = useState(false)
+  const [officialPlaylists, setOfficialPlaylists] = useState<PlaylistSummary[]>([])
+  const [userPlaylists, setUserPlaylists] = useState<UserPlaylist[]>([])
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState<'all' | string>('all')
+  
+  // NUEVOS ESTADOS PARA EL MODAL DE PLAYLIST
+  const [showNewPlaylistModal, setShowNewPlaylistModal] = useState(false)
+  const [newPlaylistName, setNewPlaylistName] = useState('')
+  const [newPlaylistDescription, setNewPlaylistDescription] = useState('')
+  const [selectedSongIds, setSelectedSongIds] = useState<string[]>([])
+  const [isSavingPlaylist, setIsSavingPlaylist] = useState(false)
+  const [showPlaylistSongsModal, setShowPlaylistSongsModal] = useState(false)
+
   const [showLyrics, setShowLyrics] = useState(false)
   const [colorPhase, setColorPhase] = useState(0)
+  const [avatarIndex, setAvatarIndex] = useState(0)
+  const [playlists, setPlaylists] = useState<PlaylistSummary[]>([])
+  
 
-  // rotación de fotos del header
-  const heroImages = ['/assets/Zairtre.jpg', '/assets/photo.jpg']
-  const [heroIndex, setHeroIndex] = useState(0)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  const audioRef = useRef<HTMLAudioElement>(null!)
-  const canvasRef = useRef<HTMLCanvasElement>(null!)
+  // Imágenes locales que quieres alternar
+  const avatarImages = ['/assets/Zairtre.jpg', '/assets/photo.jpg']
 
   // Fondo animado
   useEffect(() => {
     const interval = setInterval(() => {
-      setColorPhase(prev => (prev + 1) % 360)
+      setColorPhase((prev) => (prev + 1) % 360)
     }, 50)
     return () => clearInterval(interval)
   }, [])
-  
-  // Rotar imágenes de cabecera cada 22s
+
+  // Cambio de foto del header
   useEffect(() => {
     const interval = setInterval(() => {
-      setHeroIndex(prev => (prev + 1) % heroImages.length)
-    }, 22000)
+      setAvatarIndex((prev) => (prev + 1) % avatarImages.length)
+    }, 33000) // cada 33s
     return () => clearInterval(interval)
-  }, [heroImages.length])
-
-  // contraste automático
-  useEffect(() => {
-    const root = getComputedStyle(document.documentElement);
-    const bg = root.getPropertyValue("--background");
-    const match = bg.match(/\((.*?)\s/);
-    const l = match ? parseFloat(match[1]) : 0.5;
-
-    document.body.classList.toggle("dark-text", l < 0.5);
-    document.body.classList.toggle("light-text", l >= 0.5);
-  }, []);
-
+  }, [avatarImages.length])
 
   // Volumen
   useEffect(() => {
@@ -105,26 +124,28 @@ export default function Home() {
     }
   }, [volume])
 
-  // Cargar canciones y favoritos
+  // Cargar canciones, favoritos y playlists (oficiales + usuario)
   useEffect(() => {
     const loadData = async () => {
       try {
+        // 1) Canciones
         const songsResponse = await fetch('/api/songs')
-
         if (songsResponse.ok) {
           const songsData = await songsResponse.json()
 
           if (Array.isArray(songsData) && songsData.length > 0) {
-            // Normalizamos las canciones para asegurar coverImage
             const normalized: Song[] = songsData.map((s: any) => ({
-              id: s.id,
+              id: s.id ?? s.songId ?? s.code ?? crypto.randomUUID(),
               title: s.title,
-              artist: s.artist,
+              artist: s.artist ?? 'Enrique de Zairtre',
               duration: s.duration ?? 0,
-              coverImage: s.coverImage ?? s.coverUrl ?? '/assets/Zairtre.jpg',
-              coverUrl: s.coverUrl,
-              audioUrl: s.audioUrl,
-              lyrics: s.lyrics ?? ''
+              coverUrl:
+                s.coverUrl ??
+                s.coverImage ??
+                '/assets/vortex.jpg',
+              audioUrl: s.audioUrl ?? s.audio ?? '/assets/vortex.mp3',
+              lyrics: s.lyrics ?? '',
+              published: s.published ?? true,
             }))
 
             setSongs(normalized)
@@ -138,77 +159,217 @@ export default function Home() {
           setCurrentSong(fallbackSong)
         }
 
-        // Cargar favoritos del usuario
-        if (session?.user && (session.user as any).id) {
+        // 2) Favoritos (si hay sesión)
+        if (session?.user?.id) {
           const favResponse = await fetch('/api/favorites')
           if (favResponse.ok) {
             const favData = await favResponse.json()
-            setFavorites(favData.map((f: any) => f.songId.toString()))
+            setFavorites(favData.map((f: any) => f.songId))
           }
         }
+
+        // 3) Playlists oficiales (admin / globales)
+        try {
+          const plResponse = await fetch('/api/playlists')
+          if (plResponse.ok) {
+            const plData = await plResponse.json()
+
+            const mappedOfficial: PlaylistSummary[] = plData.map((p: any) => ({
+              id: p.id ?? p.code ?? p.playlistId ?? p.name,
+              name: p.name,
+              description: p.description,
+              isOfficial:
+                p.isOfficial ??
+                p.is_official ??
+                (p.code === 'vortex' ||
+                p.code === 'baladas_oscuras'),
+              songCount: Array.isArray(p.songIds ?? p.song_ids)
+                ? (p.songIds ?? p.song_ids).length
+                : undefined,
+              songIds: Array.isArray(p.songIds ?? p.song_ids)
+                ? (p.songIds ?? p.song_ids)
+                : [],
+            }))
+
+            // Solo guardamos las oficiales aquí
+            setOfficialPlaylists(
+              mappedOfficial.filter((pl) => pl.isOfficial),
+            )
+          } else {
+            setOfficialPlaylists([])
+          }
+        } catch (err) {
+          console.error('Error cargando playlists oficiales:', err)
+          setOfficialPlaylists([])
+        }
+
+        // 4) Playlists del usuario (si hay sesión)
+        if (session?.user?.id) {
+          try {
+            const userPlResponse = await fetch('/api/user-playlists')
+            if (userPlResponse.ok) {
+              const userPlData = await userPlResponse.json()
+
+              const mappedUser: UserPlaylist[] = userPlData.map(
+                (p: any) => ({
+                  id: p.id ?? p.playlistId ?? p.name,
+                  name: p.name,
+                  description: p.description,
+                  songIds: Array.isArray(p.songIds ?? p.song_ids)
+                    ? (p.songIds ?? p.song_ids)
+                    : [],
+                }),
+              )
+
+              setUserPlaylists(mappedUser)
+            } else {
+              // Si 401 o 500, simplemente dejamos vacío
+              setUserPlaylists([])
+            }
+          } catch (err) {
+            console.error('Error cargando playlists de usuario:', err)
+            setUserPlaylists([])
+          }
+        } else {
+          setUserPlaylists([])
+        }
       } catch (error) {
-        console.error('Error loading data:', error)
-        setSongs([fallbackSong])
-        setCurrentSong(fallbackSong)
+        console.error('Error global cargando data:', error)
       }
     }
 
     loadData()
   }, [session])
 
-  // Format time
+  // Crear playlist llamando a la API
+  const handleCreatePlaylist = async () => {
+    if (!session?.user?.id) {
+      toast.error('Debes iniciar sesión para crear playlists')
+      return
+    }
+
+    if (!newPlaylistName.trim()) {
+      toast.error('Ponle un nombre a tu playlist')
+      return
+    }
+
+    try {
+      setIsSavingPlaylist(true)
+
+      const res = await fetch('/api/user-playlists', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newPlaylistName.trim(),
+          description: newPlaylistDescription.trim() || undefined,
+          songIds: selectedSongIds,
+        }),
+      })
+
+      if (!res.ok) {
+        throw new Error('Error creando playlist')
+      }
+
+      const created = await res.json()
+
+      // Actualizar lista en memoria
+      setUserPlaylists(prev => [...prev, created])
+
+      toast.success('Playlist creada')
+
+      // Limpiar modal
+      setShowNewPlaylistModal(false)
+      setNewPlaylistName('')
+      setNewPlaylistDescription('')
+      setSelectedSongIds([])
+    } catch (err) {
+      console.error(err)
+      toast.error('No se pudo crear la playlist')
+    } finally {
+      setIsSavingPlaylist(false)
+    }
+  }
+
   const formatTime = (seconds: number) => {
-    const secsNum = Number.isFinite(seconds) ? seconds : 0
-    const mins = Math.floor(secsNum / 60)
-    const secs = Math.floor(secsNum % 60)
+    const mins = Math.floor(seconds / 60)
+    const secs = Math.floor(seconds % 60)
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
+  const getDynamicColor = () =>
+    `hsl(${(colorPhase + 240) % 360}, 70%, 15%)`
+
+  const getAccentColor = () =>
+    `hsl(${(colorPhase + 280) % 360}, 90%, 55%)`
+
+  const playSong = (song: Song) => {
+    setCurrentSong(song)
+    setCurrentTime(0)
+
+    // esperamos a que React pinte el nuevo src
+    setTimeout(() => {
+      const audio = audioRef.current
+      if (!audio) return
+      audio.currentTime = 0
+      audio
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch((err) => {
+          console.error('Error al reproducir:', err)
+          toast.error('No se pudo reproducir la canción')
+        })
+    }, 0)
+  }
+
   const handlePlayPause = () => {
-    if (!audioRef.current) return
+    const audio = audioRef.current
+    if (!audio) return
 
-    if (isPlaying) audioRef.current.pause()
-    else audioRef.current.play()
-
-    setIsPlaying(!isPlaying)
+    if (isPlaying) {
+      audio.pause()
+      setIsPlaying(false)
+    } else {
+      audio
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch((err) => {
+          console.error('Error al reproducir:', err)
+          toast.error('No se pudo reproducir la canción')
+        })
+    }
   }
 
   const handleNext = () => {
     if (!songs.length) return
 
-    const index = songs.findIndex(s => s.id === currentSong.id)
-
-    let next = isShuffleOn
-      ? Math.floor(Math.random() * songs.length)
-      : index + 1 >= songs.length
-      ? 0
-      : index + 1
-
-    setCurrentSong(songs[next])
-    setCurrentTime(0)
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0
-      if (isPlaying) audioRef.current.play()
+    const index = songs.findIndex((s) => s.id === currentSong.id)
+    if (index === -1) {
+      playSong(songs[0])
+      return
     }
+
+    const nextIndex = isShuffleOn
+      ? Math.floor(Math.random() * songs.length)
+      : (index + 1) % songs.length
+
+    playSong(songs[nextIndex])
   }
 
   const handlePrevious = () => {
     if (!songs.length) return
 
-    const index = songs.findIndex(s => s.id === currentSong.id)
-
-    const previous = index - 1 < 0 ? songs.length - 1 : index - 1
-    setCurrentSong(songs[previous])
-    setCurrentTime(0)
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0
-      if (isPlaying) audioRef.current.play()
+    const index = songs.findIndex((s) => s.id === currentSong.id)
+    if (index === -1) {
+      playSong(songs[0])
+      return
     }
+
+    const prevIndex = index - 1 < 0 ? songs.length - 1 : index - 1
+    playSong(songs[prevIndex])
   }
 
   const handleFavorite = async () => {
-    // Si no hay auth, solo mostramos mensaje, la UI igual dibuja el corazón según estado
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user?.id) {
       toast.error('Debes iniciar sesión')
       return
     }
@@ -217,17 +378,16 @@ export default function Home() {
       const response = await fetch('/api/favorites', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ songId: currentSong.id })
+        body: JSON.stringify({ songId: currentSong.id }),
       })
 
       if (response.ok) {
         const data = await response.json()
-
         if (data.favorited) {
-          setFavorites(prev => [...prev, currentSong.id])
+          setFavorites((prev) => [...prev, currentSong.id])
           toast.success('Añadido a favoritos')
         } else {
-          setFavorites(prev => prev.filter(id => id !== currentSong.id))
+          setFavorites((prev) => prev.filter((id) => id !== currentSong.id))
           toast.info('Eliminado de favoritos')
         }
       }
@@ -237,41 +397,98 @@ export default function Home() {
   }
 
   const handleShare = async () => {
-    if (navigator.share) {
-      await navigator.share({
-        title: `${currentSong.title} - ${currentSong.artist}`,
-        text: `Escucha "${currentSong.title}"`,
-        url: window.location.href
-      })
-    } else {
-      navigator.clipboard
-        .writeText(window.location.href)
-        .then(() => toast.success('Enlace copiado'))
-        .catch(() => toast.error('No se pudo copiar el enlace'))
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `${currentSong.title} - Enrique de Zairtre`,
+          text: `Escucha "${currentSong.title}"`,
+          url: window.location.href,
+        })
+      } else {
+        await navigator.clipboard.writeText(window.location.href)
+        toast.success('Enlace copiado al portapapeles')
+      }
+    } catch (err) {
+      console.error(err)
     }
   }
 
-  const getDynamicColor = () =>
-    `hsl(${(colorPhase + 240) % 360}, 70%, 15%)`
+  // 🧠 onEnded con 3 modos:
+  // 'off' → lista una vez; se detiene al terminar la última
+  // 'all' → lista en bucle
+  // 'one' → solo repite la canción actual
+  const handleEnded = () => {
+    const audio = audioRef.current
+    if (!audio || !songs.length) {
+      setIsPlaying(false)
+      return
+    }
 
-  const getAccentColor = () =>
-    `hsl(${(colorPhase + 280) % 360}, 90%, 55%)`
+    if (repeatMode === 'one') {
+      audio.currentTime = 0
+      audio
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch(() => setIsPlaying(false))
+      return
+    }
 
-  const getAccentButtonStyle = () => ({
-  backgroundColor: getAccentColor(),
-  color: '#050509' // Texto/icono oscuro para contrastar con el acento brillante
-})
+    const currentIndex = songs.findIndex((s) => s.id === currentSong.id)
+    const safeIndex = currentIndex === -1 ? 0 : currentIndex
 
-  const currentCoverSrc =
-    currentSong.coverUrl || '/assets/Zairtre.jpg'
+    if (repeatMode === 'off') {
+      // solo avanzar mientras no sea la última
+      if (safeIndex >= songs.length - 1) {
+        setIsPlaying(false)
+        setCurrentTime(0)
+        return
+      }
+
+      const nextIndex = isShuffleOn
+        ? Math.floor(Math.random() * songs.length)
+        : safeIndex + 1
+
+      playSong(songs[nextIndex])
+      return
+    }
+
+    // repeatMode === 'all' → bucle de la lista
+    const nextIndex = isShuffleOn
+      ? Math.floor(Math.random() * songs.length)
+      : (safeIndex + 1) % songs.length
+
+    playSong(songs[nextIndex])
+  }
+
+  const cycleRepeatMode = () => {
+    setRepeatMode((prev) =>
+      prev === 'off' ? 'all' : prev === 'all' ? 'one' : 'off',
+    )
+  }
+
+  const repeatButtonTitle =
+    repeatMode === 'off'
+      ? 'Reproducir lista una vez'
+      : repeatMode === 'all'
+      ? 'Repetir lista'
+      : 'Repetir canción actual'
+
+  const repeatButtonClass =
+    repeatMode === 'off'
+      ? 'text-gray-400'
+      : repeatMode === 'all'
+      ? 'text-purple-400'
+      : 'text-red-400'
+
+  const isCurrentFavorite = favorites.includes(currentSong.id)
 
   return (
-    <Suspense fallback={<div className="text-white p-8">Cargando...</div>}>
+    <Suspense fallback={<div>Cargando...</div>}>
       <div
-        className="min-h-screen transition-all duration-1000 relative overflow-hidden"
+        className="min-h-screen relative overflow-hidden transition-all duration-1000"
         style={{ backgroundColor: getDynamicColor() }}
       >
-        {/* Animated background elements */}
+        {/* Background blobs */}
         <div className="absolute inset-0 overflow-hidden">
           <div
             className="absolute w-96 h-96 rounded-full opacity-10 blur-3xl"
@@ -279,7 +496,7 @@ export default function Home() {
               backgroundColor: getAccentColor(),
               top: '10%',
               left: '10%',
-              animation: 'float 20s infinite ease-in-out'
+              animation: 'float 20s infinite ease-in-out',
             }}
           />
           <div
@@ -288,13 +505,13 @@ export default function Home() {
               backgroundColor: getAccentColor(),
               bottom: '10%',
               right: '10%',
-              animation: 'float 25s infinite ease-in-out reverse'
+              animation: 'float 25s infinite ease-in-out reverse',
             }}
           />
         </div>
 
         <div className="relative z-10 container mx-auto px-4 py-8">
-          {/* Header */}
+          {/* HEADER */}
           <header className="text-center mb-12">
             <div className="relative inline-block mb-6">
               <div
@@ -302,7 +519,7 @@ export default function Home() {
                 style={{ borderColor: getAccentColor() }}
               >
                 <img
-                  src={heroImages[heroIndex]}
+                  src={avatarImages[avatarIndex]}
                   alt="Enrique de Zairtre"
                   className="w-full h-full object-cover"
                 />
@@ -327,12 +544,12 @@ export default function Home() {
                     className="px-4 py-2 rounded-full text-sm font-medium text-white border"
                     style={{
                       borderColor: getAccentColor(),
-                      backgroundColor: `${getAccentColor()}20`
+                      backgroundColor: `${getAccentColor()}20`,
                     }}
                   >
                     {role}
                   </span>
-                )
+                ),
               )}
             </div>
 
@@ -345,16 +562,16 @@ export default function Home() {
                     onClick={() => router.push('/profile')}
                     className="border-gray-600 text-white hover:bg-gray-800"
                   >
-                    <User className="w-4 h-4 mr-2" />
-                    Mi Perfil
+                    <User className="w-4 h-4" />
+                    <span className="sr-only">Mi Perfil</span>
                   </Button>
                   <Button
                     variant="outline"
                     onClick={() => signOut({ callbackUrl: '/' })}
                     className="border-gray-600 text-white hover:bg-gray-800"
                   >
-                    <LogIn className="w-4 h-4 mr-2" />
-                    Cerrar Sesión
+                    <LogIn className="w-4 h-4" />
+                    <span className="sr-only">Cerrar sesión</span>
                   </Button>
                 </div>
               ) : (
@@ -362,31 +579,25 @@ export default function Home() {
                   onClick={() => signIn('google', { callbackUrl: '/' })}
                   className="bg-purple-600 hover:bg-purple-700 text-white"
                 >
-                  <LogIn className="w-4 h-4 mr-2" />
-                  Iniciar Sesión
+                  <LogIn className="w-4 h-4" />
+                  <span className="sr-only">Iniciar sesión</span>
                 </Button>
               )}
             </div>
           </header>
 
-          {/* Main Player */}
+          {/* MAIN PLAYER */}
           <Card className="max-w-4xl mx-auto bg-black/50 backdrop-blur-lg border-gray-700 text-white overflow-hidden">
             <div className="grid md:grid-cols-2 gap-6 p-6">
-              {/* Album Cover and Visualizer */}
+              {/* Cover */}
               <div className="space-y-4">
                 <div className="relative aspect-square rounded-lg overflow-hidden">
                   <img
-                    src={currentCoverSrc}
+                    src={currentSong.coverUrl ?? './assets/vortex.jpg'}
                     alt={currentSong.title}
                     className="w-full h-full object-cover"
                   />
-                  <canvas
-                    ref={canvasRef}
-                    className="absolute inset-0 w-full h-full opacity-50"
-                  />
                 </div>
-
-                {/* Song Info */}
                 <div className="text-center">
                   <h2 className="text-2xl font-bold mb-2">
                     {currentSong.title}
@@ -395,60 +606,64 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Player Controls */}
+              {/* Controls */}
               <div className="space-y-6">
-                {/* Progress Bar */}
+                {/* Progress */}
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm text-gray-300">
                     <span>{formatTime(currentTime)}</span>
-                    <span>{formatTime(currentSong.duration)}</span>
+                    <span>{formatTime(currentSong.duration ?? 0)}</span>
                   </div>
                   <Slider
                     value={[currentTime]}
-                    max={currentSong.duration || 0}
+                    max={currentSong.duration ?? 0}
                     step={1}
                     className="w-full"
-                    onValueChange={value => {
-                      const newTime = value[0]
-                      setCurrentTime(newTime)
+                    onValueChange={(value) => {
+                      const t = value[0]
+                      setCurrentTime(t)
                       if (audioRef.current) {
-                        audioRef.current.currentTime = newTime
+                        audioRef.current.currentTime = t
                       }
                     }}
                   />
                 </div>
 
-                {/* Control Buttons */}
+                {/* Buttons fila central */}
                 <div className="flex justify-center items-center gap-4">
                   <Button
+                    type="button"
                     variant="ghost"
-                    size="sm"
-                    onClick={() => setIsShuffleOn(!isShuffleOn)}
-                    className={
-                      isShuffleOn ? 'text-purple-400' : 'text-gray-400'
-                    }
+                    size="icon"
+                    onClick={() => setIsShuffleOn((prev) => !prev)}
+                    className={isShuffleOn ? 'text-purple-400' : 'text-gray-400'}
                   >
                     <Shuffle className="w-4 h-4" />
+                    <span className="sr-only">Shuffle</span>
                   </Button>
 
                   <Button
+                    type="button"
                     variant="ghost"
-                    size="sm"
+                    size="icon"
                     onClick={handlePrevious}
                     className="text-white hover:text-purple-400"
                   >
                     <SkipBack className="w-6 h-6" />
+                    <span className="sr-only">Anterior</span>
                   </Button>
 
                   <Button
+                    type="button"
+                    size="icon"
                     onClick={handlePlayPause}
-                    className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg"
-                    style={getAccentButtonStyle()}
+                    className="w-16 h-16 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: getAccentColor() }}
                   >
                     {isPlaying ? (
                       <Pause className="w-6 h-6" />
                     ) : (
-                      <Play className="w-6 h-6 ml-0.5" />
+                      <Play className="w-6 h-6 ml-1" />
                     )}
                     <span className="sr-only">
                       {isPlaying ? 'Pausar' : 'Reproducir'}
@@ -456,37 +671,31 @@ export default function Home() {
                   </Button>
 
                   <Button
+                    type="button"
                     variant="ghost"
-                    size="sm"
+                    size="icon"
                     onClick={handleNext}
                     className="text-white hover:text-purple-400"
                   >
                     <SkipForward className="w-6 h-6" />
+                    <span className="sr-only">Siguiente</span>
                   </Button>
 
+                  {/* Botón de repeat con 3 estados */}
                   <Button
+                    type="button"
                     variant="ghost"
-                    size="sm"
-                    onClick={() =>
-                      setRepeatMode(
-                        repeatMode === 'off'
-                          ? 'all'
-                          : repeatMode === 'all'
-                          ? 'one'
-                          : 'off'
-                      )
-                    }
-                    className={
-                      repeatMode !== 'off'
-                        ? 'text-purple-400'
-                        : 'text-gray-400'
-                    }
+                    size="icon"
+                    onClick={cycleRepeatMode}
+                    title={repeatButtonTitle}
+                    className={repeatButtonClass}
                   >
                     <Repeat className="w-4 h-4" />
+                    <span className="sr-only">{repeatButtonTitle}</span>
                   </Button>
                 </div>
 
-                {/* Volume Control */}
+                {/* Volumen */}
                 <div className="flex items-center gap-3">
                   <Volume2 className="w-4 h-4 text-gray-400" />
                   <Slider
@@ -494,109 +703,441 @@ export default function Home() {
                     max={100}
                     step={1}
                     className="flex-1"
-                    onValueChange={value => setVolume(value[0])}
+                    onValueChange={(value) => setVolume(value[0])}
                   />
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-3 justify-center">
-                  {/* Favorito */}
+                {/* Botones inferiores, solo iconos */}
+                <div className="flex gap-2 justify-between">
                   <Button
+                    type="button"
                     variant="outline"
+                    size="icon"
                     onClick={handleFavorite}
-                    className={`h-10 w-10 rounded-full border-gray-600 flex items-center justify-center transition ${
-                      favorites.includes(currentSong.id)
-                        ? 'bg-red-900/40 border-red-500 text-red-300'
-                        : 'bg-black/40 text-white hover:bg-gray-800'
+                    className={`border-gray-600 text-white hover:bg-gray-800 ${
+                      isCurrentFavorite ? 'bg-red-900/30 border-red-600' : ''
                     }`}
                   >
                     <Heart
                       className={`w-4 h-4 ${
-                        favorites.includes(currentSong.id) ? 'fill-current' : ''
+                        isCurrentFavorite ? 'fill-current text-red-500' : ''
                       }`}
                     />
-                    <span className="sr-only">Marcar como favorito</span>
+                    <span className="sr-only">Favorito</span>
                   </Button>
 
-                  {/* Playlist */}
                   <Button
+                    type="button"
                     variant="outline"
-                    onClick={() => setShowPlaylist(!showPlaylist)}
-                    className="h-10 w-10 rounded-full border-gray-600 bg-black/40 text-white hover:bg-gray-800 flex items-center justify-center"
+                    size="icon"
+                    onClick={() => setShowPlaylistPanel((prev) => !prev)}
+                    className="border-gray-600 text-white hover:bg-gray-800"
                   >
                     <List className="w-4 h-4" />
-                    <span className="sr-only">Mostrar playlist</span>
+                    <span className="sr-only">Playlists</span>
                   </Button>
 
-                  {/* Letras */}
                   <Button
+                    type="button"
                     variant="outline"
-                    onClick={() => setShowLyrics(!showLyrics)}
-                    className="h-10 w-10 rounded-full border-gray-600 bg-black/40 text-white hover:bg-gray-800 flex items-center justify-center"
+                    size="icon"
+                    onClick={() => setShowLyrics((prev) => !prev)}
+                    className="border-gray-600 text-white hover:bg-gray-800"
                   >
                     <Music className="w-4 h-4" />
-                    <span className="sr-only">Mostrar letras</span>
+                    <span className="sr-only">Letras</span>
                   </Button>
 
-                  {/* Compartir */}
                   <Button
+                    type="button"
                     variant="outline"
+                    size="icon"
                     onClick={handleShare}
-                    className="h-10 w-10 rounded-full border-gray-600 bg-black/40 text-white hover:bg-gray-800 flex items-center justify-center"
+                    className="border-gray-600 text-white hover:bg-gray-800"
                   >
                     <Share2 className="w-4 h-4" />
-                    <span className="sr-only">Compartir canción</span>
+                    <span className="sr-only">Compartir</span>
                   </Button>
                 </div>
               </div>
             </div>
 
-            {/* Playlist */}
-            {showPlaylist && (
-              <div className="border-t border-gray-700 p-4 max-h-64 overflow-y-auto">
-                <h3 className="text-lg font-semibold mb-3">Playlist</h3>
-                <div className="space-y-2">
-                  {songs.map(song => {
-                    const coverSrc =
-                      song.coverUrl ||
-                      '/assets/Zairtre.jpg'
-                    return (
-                      <div
+            {/* PANEL / MODAL DE PLAYLISTS - ESBOZO */}
+            {showPlaylistPanel && (
+              <div className="border-t border-gray-700 p-4 max-h-72 overflow-y-auto bg-black/40">
+                <h3 className="text-lg font-semibold mb-3">Playlists</h3>
+
+                {/* Playlist actual = todas las canciones */}
+                <div className="mb-4">
+                  <p className="text-sm text-gray-300 mb-2">
+                    Playlist actual (todas las canciones)
+                  </p>
+                  <div className="space-y-2">
+                    {songs.map((song) => (
+                      <button
                         key={song.id}
-                        onClick={() => setCurrentSong(song)}
-                        className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                        onClick={() => playSong(song)}
+                        className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors ${
                           currentSong.id === song.id
-                            ? 'bg-purple-900/30'
+                            ? 'bg-purple-900/40'
                             : 'hover:bg-gray-800'
                         }`}
                       >
                         <img
-                          src={coverSrc}
+                          src={
+                            song.coverUrl ??
+                            './assets/vortex.jpg'
+                          }
                           alt={song.title}
-                          className="w-12 h-12 rounded"
+                          className="w-10 h-10 rounded"
                         />
                         <div className="flex-1">
-                          <p className="font-medium">{song.title}</p>
-                          <p className="text-sm text-gray-400">
+                          <p className="text-sm font-medium">{song.title}</p>
+                          <p className="text-xs text-gray-400">
                             {song.artist}
                           </p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          {favorites.includes(song.id) && (
-                            <Heart className="w-4 h-4 text-red-400 fill-current" />
+                        <span className="text-xs text-gray-400">
+                          {formatTime(song.duration ?? 0)}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Playlists oficiales y de usuario (solo estructura) */}
+                <div className="grid md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <h4 className="font-semibold mb-2">Oficiales</h4>
+                    {officialPlaylists.length === 0 && (
+                      <p className="text-gray-400 text-xs">
+                        Aún no hay playlists oficiales.
+                      </p>
+                    )}
+                    <div className="space-y-2">
+                      {officialPlaylists.map((pl) => (
+                        <div
+                          key={pl.id}
+                          className="p-2 rounded-lg bg-gray-900/40 border border-gray-700"
+                        >
+                          <p className="font-medium">{pl.name}</p>
+                          {pl.description && (
+                            <p className="text-xs text-gray-400">
+                              {pl.description}
+                            </p>
                           )}
-                          <span className="text-sm text-gray-400">
-                            {formatTime(song.duration)}
-                          </span>
                         </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold mb-2">Tus playlists</h4>
+                    {userPlaylists.length === 0 && (
+                      <p className="text-gray-400 text-xs">
+                        Aquí aparecerán las playlists que crees.
+                      </p>
+                    )}
+                    <div className="space-y-2">
+                      {userPlaylists.map((pl) => (
+                        <div
+                          key={pl.id}
+                          className="p-2 rounded-lg bg-gray-900/40 border border-gray-700"
+                        >
+                          <p className="font-medium">{pl.name}</p>
+                          {pl.description && (
+                            <p className="text-xs text-gray-400">
+                              {pl.description}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    {showPlaylistPanel && (
+                      <div className="border-t border-gray-700 bg-black/40 backdrop-blur-sm">
+                        <div className="grid grid-cols-1 md:grid-cols-[260px,1fr] max-h-80">
+                          {/* === Columna izquierda: listas === */}
+                          <div className="border-r border-border p-4 space-y-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                                Playlists
+                              </h3>
+
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                className="icon-button text-muted-foreground"
+                                onClick={() => setShowNewPlaylistModal(true)}
+                                title="Crear nueva playlist"
+                              >
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                            </div>
+
+                            <div className="space-y-1 text-sm">
+                              {/* Playlist "Todas las canciones" */}
+                              <button
+                                type="button"
+                                onClick={() => setSelectedPlaylistId('all')}
+                                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                                  selectedPlaylistId === 'all'
+                                    ? 'bg-zairtre-surface text-zairtre-accent'
+                                    : 'hover:bg-zairtre-surface/40 text-muted-foreground'
+                                }`}
+                              >
+                                Todas las canciones
+                              </button>
+
+                              {/* Playlists oficiales */}
+                              {officialPlaylists.length > 0 && (
+                                <>
+                                  <p className="mt-3 mb-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                                    Oficiales
+                                  </p>
+                                  {officialPlaylists.map((pl) => (
+                                    <button
+                                      key={pl.id}
+                                      type="button"
+                                      onClick={() => setSelectedPlaylistId(pl.id)}
+                                      className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                                        selectedPlaylistId === pl.id
+                                          ? 'bg-zairtre-surface text-zairtre-accent'
+                                          : 'hover:bg-zairtre-surface/40 text-muted-foreground'
+                                      }`}
+                                    >
+                                      {pl.name}
+                                    </button>
+                                  ))}
+                                </>
+                              )}
+
+                              {/* Playlists del usuario */}
+                              {userPlaylists.length > 0 && (
+                                <>
+                                  <p className="mt-3 mb-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                                    Tus playlists
+                                  </p>
+                                  {userPlaylists.map((pl) => (
+                                    <button
+                                      key={pl.id}
+                                      type="button"
+                                      onClick={() => setSelectedPlaylistId(pl.id)}
+                                      className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                                        selectedPlaylistId === pl.id
+                                          ? 'bg-zairtre-surface text-zairtre-accent'
+                                          : 'hover:bg-zairtre-surface/40 text-muted-foreground'
+                                      }`}
+                                    >
+                                      {pl.name}
+                                    </button>
+                                  ))}
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* === Columna derecha: canciones de la playlist seleccionada === */}
+                          <div className="p-4 overflow-y-auto">
+                            <h4 className="text-sm font-semibold mb-3">
+                              {selectedPlaylistId === 'all'
+                                ? 'Todas las canciones'
+                                : [
+                                    ...officialPlaylists,
+                                    ...userPlaylists
+                                  ].find((p) => p.id === selectedPlaylistId)?.name ?? 'Playlist'}
+                            </h4>
+
+                            {/* visibleSongs: calcula las canciones según la playlist seleccionada */}
+                            <div className="space-y-2">
+                              {(
+                                selectedPlaylistId === 'all'
+                                  ? songs
+                                  : songs.filter((song) => {
+                                      const pl = [...officialPlaylists, ...userPlaylists].find(
+                                        (p) => p.id === selectedPlaylistId
+                                      )
+                                      if (!pl?.songIds) return false
+                                      return pl.songIds.includes(song.id)
+                                    })
+                              ).map((song) => (
+                                <button
+                                  key={song.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setCurrentSong(song)
+                                    setCurrentTime(0)
+                                    setIsPlaying(true)
+                                    setTimeout(() => {
+                                      audioRef.current?.play()
+                                    }, 0)
+                                  }}
+                                  className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors ${
+                                    currentSong.id === song.id
+                                      ? 'bg-zairtre-surface text-zairtre-accent'
+                                      : 'hover:bg-zairtre-surface/40 text-foreground'
+                                  }`}
+                                >
+                                  <img
+                                    src={song.coverUrl}
+                                    alt={song.title}
+                                    className="w-10 h-10 rounded object-cover"
+                                  />
+                                  <div className="flex-1 text-left">
+                                    <p className="text-sm font-medium">{song.title}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {song.artist}
+                                    </p>
+                                  </div>
+                                  <span className="text-xs text-muted-foreground">
+                                    {formatTime(song.duration)}
+                                  </span>
+                                </button>
+                              ))}
+
+                              {selectedPlaylistId !== 'all' &&
+                                songs.filter((song) => {
+                                  const pl = [...officialPlaylists, ...userPlaylists].find(
+                                    (p) => p.id === selectedPlaylistId
+                                  )
+                                  if (!pl?.songIds) return false
+                                  return pl.songIds.includes(song.id)
+                                }).length === 0 && (
+                                  <p className="text-xs text-muted-foreground">
+                                    Esta playlist todavía no tiene canciones.
+                                  </p>
+                                )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Modal para "Nueva playlist" */}
+                        {showNewPlaylistModal && (
+                          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+                            <div className="w-full max-w-md bg-card border border-border rounded-xl p-6 space-y-4">
+                              <h3 className="text-lg font-semibold">Nueva playlist</h3>
+
+                              <p className="text-sm text-muted-foreground">
+                                Ponle un nombre a tu playlist y elige qué canciones quieres agregar.
+                              </p>
+
+                              {/* Nombre de la playlist */}
+                              <div className="space-y-1">
+                                <label className="text-sm font-medium">Nombre</label>
+                                <input
+                                  type="text"
+                                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+                                  placeholder="Ej: Noches con Zairtre"
+                                  value={newPlaylistName}
+                                  onChange={e => setNewPlaylistName(e.target.value)}
+                                />
+                              </div>
+
+                              {/* Descripción opcional */}
+                              <div className="space-y-1">
+                                <label className="text-sm font-medium">Descripción (opcional)</label>
+                                <textarea
+                                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary resize-none"
+                                  rows={2}
+                                  placeholder="Algo que describa el mood de esta playlist…"
+                                  value={newPlaylistDescription}
+                                  onChange={e => setNewPlaylistDescription(e.target.value)}
+                                />
+                              </div>
+
+                              {/* Lista de canciones para seleccionar */}
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-sm font-medium">Canciones</span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {selectedSongIds.length} seleccionadas
+                                  </span>
+                                </div>
+
+                                <div className="max-h-48 overflow-y-auto border border-border rounded-md divide-y divide-border/60">
+                                  {songs.length === 0 && (
+                                    <div className="p-3 text-sm text-muted-foreground">
+                                      No hay canciones disponibles todavía.
+                                    </div>
+                                  )}
+
+                                  {songs.map(song => {
+                                    const checked = selectedSongIds.includes(song.id)
+
+                                    const toggleSongInNewPlaylist = (songId: string) => {
+                                      setSelectedSongIds((prev) =>
+                                        prev.includes(songId)
+                                          ? prev.filter((id) => id !== songId)
+                                          : [...prev, songId]
+                                      )
+                                    }
+                                    return (
+                                      <button
+                                        key={song.id}
+                                        type="button"
+                                        onClick={() => toggleSongInNewPlaylist(song.id)}
+                                        className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm transition-colors ${
+                                          checked
+                                            ? 'bg-primary/20 text-primary-foreground'
+                                            : 'hover:bg-muted/40'
+                                        }`}
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          readOnly
+                                          checked={checked}
+                                          className="h-3 w-3 accent-primary"
+                                        />
+                                        <div className="flex-1">
+                                          <div className="font-medium">{song.title}</div>
+                                          <div className="text-xs text-muted-foreground">
+                                            {song.artist}
+                                          </div>
+                                        </div>
+                                        <span className="text-xs text-muted-foreground">
+                                          {formatTime(song.duration)}
+                                        </span>
+                                      </button>
+                                    )
+                                  })}
+                                </div>
+                              </div>
+
+                              {/* Botones de acción */}
+                              <div className="flex justify-end gap-2 pt-2">
+                                <Button
+                                  variant="ghost"
+                                  type="button"
+                                  onClick={() => {
+                                    setShowNewPlaylistModal(false)
+                                    setNewPlaylistName('')
+                                    setNewPlaylistDescription('')
+                                    setSelectedSongIds([])
+                                  }}
+                                >
+                                  Cerrar
+                                </Button>
+
+                                <Button
+                                  type="button"
+                                  disabled={isSavingPlaylist}
+                                  onClick={handleCreatePlaylist}
+                                >
+                                  {isSavingPlaylist ? 'Guardando…' : 'Guardar playlist'}
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
                       </div>
-                    )
-                  })}
+                    )}
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* Lyrics */}
+            {/* LETRAS */}
             {showLyrics && (
               <div className="border-t border-gray-700 p-4">
                 <h3 className="text-lg font-semibold mb-3">Letras</h3>
@@ -609,21 +1150,15 @@ export default function Home() {
             )}
           </Card>
 
-          {/* Hidden Audio Element */}
+          {/* AUDIO REAL */}
           <audio
             ref={audioRef}
             src={currentSong.audioUrl}
-            onTimeUpdate={e => setCurrentTime(e.currentTarget.currentTime)}
-            onEnded={() => {
-              if (repeatMode === 'one') {
-                audioRef.current?.play()
-              } else if (repeatMode === 'all' || isShuffleOn) {
-                handleNext()
-              } else {
-                setIsPlaying(false)
-              }
-            }}
+            onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+            onEnded={handleEnded}
           />
+
+          {/* Footer minimal con enlaces a streaming / redes */}
           <footer className="mt-10 text-center text-sm text-gray-400">
             <div className="flex justify-center gap-6 mb-2">
               {/* SmartLink streaming */}
@@ -634,7 +1169,7 @@ export default function Home() {
                 className="flex items-center gap-2 hover:text-white transition"
               >
                 <Music className="w-4 h-4" />
-                <span className="hidden sm:inline">Escúchalo en tu plataforma favorita</span>
+                <span className="underline">Escúchalo en tu plataforma favorita</span>
               </a>
 
               {/* Facebook */}
@@ -645,7 +1180,7 @@ export default function Home() {
                 className="flex items-center gap-2 hover:text-white transition"
               >
                 <Share2 className="w-4 h-4" />
-                <span className="hidden sm:inline">Facebook Oficial</span>
+                <span className="underline">Facebook Oficial</span>
               </a>
             </div>
 
@@ -653,7 +1188,9 @@ export default function Home() {
               © {new Date().getFullYear()} Enrique de Zairtre. Todos los derechos reservados.
             </p>
           </footer>
+
         </div>
+
 
         <style jsx>{`
           @keyframes float {
@@ -667,15 +1204,6 @@ export default function Home() {
             66% {
               transform: translateY(30px) rotate(240deg);
             }
-          },
-          :root {
-            --btn-icon-color: #ffffff;
-          }
-
-          @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-30px) rotate(120deg); }
-            66% { transform: translateY(30px) rotate(240deg); }
           }
         `}</style>
       </div>
