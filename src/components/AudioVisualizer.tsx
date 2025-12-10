@@ -3,50 +3,84 @@
 import { useEffect, useRef } from 'react'
 
 interface AudioVisualizerProps {
-  audioRef: React.RefObject<HTMLAudioElement | null>
-  canvasRef: React.RefObject<HTMLCanvasElement | null>
+  audioRef: React.RefObject<HTMLAudioElement>
+  canvasRef: React.RefObject<HTMLCanvasElement>
   isPlaying: boolean
 }
 
-export default function AudioVisualizer({ audioRef, canvasRef, isPlaying }: AudioVisualizerProps) {
+export default function AudioVisualizer({
+  audioRef,
+  canvasRef,
+  isPlaying
+}: AudioVisualizerProps) {
   const animationRef = useRef<number>()
   const analyserRef = useRef<AnalyserNode | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
 
   useEffect(() => {
-    if (!audioRef.current || !canvasRef.current) return
+    const audioEl = audioRef.current
+    const canvasEl = canvasRef.current
 
-    const setupAudioContext = () => {
+    if (!audioEl || !canvasEl) return
+
+    const ensureAudioContext = async () => {
+      // Crear contexto + analyser solo una vez
       if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)()
-        analyserRef.current = audioContextRef.current.createAnalyser()
-        analyserRef.current.fftSize = 256
+        const Ctx =
+          (window as any).AudioContext || (window as any).webkitAudioContext
+        const ctx = new Ctx() as AudioContext
+        const analyser = ctx.createAnalyser()
 
-        const source = audioContextRef.current.createMediaElementSource(audioRef.current!)
-        source.connect(analyserRef.current)
-        analyserRef.current.connect(audioContextRef.current.destination)
+        analyser.fftSize = 256
+
+        const source = ctx.createMediaElementSource(audioEl)
+        source.connect(analyser)
+        analyser.connect(ctx.destination)
+
+        audioContextRef.current = ctx
+        analyserRef.current = analyser
+      }
+
+      // MUY IMPORTANTE: asegurar que el contexto NO esté suspendido
+      if (audioContextRef.current?.state === 'suspended') {
+        try {
+          await audioContextRef.current.resume()
+        } catch (e) {
+          console.warn('No se pudo reanudar el AudioContext:', e)
+        }
       }
     }
 
     const draw = () => {
-      if (!canvasRef.current || !analyserRef.current) return
-
+      const analyser = analyserRef.current
       const canvas = canvasRef.current
-      const ctx = canvas.getContext('2d')!
-      const bufferLength = analyserRef.current.frequencyBinCount
+
+      if (!analyser || !canvas) return
+
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+
+      // Ajustar tamaño del canvas al tamaño visible
+      const { width, height } = canvas.getBoundingClientRect()
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width
+        canvas.height = height
+      }
+
+      const bufferLength = analyser.frequencyBinCount
       const dataArray = new Uint8Array(bufferLength)
 
-      analyserRef.current.getByteFrequencyData(dataArray)
+      analyser.getByteFrequencyData(dataArray)
 
       ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
       const barWidth = (canvas.width / bufferLength) * 2.5
-      let barHeight
       let x = 0
 
       for (let i = 0; i < bufferLength; i++) {
-        barHeight = (dataArray[i] / 255) * canvas.height * 0.7
+        const value = dataArray[i]
+        const barHeight = (value / 255) * canvas.height * 0.7
 
         const hue = (i / bufferLength) * 360
         ctx.fillStyle = `hsl(${hue}, 100%, 50%)`
@@ -60,9 +94,18 @@ export default function AudioVisualizer({ audioRef, canvasRef, isPlaying }: Audi
       }
     }
 
+    let cancelled = false
+
+    const start = async () => {
+      if (!isPlaying) return
+      await ensureAudioContext()
+      if (!cancelled) {
+        draw()
+      }
+    }
+
     if (isPlaying) {
-      setupAudioContext()
-      draw()
+      start()
     } else {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
@@ -70,6 +113,7 @@ export default function AudioVisualizer({ audioRef, canvasRef, isPlaying }: Audi
     }
 
     return () => {
+      cancelled = true
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
       }

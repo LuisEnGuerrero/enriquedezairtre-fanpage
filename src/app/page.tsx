@@ -67,8 +67,8 @@ export default function Home() {
   const heroImages = ['/assets/Zairtre.jpg', '/assets/photo.jpg']
   const [heroIndex, setHeroIndex] = useState(0)
 
-  const audioRef = useRef<HTMLAudioElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const audioRef = useRef<HTMLAudioElement>(null!)
+  const canvasRef = useRef<HTMLCanvasElement>(null!)
 
   // Fondo animado
   useEffect(() => {
@@ -85,6 +85,18 @@ export default function Home() {
     }, 22000)
     return () => clearInterval(interval)
   }, [heroImages.length])
+
+  // contraste automático
+  useEffect(() => {
+    const root = getComputedStyle(document.documentElement);
+    const bg = root.getPropertyValue("--background");
+    const match = bg.match(/\((.*?)\s/);
+    const l = match ? parseFloat(match[1]) : 0.5;
+
+    document.body.classList.toggle("dark-text", l < 0.5);
+    document.body.classList.toggle("light-text", l >= 0.5);
+  }, []);
+
 
   // Volumen
   useEffect(() => {
@@ -245,6 +257,11 @@ export default function Home() {
   const getAccentColor = () =>
     `hsl(${(colorPhase + 280) % 360}, 90%, 55%)`
 
+  const getAccentButtonStyle = () => ({
+  backgroundColor: getAccentColor(),
+  color: '#050509' // Texto/icono oscuro para contrastar con el acento brillante
+})
+
   const currentCoverSrc =
     currentSong.coverUrl || '/assets/Zairtre.jpg'
 
@@ -367,11 +384,6 @@ export default function Home() {
                     ref={canvasRef}
                     className="absolute inset-0 w-full h-full opacity-50"
                   />
-                  <AudioVisualizer
-                    audioRef={audioRef}
-                    canvasRef={canvasRef}
-                    isPlaying={isPlaying}
-                  />
                 </div>
 
                 {/* Song Info */}
@@ -430,14 +442,17 @@ export default function Home() {
 
                   <Button
                     onClick={handlePlayPause}
-                    className="w-16 h-16 rounded-full"
-                    style={{ backgroundColor: getAccentColor() }}
+                    className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg"
+                    style={getAccentButtonStyle()}
                   >
                     {isPlaying ? (
                       <Pause className="w-6 h-6" />
                     ) : (
-                      <Play className="w-6 h-6 ml-1" />
+                      <Play className="w-6 h-6 ml-0.5" />
                     )}
+                    <span className="sr-only">
+                      {isPlaying ? 'Pausar' : 'Reproducir'}
+                    </span>
                   </Button>
 
                   <Button
@@ -484,50 +499,53 @@ export default function Home() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-2">
+                <div className="flex gap-3 justify-center">
+                  {/* Favorito */}
                   <Button
                     variant="outline"
                     onClick={handleFavorite}
-                    className={`flex-1 border-gray-600 text-white hover:bg-gray-800 ${
+                    className={`h-10 w-10 rounded-full border-gray-600 flex items-center justify-center transition ${
                       favorites.includes(currentSong.id)
-                        ? 'bg-red-900/30 border-red-600'
-                        : ''
+                        ? 'bg-red-900/40 border-red-500 text-red-300'
+                        : 'bg-black/40 text-white hover:bg-gray-800'
                     }`}
                   >
                     <Heart
-                      className={`w-4 h-4 mr-2 ${
-                        favorites.includes(currentSong.id)
-                          ? 'fill-current'
-                          : ''
+                      className={`w-4 h-4 ${
+                        favorites.includes(currentSong.id) ? 'fill-current' : ''
                       }`}
                     />
-                    Favorito
+                    <span className="sr-only">Marcar como favorito</span>
                   </Button>
 
+                  {/* Playlist */}
                   <Button
                     variant="outline"
                     onClick={() => setShowPlaylist(!showPlaylist)}
-                    className="flex-1 border-gray-600 text-white hover:bg-gray-800"
+                    className="h-10 w-10 rounded-full border-gray-600 bg-black/40 text-white hover:bg-gray-800 flex items-center justify-center"
                   >
-                    <List className="w-4 h-4 mr-2" />
-                    Playlist
+                    <List className="w-4 h-4" />
+                    <span className="sr-only">Mostrar playlist</span>
                   </Button>
 
+                  {/* Letras */}
                   <Button
                     variant="outline"
                     onClick={() => setShowLyrics(!showLyrics)}
-                    className="flex-1 border-gray-600 text-white hover:bg-gray-800"
+                    className="h-10 w-10 rounded-full border-gray-600 bg-black/40 text-white hover:bg-gray-800 flex items-center justify-center"
                   >
-                    <Music className="w-4 h-4 mr-2" />
-                    Letras
+                    <Music className="w-4 h-4" />
+                    <span className="sr-only">Mostrar letras</span>
                   </Button>
 
+                  {/* Compartir */}
                   <Button
                     variant="outline"
                     onClick={handleShare}
-                    className="border-gray-600 text-white hover:bg-gray-800"
+                    className="h-10 w-10 rounded-full border-gray-600 bg-black/40 text-white hover:bg-gray-800 flex items-center justify-center"
                   >
                     <Share2 className="w-4 h-4" />
+                    <span className="sr-only">Compartir canción</span>
                   </Button>
                 </div>
               </div>
@@ -606,6 +624,35 @@ export default function Home() {
               }
             }}
           />
+          <footer className="mt-10 text-center text-sm text-gray-400">
+            <div className="flex justify-center gap-6 mb-2">
+              {/* SmartLink streaming */}
+              <a
+                href="https://ditto.fm/vortex_9cadd2c9"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 hover:text-white transition"
+              >
+                <Music className="w-4 h-4" />
+                <span className="hidden sm:inline">Escúchalo en tu plataforma favorita</span>
+              </a>
+
+              {/* Facebook */}
+              <a
+                href="https://www.facebook.com/profile.php?id=61584058261395#"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 hover:text-white transition"
+              >
+                <Share2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Facebook Oficial</span>
+              </a>
+            </div>
+
+            <p className="text-xs text-gray-500">
+              © {new Date().getFullYear()} Enrique de Zairtre. Todos los derechos reservados.
+            </p>
+          </footer>
         </div>
 
         <style jsx>{`
@@ -620,6 +667,15 @@ export default function Home() {
             66% {
               transform: translateY(30px) rotate(240deg);
             }
+          },
+          :root {
+            --btn-icon-color: #ffffff;
+          }
+
+          @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(120deg); }
+            66% { transform: translateY(30px) rotate(240deg); }
           }
         `}</style>
       </div>
