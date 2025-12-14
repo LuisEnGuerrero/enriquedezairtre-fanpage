@@ -15,6 +15,16 @@ async function main() {
   } finally {
     admin.app().delete();
   }
+
+  const { db } = require("./firebase-admin.js");
+
+  async function run() {
+    const snap = await db.collection("songs").get();
+    console.log("SONGS:", snap.docs.map(d => d.data()));
+  }
+
+  run().catch(console.error);
+
 }
 
 main();

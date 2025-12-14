@@ -5,9 +5,16 @@ import { syncUserDirect } from '@/app/api/auth/sync-user/route'
 /**
  * Normalizar el email del ADMIN para evitar fallos por mayúsculas
  */
-const ADMIN_EMAIL = (process.env.ADM1N_EM41L || 'enrique.zairtre@example.com').toLowerCase().trim()
+const ADMIN_EMAIL = (process.env.ADM1N_EM41L || 'enrique.zairtre@example.com')
+  .toLowerCase()
+  .trim()
 
 export const authOptions: NextAuthOptions = {
+  debug: true,
+
+  /**
+   * 🔐 Proveedor Google
+   */
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -17,32 +24,57 @@ export const authOptions: NextAuthOptions = {
   ],
 
   /**
-   * 🔐 JWT Callback:
-   * Se ejecuta:
-   *  - en el primer login
-   *  - en cada refresh del token
-   *  - al obtener session en server components
+   * 🍪 CONFIGURACIÓN CRÍTICA DE COOKIES
+   * Necesaria para Firebase Hosting → Cloud Run
+   */
+  cookies: {
+    sessionToken: {
+      name: '__Secure-next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'none',
+        path: '/',
+        secure: true,
+      },
+    },
+    callbackUrl: {
+      name: '__Secure-next-auth.callback-url',
+      options: {
+        sameSite: 'none',
+        path: '/',
+        secure: true,
+      },
+    },
+    csrfToken: {
+      name: '__Host-next-auth.csrf-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'none',
+        path: '/',
+        secure: true,
+      },
+    },
+  },
+
+  /**
+   * 🔐 JWT Callback
    */
   callbacks: {
     async jwt({ token, user }) {
-      // SOLO el primer login trae "user"
       if (user?.email) {
         const cleanEmail = user.email.toLowerCase().trim()
         token.role = cleanEmail === ADMIN_EMAIL ? 'admin' : 'fan'
       }
 
-      // fallback por seguridad
       if (!token.role) token.role = 'fan'
-
       return token
     },
 
     /**
-     * 🧠 Session Callback:
-     * Lo que llegue aquí es lo que recibes en useSession()
+     * 🧠 Session Callback
      */
     async session({ session, token }) {
-      if (token) {
+      if (session.user && token) {
         session.user.id = token.sub!
         session.user.role = token.role as string
       }
@@ -50,9 +82,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     /**
-     * 🚀 signIn Callback:
-     * 1) Valida ingreso
-     * 2) Sincroniza DB automáticamente
+     * 🚀 signIn Callback
      */
     async signIn({ user, account }) {
       if (account?.provider === 'google' && user.email) {
@@ -63,25 +93,21 @@ export const authOptions: NextAuthOptions = {
             image: user.image,
           })
 
-          // Vincular info DB → sesión NextAuth
           user.id = dbUser.id
           user.role = dbUser.role
-
         } catch (error) {
-          console.error('🔥 Error syncing user via direct DB call:', error)
-
-          // fallback para no romper login
+          console.error('🔥 Error syncing user:', error)
           const cleanEmail = user.email.toLowerCase().trim()
           user.role = cleanEmail === ADMIN_EMAIL ? 'admin' : 'fan'
         }
       }
 
-      return true // permitir login siempre
+      return true
     },
   },
 
   /**
-   * Páginas personalizadas
+   * 📄 Páginas personalizadas
    */
   pages: {
     signIn: '/auth/signin',
@@ -89,13 +115,12 @@ export const authOptions: NextAuthOptions = {
   },
 
   /**
-   * Clave secreta del JWT
+   * 🔑 Secret
    */
   secret: process.env.NEXTAUTH_SECRET,
 
   /**
-   * Importante para evitar errores de `session.strategy`
-   * (por defecto usa 'jwt', que aquí es lo correcto)
+   * 📦 Sesión por JWT
    */
   session: {
     strategy: 'jwt',
@@ -103,5 +128,4 @@ export const authOptions: NextAuthOptions = {
 }
 
 const handler = NextAuth(authOptions)
-
 export { handler as GET, handler as POST }

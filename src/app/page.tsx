@@ -51,8 +51,8 @@ const fallbackSong: Song = {
   title: 'Canción de Ejemplo',
   artist: 'Artista',
   duration: 200,
-  coverUrl: '/vortex.jpg',
-  audioUrl: '/vortex.mp3',
+  coverUrl: '/assets/vortex.jpg',
+  audioUrl: '/assets/vortex.mp3',
   lyrics: 'Letra de ejemplo...',
 }
 

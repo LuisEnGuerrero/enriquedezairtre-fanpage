@@ -1,0 +1,19 @@
+{
+  "hosting": {
+    "site": "zairtre-music",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "zairtre-cloudrun",
+          "region": "us-central1"
+        }
+      }
+    ]
+  }
+}

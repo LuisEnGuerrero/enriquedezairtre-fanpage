@@ -1,4 +1,8 @@
 |-- .dockerignore
+|-- .env
+|-- .env.cloudrun
+|-- .env.production.local
+|-- .firebaserc
 |-- .gitignore
 |-- Caddyfile
 |-- components.json
@@ -7,6 +11,7 @@
 |-- entrypoint.sh
 |-- env.doc
 |-- eslint.config.mjs
+|-- firebase.json
 |-- middleware.ts
 |-- next-env.d.ts
 |-- next.config.ts
@@ -18,16 +23,513 @@
 |-- tailwind.config.ts
 |-- tsconfig.json
 |-- workspace-cb207cc8-54f2-4cba-b18e-449c2535ccfc
-+-- db
-|   |-- custom.db
-+-- examples
-|   +-- websocket
-|   |   |-- frontend.tsx
-|   |   |-- server.ts
++-- .firebase
+|   |-- hosting.cHVibGlj.cache
++-- .next
+|   |-- app-build-manifest.json
+|   |-- app-path-routes-manifest.json
+|   |-- build-manifest.json
+|   |-- BUILD_ID
+|   |-- export-marker.json
+|   |-- images-manifest.json
+|   |-- next-minimal-server.js.nft.json
+|   |-- next-server.js.nft.json
+|   |-- package.json
+|   |-- prerender-manifest.json
+|   |-- react-loadable-manifest.json
+|   |-- required-server-files.json
+|   |-- routes-manifest.json
+|   |-- trace
+|   +-- cache
+|   |   |-- .rscinfo
+|   |   +-- swc
+|   |   |   +-- plugins
+|   |   |   |   +-- v7_windows_x86_64_9.0.0
+|   |   +-- webpack
+|   |   |   +-- client-production
+|   |   |   |   |-- 0.pack
+|   |   |   |   |-- 1.pack
+|   |   |   |   |-- 10.pack
+|   |   |   |   |-- 11.pack
+|   |   |   |   |-- 12.pack
+|   |   |   |   |-- 13.pack
+|   |   |   |   |-- 14.pack
+|   |   |   |   |-- 15.pack
+|   |   |   |   |-- 2.pack
+|   |   |   |   |-- 3.pack
+|   |   |   |   |-- 4.pack
+|   |   |   |   |-- 5.pack
+|   |   |   |   |-- 6.pack
+|   |   |   |   |-- 7.pack
+|   |   |   |   |-- 8.pack
+|   |   |   |   |-- 9.pack
+|   |   |   |   |-- index.pack
+|   |   |   |   |-- index.pack.old
+|   |   |   +-- edge-server-production
+|   |   |   |   |-- 0.pack
+|   |   |   |   |-- index.pack
+|   |   |   +-- server-production
+|   |   |   |   |-- 0.pack
+|   |   |   |   |-- 1.pack
+|   |   |   |   |-- 10.pack
+|   |   |   |   |-- 11.pack
+|   |   |   |   |-- 12.pack
+|   |   |   |   |-- 13.pack
+|   |   |   |   |-- 14.pack
+|   |   |   |   |-- 15.pack
+|   |   |   |   |-- 2.pack
+|   |   |   |   |-- 3.pack
+|   |   |   |   |-- 4.pack
+|   |   |   |   |-- 5.pack
+|   |   |   |   |-- 6.pack
+|   |   |   |   |-- 7.pack
+|   |   |   |   |-- 8.pack
+|   |   |   |   |-- 9.pack
+|   |   |   |   |-- index.pack
+|   |   |   |   |-- index.pack.old
+|   +-- diagnostics
+|   |   |-- build-diagnostics.json
+|   |   |-- framework.json
+|   +-- server
+|   |   |-- app-paths-manifest.json
+|   |   |-- functions-config-manifest.json
+|   |   |-- interception-route-rewrite-manifest.js
+|   |   |-- middleware-build-manifest.js
+|   |   |-- middleware-manifest.json
+|   |   |-- middleware-react-loadable-manifest.js
+|   |   |-- next-font-manifest.js
+|   |   |-- next-font-manifest.json
+|   |   |-- pages-manifest.json
+|   |   |-- server-reference-manifest.js
+|   |   |-- server-reference-manifest.json
+|   |   |-- webpack-runtime.js
+|   |   +-- app
+|   |   |   |-- admin.html
+|   |   |   |-- admin.meta
+|   |   |   |-- admin.rsc
+|   |   |   |-- index.html
+|   |   |   |-- index.meta
+|   |   |   |-- index.rsc
+|   |   |   |-- page.js
+|   |   |   |-- page.js.nft.json
+|   |   |   |-- page_client-reference-manifest.js
+|   |   |   |-- profile.html
+|   |   |   |-- profile.meta
+|   |   |   |-- profile.rsc
+|   |   |   |-- _not-found.html
+|   |   |   |-- _not-found.meta
+|   |   |   |-- _not-found.rsc
+|   |   |   +-- admin
+|   |   |   |   |-- login.html
+|   |   |   |   |-- login.meta
+|   |   |   |   |-- login.rsc
+|   |   |   |   |-- page.js
+|   |   |   |   |-- page.js.nft.json
+|   |   |   |   |-- page_client-reference-manifest.js
+|   |   |   |   +-- login
+|   |   |   |   |   |-- page.js
+|   |   |   |   |   |-- page.js.nft.json
+|   |   |   |   |   |-- page_client-reference-manifest.js
+|   |   |   +-- api
+|   |   |   |   |-- route.js
+|   |   |   |   |-- route.js.nft.json
+|   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   +-- admin
+|   |   |   |   |   +-- export
+|   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   +-- fans
+|   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   +-- import
+|   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   +-- settings
+|   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   +-- stats
+|   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   +-- auth
+|   |   |   |   |   +-- sync-user
+|   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   +-- [...nextauth]
+|   |   |   |   +-- favorites
+|   |   |   |   |   |-- route.js
+|   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   +-- playlists
+|   |   |   |   |   |-- route.js
+|   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   +-- [id]
+|   |   |   |   +-- songs
+|   |   |   |   |   |-- route.js
+|   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   +-- [id]
+|   |   |   |   +-- user
+|   |   |   |   |   +-- profile
+|   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   +-- rewards
+|   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   |   +-- check
+|   |   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   +-- user-playlists
+|   |   |   |   |   |-- route.js
+|   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   +-- [id]
+|   |   |   +-- auth
+|   |   |   |   |-- signin.html
+|   |   |   |   |-- signin.meta
+|   |   |   |   |-- signin.rsc
+|   |   |   |   +-- signin
+|   |   |   |   |   |-- page.js
+|   |   |   |   |   |-- page.js.nft.json
+|   |   |   |   |   |-- page_client-reference-manifest.js
+|   |   |   +-- healthz
+|   |   |   |   |-- route.js
+|   |   |   |   |-- route.js.nft.json
+|   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   +-- profile
+|   |   |   |   |-- page.js
+|   |   |   |   |-- page.js.nft.json
+|   |   |   |   |-- page_client-reference-manifest.js
+|   |   |   +-- _not-found
+|   |   |   |   |-- page.js
+|   |   |   |   |-- page.js.nft.json
+|   |   |   |   |-- page_client-reference-manifest.js
+|   |   +-- chunks
+|   |   |   |-- 259.js
+|   |   |   |-- 263.js
+|   |   |   |-- 447.js
+|   |   |   |-- 452.js
+|   |   |   |-- 519.js
+|   |   |   |-- 548.js
+|   |   |   |-- 580.js
+|   |   |   |-- 681.js
+|   |   |   |-- 840.js
+|   |   +-- pages
+|   |   |   |-- 404.html
+|   |   |   |-- 500.html
+|   |   |   |-- _app.js
+|   |   |   |-- _app.js.nft.json
+|   |   |   |-- _document.js
+|   |   |   |-- _document.js.nft.json
+|   |   |   |-- _error.js
+|   |   |   |-- _error.js.nft.json
+|   +-- standalone
+|   |   |-- .env
+|   |   |-- package.json
+|   |   |-- server.js
+|   |   +-- .next
+|   |   |   |-- app-build-manifest.json
+|   |   |   |-- app-path-routes-manifest.json
+|   |   |   |-- build-manifest.json
+|   |   |   |-- BUILD_ID
+|   |   |   |-- package.json
+|   |   |   |-- prerender-manifest.json
+|   |   |   |-- react-loadable-manifest.json
+|   |   |   |-- required-server-files.json
+|   |   |   |-- routes-manifest.json
+|   |   |   +-- server
+|   |   |   |   |-- app-paths-manifest.json
+|   |   |   |   |-- functions-config-manifest.json
+|   |   |   |   |-- middleware-build-manifest.js
+|   |   |   |   |-- middleware-manifest.json
+|   |   |   |   |-- middleware-react-loadable-manifest.js
+|   |   |   |   |-- next-font-manifest.js
+|   |   |   |   |-- next-font-manifest.json
+|   |   |   |   |-- pages-manifest.json
+|   |   |   |   |-- server-reference-manifest.js
+|   |   |   |   |-- server-reference-manifest.json
+|   |   |   |   |-- webpack-runtime.js
+|   |   |   |   +-- app
+|   |   |   |   |   |-- admin.html
+|   |   |   |   |   |-- admin.meta
+|   |   |   |   |   |-- admin.rsc
+|   |   |   |   |   |-- index.html
+|   |   |   |   |   |-- index.meta
+|   |   |   |   |   |-- index.rsc
+|   |   |   |   |   |-- page.js
+|   |   |   |   |   |-- page.js.nft.json
+|   |   |   |   |   |-- page_client-reference-manifest.js
+|   |   |   |   |   |-- profile.html
+|   |   |   |   |   |-- profile.meta
+|   |   |   |   |   |-- profile.rsc
+|   |   |   |   |   |-- _not-found.html
+|   |   |   |   |   |-- _not-found.meta
+|   |   |   |   |   |-- _not-found.rsc
+|   |   |   |   |   +-- admin
+|   |   |   |   |   |   |-- login.html
+|   |   |   |   |   |   |-- login.meta
+|   |   |   |   |   |   |-- login.rsc
+|   |   |   |   |   |   |-- page.js
+|   |   |   |   |   |   |-- page.js.nft.json
+|   |   |   |   |   |   |-- page_client-reference-manifest.js
+|   |   |   |   |   |   +-- login
+|   |   |   |   |   |   |   |-- page.js
+|   |   |   |   |   |   |   |-- page.js.nft.json
+|   |   |   |   |   |   |   |-- page_client-reference-manifest.js
+|   |   |   |   |   +-- api
+|   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   |   +-- admin
+|   |   |   |   |   |   |   +-- export
+|   |   |   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   |   |   +-- fans
+|   |   |   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   |   |   +-- import
+|   |   |   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   |   |   +-- settings
+|   |   |   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   |   |   +-- stats
+|   |   |   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   |   +-- auth
+|   |   |   |   |   |   |   +-- sync-user
+|   |   |   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   |   |   +-- [...nextauth]
+|   |   |   |   |   |   +-- favorites
+|   |   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   |   +-- playlists
+|   |   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   |   |   +-- [id]
+|   |   |   |   |   |   +-- songs
+|   |   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   |   |   +-- [id]
+|   |   |   |   |   |   +-- user
+|   |   |   |   |   |   |   +-- profile
+|   |   |   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   |   |   +-- rewards
+|   |   |   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   |   |   |   +-- check
+|   |   |   |   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   |   +-- user-playlists
+|   |   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   |   |   +-- [id]
+|   |   |   |   |   +-- auth
+|   |   |   |   |   |   |-- signin.html
+|   |   |   |   |   |   |-- signin.meta
+|   |   |   |   |   |   |-- signin.rsc
+|   |   |   |   |   |   +-- signin
+|   |   |   |   |   |   |   |-- page.js
+|   |   |   |   |   |   |   |-- page.js.nft.json
+|   |   |   |   |   |   |   |-- page_client-reference-manifest.js
+|   |   |   |   |   +-- healthz
+|   |   |   |   |   |   |-- route.js
+|   |   |   |   |   |   |-- route.js.nft.json
+|   |   |   |   |   |   |-- route_client-reference-manifest.js
+|   |   |   |   |   +-- profile
+|   |   |   |   |   |   |-- page.js
+|   |   |   |   |   |   |-- page.js.nft.json
+|   |   |   |   |   |   |-- page_client-reference-manifest.js
+|   |   |   |   |   +-- _not-found
+|   |   |   |   |   |   |-- page.js
+|   |   |   |   |   |   |-- page.js.nft.json
+|   |   |   |   |   |   |-- page_client-reference-manifest.js
+|   |   |   |   +-- chunks
+|   |   |   |   |   |-- 259.js
+|   |   |   |   |   |-- 263.js
+|   |   |   |   |   |-- 447.js
+|   |   |   |   |   |-- 452.js
+|   |   |   |   |   |-- 519.js
+|   |   |   |   |   |-- 548.js
+|   |   |   |   |   |-- 580.js
+|   |   |   |   |   |-- 681.js
+|   |   |   |   |   |-- 840.js
+|   |   |   |   +-- pages
+|   |   |   |   |   |-- 404.html
+|   |   |   |   |   |-- 500.html
+|   |   |   |   |   |-- _app.js
+|   |   |   |   |   |-- _app.js.nft.json
+|   |   |   |   |   |-- _document.js
+|   |   |   |   |   |-- _document.js.nft.json
+|   |   |   |   |   |-- _error.js
+|   |   |   |   |   |-- _error.js.nft.json
+|   +-- static
+|   |   +-- bIGb6M2LmVpMVsoALAZ_E
+|   |   |   |-- _buildManifest.js
+|   |   |   |-- _ssgManifest.js
+|   |   +-- chunks
+|   |   |   |-- 341.9d0efe4d5d2ae508.js
+|   |   |   |-- 459-cf5f8ce59ed1e151.js
+|   |   |   |-- 472.ebd0deb27f51cbb5.js
+|   |   |   |-- 494-105f1fb5e5606d4f.js
+|   |   |   |-- 4bd1b696-a6534ec168ee5a83.js
+|   |   |   |-- 588-de5ae1d664dbccd1.js
+|   |   |   |-- 667-3a29444fe7420b29.js
+|   |   |   |-- 684-9112786178161eff.js
+|   |   |   |-- 779-fa73b063d3955a8b.js
+|   |   |   |-- 808-a095252bf84eeb84.js
+|   |   |   |-- 951-917d629f20f41bcc.js
+|   |   |   |-- framework-679ea02c930ab8dd.js
+|   |   |   |-- main-app-6b0ba9f249c64f59.js
+|   |   |   |-- main-b6cfa8168afd06ab.js
+|   |   |   |-- polyfills-42372ed130431b0a.js
+|   |   |   |-- webpack-651800a93658f3a8.js
+|   |   |   +-- app
+|   |   |   |   |-- layout-e616e4b9fd0b8121.js
+|   |   |   |   |-- page-881fba401645944e.js
+|   |   |   |   +-- admin
+|   |   |   |   |   |-- page-24433f2616cc8de7.js
+|   |   |   |   |   +-- login
+|   |   |   |   |   |   |-- page-9cf2d9ce88f27de0.js
+|   |   |   |   +-- api
+|   |   |   |   |   |-- route-452a18b32687f712.js
+|   |   |   |   |   +-- admin
+|   |   |   |   |   |   +-- export
+|   |   |   |   |   |   |   |-- route-4f96562d9fb13ce2.js
+|   |   |   |   |   |   +-- fans
+|   |   |   |   |   |   |   |-- route-45be992af9574283.js
+|   |   |   |   |   |   +-- import
+|   |   |   |   |   |   |   |-- route-651f476a8d89a3de.js
+|   |   |   |   |   |   +-- settings
+|   |   |   |   |   |   |   |-- route-252eae5f5df2507c.js
+|   |   |   |   |   |   +-- stats
+|   |   |   |   |   |   |   |-- route-dddefb6b04e1a1e5.js
+|   |   |   |   |   +-- auth
+|   |   |   |   |   |   +-- sync-user
+|   |   |   |   |   |   |   |-- route-411a91d70ec5e518.js
+|   |   |   |   |   |   +-- [...nextauth]
+|   |   |   |   |   +-- favorites
+|   |   |   |   |   |   |-- route-3d99a3a2f6b53ec8.js
+|   |   |   |   |   +-- playlists
+|   |   |   |   |   |   |-- route-77a4fb9f17a7ed8c.js
+|   |   |   |   |   |   +-- [id]
+|   |   |   |   |   +-- songs
+|   |   |   |   |   |   |-- route-334852a65fa12ab3.js
+|   |   |   |   |   |   +-- [id]
+|   |   |   |   |   +-- user
+|   |   |   |   |   |   +-- profile
+|   |   |   |   |   |   |   |-- route-7d85a2adee6f94a5.js
+|   |   |   |   |   |   +-- rewards
+|   |   |   |   |   |   |   |-- route-d4654dcd1ec7254c.js
+|   |   |   |   |   |   |   +-- check
+|   |   |   |   |   |   |   |   |-- route-38cd59df2161e21f.js
+|   |   |   |   |   +-- user-playlists
+|   |   |   |   |   |   |-- route-3995458c9bc52fac.js
+|   |   |   |   |   |   +-- [id]
+|   |   |   |   +-- auth
+|   |   |   |   |   +-- signin
+|   |   |   |   |   |   |-- page-28634b95067aba91.js
+|   |   |   |   +-- healthz
+|   |   |   |   |   |-- route-34f49a6879cb9502.js
+|   |   |   |   +-- profile
+|   |   |   |   |   |-- page-49e5b565b1f832cc.js
+|   |   |   |   +-- _not-found
+|   |   |   |   |   |-- page-664eec8c2b03fbb1.js
+|   |   |   +-- pages
+|   |   |   |   |-- _app-a67a8908f3e6c91e.js
+|   |   |   |   |-- _error-9fa9e593fadfe6b5.js
+|   |   +-- css
+|   |   |   |-- de70bee13400563f.css
+|   |   |   |-- f94cd31ea6c927fd.css
+|   |   +-- media
+|   |   |   |-- 4cf2300e9c8272f7-s.p.woff2
+|   |   |   |-- 747892c23ea88013-s.woff2
+|   |   |   |-- 8d697b304b401681-s.woff2
+|   |   |   |-- 93f479601ee12b01-s.p.woff2
+|   |   |   |-- 9610d9e46709d722-s.woff2
+|   |   |   |-- ba015fad6dcf6784-s.woff2
+|   +-- types
+|   |   |-- cache-life.d.ts
+|   |   |-- package.json
+|   |   +-- app
+|   |   |   |-- layout.ts
+|   |   |   |-- page.ts
+|   |   |   +-- admin
+|   |   |   |   |-- page.ts
+|   |   |   |   +-- login
+|   |   |   |   |   |-- page.ts
+|   |   |   +-- api
+|   |   |   |   |-- route.ts
+|   |   |   |   +-- admin
+|   |   |   |   |   +-- export
+|   |   |   |   |   |   |-- route.ts
+|   |   |   |   |   +-- fans
+|   |   |   |   |   |   |-- route.ts
+|   |   |   |   |   +-- import
+|   |   |   |   |   |   |-- route.ts
+|   |   |   |   |   +-- settings
+|   |   |   |   |   |   |-- route.ts
+|   |   |   |   |   +-- stats
+|   |   |   |   |   |   |-- route.ts
+|   |   |   |   +-- auth
+|   |   |   |   |   +-- sync-user
+|   |   |   |   |   |   |-- route.ts
+|   |   |   |   |   +-- [...nextauth]
+|   |   |   |   +-- favorites
+|   |   |   |   |   |-- route.ts
+|   |   |   |   +-- playlists
+|   |   |   |   |   |-- route.ts
+|   |   |   |   |   +-- [id]
+|   |   |   |   +-- songs
+|   |   |   |   |   |-- route.ts
+|   |   |   |   |   +-- [id]
+|   |   |   |   +-- user
+|   |   |   |   |   +-- profile
+|   |   |   |   |   |   |-- route.ts
+|   |   |   |   |   +-- rewards
+|   |   |   |   |   |   |-- route.ts
+|   |   |   |   |   |   +-- check
+|   |   |   |   |   |   |   |-- route.ts
+|   |   |   |   +-- user-playlists
+|   |   |   |   |   |-- route.ts
+|   |   |   |   |   +-- [id]
+|   |   |   +-- auth
+|   |   |   |   +-- signin
+|   |   |   |   |   |-- page.ts
+|   |   |   +-- healthz
+|   |   |   |   |-- route.ts
+|   |   |   +-- profile
+|   |   |   |   |-- page.ts
 +-- mini-services
 |   |-- .gitkeep
 +-- public
+|   |-- 404.html
 |   |-- favicon.ico
+|   |-- index.html
 |   |-- logo.svg
 |   |-- og-image.png
 |   |-- robots.txt
@@ -45,6 +547,7 @@
 |   |-- reset-firestore.js
 |   |-- seed-firestore.js
 |   |-- test-firestore.js
+|   |-- update-cloudrun-env.js
 +-- src
 |   +-- app
 |   |   |-- globals.css
@@ -100,6 +603,7 @@
 |   |   |   |-- page.tsx
 |   +-- components
 |   |   |-- AudioVisualizer.tsx
+|   |   |-- PlaylistPanel.tsx
 |   |   +-- admin
 |   |   |   |-- FanManager.tsx
 |   |   |   |-- PlaylistManager.tsx
