@@ -3,31 +3,62 @@ import GoogleProvider from 'next-auth/providers/google'
 import { syncUserDirect } from '@/app/api/auth/sync-user/route'
 
 const ADMIN_EMAIL = (process.env.ADM1N_EM41L || 'zairtre@gmail.com')
-  .toLowerCase()
-  .trim()
+.toLowerCase()
+.trim()
 
 export const authOptions: NextAuthOptions = {
   debug: true,
+  
+  useSecureCookies: true,
+  
+  /**
+   * 🔥 COOKIE CONFIGURATION (CRÍTICO PARA FIREBASE + CLOUD RUN)
+   */
+  
+  cookies: {
+    sessionToken: {
+      name: "__Secure-next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+      },  
+    },  
+    callbackUrl: {
+      name: "__Secure-next-auth.callback-url",
+      options: {
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+      },  
+    },  
+    csrfToken: {
+      name: "__Secure-next-auth.csrf-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+      },  
+    },  
+  },  
 
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       allowDangerousEmailAccountLinking: true,
-    }),
-  ],
+    }),  
+  ],  
 
   secret: process.env.NEXTAUTH_SECRET,
-
-  session: {
-    strategy: 'jwt',
-  },
 
   callbacks: {
     async jwt({ token, user }) {
       if (user?.email) {
-        const email = user.email.toLowerCase().trim()
-        token.role = email === ADMIN_EMAIL ? 'admin' : 'fan'
+        const cleanEmail = user.email.toLowerCase().trim()
+        token.role = cleanEmail === ADMIN_EMAIL ? 'admin' : 'fan'
       }
       if (!token.role) token.role = 'fan'
       return token
@@ -49,21 +80,27 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
             image: user.image,
           })
+
           user.id = dbUser.id
           user.role = dbUser.role
-        } catch (err) {
-          const email = user.email.toLowerCase().trim()
-          user.role = email === ADMIN_EMAIL ? 'admin' : 'fan'
+        } catch (error) {
+          console.error('🔥 Error syncing user:', error)
+          const cleanEmail = user.email.toLowerCase().trim()
+          user.role = cleanEmail === ADMIN_EMAIL ? 'admin' : 'fan'
         }
       }
       return true
     },
   },
 
+  
   pages: {
     signIn: '/auth/signin',
     error: '/auth/error',
   },
+  
+  session: { strategy: "jwt" },
+
 }
 
 const handler = NextAuth(authOptions)
