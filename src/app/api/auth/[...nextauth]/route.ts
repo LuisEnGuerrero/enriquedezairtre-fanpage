@@ -2,19 +2,13 @@ import NextAuth, { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import { syncUserDirect } from '@/app/api/auth/sync-user/route'
 
-/**
- * Normalizar el email del ADMIN para evitar fallos por mayúsculas
- */
-const ADMIN_EMAIL = (process.env.ADM1N_EM41L || 'enrique.zairtre@example.com')
+const ADMIN_EMAIL = (process.env.ADM1N_EM41L || 'zairtre@gmail.com')
   .toLowerCase()
   .trim()
 
 export const authOptions: NextAuthOptions = {
   debug: true,
 
-  /**
-   * 🔐 Proveedor Google
-   */
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -23,11 +17,25 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
+  session: {
+    strategy: 'jwt',
+  },
+
+  secret: process.env.NEXTAUTH_SECRET,
+
   /**
-   * 🍪 CONFIGURACIÓN CRÍTICA DE COOKIES
-   * Necesaria para Firebase Hosting → Cloud Run
+   * 🔥 COOKIE CONFIGURATION (CRÍTICO PARA FIREBASE + CLOUD RUN)
    */
   cookies: {
+    state: {
+      name: '__Secure-next-auth.state',
+      options: {
+        httpOnly: true,
+        sameSite: 'none',
+        path: '/',
+        secure: true,
+      },
+    },
     sessionToken: {
       name: '__Secure-next-auth.session-token',
       options: {
@@ -56,23 +64,16 @@ export const authOptions: NextAuthOptions = {
     },
   },
 
-  /**
-   * 🔐 JWT Callback
-   */
   callbacks: {
     async jwt({ token, user }) {
       if (user?.email) {
         const cleanEmail = user.email.toLowerCase().trim()
         token.role = cleanEmail === ADMIN_EMAIL ? 'admin' : 'fan'
       }
-
       if (!token.role) token.role = 'fan'
       return token
     },
 
-    /**
-     * 🧠 Session Callback
-     */
     async session({ session, token }) {
       if (session.user && token) {
         session.user.id = token.sub!
@@ -81,9 +82,6 @@ export const authOptions: NextAuthOptions = {
       return session
     },
 
-    /**
-     * 🚀 signIn Callback
-     */
     async signIn({ user, account }) {
       if (account?.provider === 'google' && user.email) {
         try {
@@ -101,29 +99,13 @@ export const authOptions: NextAuthOptions = {
           user.role = cleanEmail === ADMIN_EMAIL ? 'admin' : 'fan'
         }
       }
-
       return true
     },
   },
 
-  /**
-   * 📄 Páginas personalizadas
-   */
   pages: {
     signIn: '/auth/signin',
     error: '/auth/error',
-  },
-
-  /**
-   * 🔑 Secret
-   */
-  secret: process.env.NEXTAUTH_SECRET,
-
-  /**
-   * 📦 Sesión por JWT
-   */
-  session: {
-    strategy: 'jwt',
   },
 }
 
