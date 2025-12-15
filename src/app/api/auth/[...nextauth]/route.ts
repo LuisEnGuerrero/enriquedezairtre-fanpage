@@ -3,66 +3,56 @@ import GoogleProvider from 'next-auth/providers/google'
 import { syncUserDirect } from '@/app/api/auth/sync-user/route'
 
 const ADMIN_EMAIL = (process.env.ADM1N_EM41L || 'zairtre@gmail.com')
-  .toLowerCase()
-  .trim()
+.toLowerCase()
+.trim()
 
 export const authOptions: NextAuthOptions = {
   debug: true,
+  
+  useSecureCookies: true,
+  
+  /**
+   * 🔥 COOKIE CONFIGURATION (CRÍTICO PARA FIREBASE + CLOUD RUN)
+   */
+  
+  cookies: {
+    sessionToken: {
+      name: "__Secure-next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+      },  
+    },  
+    callbackUrl: {
+      name: "__Secure-next-auth.callback-url",
+      options: {
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+      },  
+    },  
+    csrfToken: {
+      name: "__Secure-next-auth.csrf-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+      },  
+    },  
+  },  
 
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       allowDangerousEmailAccountLinking: true,
-    }),
-  ],
-
-  session: {
-    strategy: 'jwt',
-  },
+    }),  
+  ],  
 
   secret: process.env.NEXTAUTH_SECRET,
-
-  /**
-   * 🔥 COOKIE CONFIGURATION (CRÍTICO PARA FIREBASE + CLOUD RUN)
-   */
-  cookies: {
-    state: {
-      name: '__Secure-next-auth.state',
-      options: {
-        httpOnly: true,
-        sameSite: 'none',
-        path: '/',
-        secure: true,
-      },
-    },
-    sessionToken: {
-      name: '__Secure-next-auth.session-token',
-      options: {
-        httpOnly: true,
-        sameSite: 'none',
-        path: '/',
-        secure: true,
-      },
-    },
-    callbackUrl: {
-      name: '__Secure-next-auth.callback-url',
-      options: {
-        sameSite: 'none',
-        path: '/',
-        secure: true,
-      },
-    },
-    csrfToken: {
-      name: '__Host-next-auth.csrf-token',
-      options: {
-        httpOnly: true,
-        sameSite: 'none',
-        path: '/',
-        secure: true,
-      },
-    },
-  },
 
   callbacks: {
     async jwt({ token, user }) {
@@ -103,10 +93,14 @@ export const authOptions: NextAuthOptions = {
     },
   },
 
+  
   pages: {
     signIn: '/auth/signin',
     error: '/auth/error',
   },
+  
+  session: { strategy: "jwt" },
+
 }
 
 const handler = NextAuth(authOptions)
