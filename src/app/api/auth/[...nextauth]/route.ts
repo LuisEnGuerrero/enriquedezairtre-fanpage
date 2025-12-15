@@ -12,6 +12,7 @@ export const authOptions: NextAuthOptions = {
   /**
    * 🔥 CRÍTICO PARA FIREBASE + CLOUD RUN
    */
+  trustHost: true,
   useSecureCookies: true,
 
   providers: [
