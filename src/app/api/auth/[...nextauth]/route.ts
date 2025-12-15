@@ -1,19 +1,13 @@
-import NextAuth, { NextAuthOptions } from "next-auth"
-import GoogleProvider from "next-auth/providers/google"
-import { syncUserDirect } from "@/app/api/auth/sync-user/route"
+import NextAuth, { NextAuthOptions } from 'next-auth'
+import GoogleProvider from 'next-auth/providers/google'
+import { syncUserDirect } from '@/app/api/auth/sync-user/route'
 
-const ADMIN_EMAIL = (process.env.ADM1N_EM41L || "zairtre@gmail.com")
+const ADMIN_EMAIL = (process.env.ADM1N_EM41L || 'zairtre@gmail.com')
   .toLowerCase()
   .trim()
 
 export const authOptions: NextAuthOptions = {
   debug: true,
-
-  /**
-   * 🔥 CRÍTICO PARA FIREBASE + CLOUD RUN
-   */
-  trustHost: true,
-  useSecureCookies: true,
 
   providers: [
     GoogleProvider({
@@ -26,16 +20,16 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
 
   callbacks: {
     async jwt({ token, user }) {
       if (user?.email) {
-        const cleanEmail = user.email.toLowerCase().trim()
-        token.role = cleanEmail === ADMIN_EMAIL ? "admin" : "fan"
+        const email = user.email.toLowerCase().trim()
+        token.role = email === ADMIN_EMAIL ? 'admin' : 'fan'
       }
-      if (!token.role) token.role = "fan"
+      if (!token.role) token.role = 'fan'
       return token
     },
 
@@ -48,20 +42,18 @@ export const authOptions: NextAuthOptions = {
     },
 
     async signIn({ user, account }) {
-      if (account?.provider === "google" && user.email) {
+      if (account?.provider === 'google' && user.email) {
         try {
           const dbUser = await syncUserDirect({
             email: user.email,
             name: user.name,
             image: user.image,
           })
-
           user.id = dbUser.id
           user.role = dbUser.role
-        } catch (error) {
-          console.error("🔥 Error syncing user:", error)
-          const cleanEmail = user.email.toLowerCase().trim()
-          user.role = cleanEmail === ADMIN_EMAIL ? "admin" : "fan"
+        } catch (err) {
+          const email = user.email.toLowerCase().trim()
+          user.role = email === ADMIN_EMAIL ? 'admin' : 'fan'
         }
       }
       return true
@@ -69,8 +61,8 @@ export const authOptions: NextAuthOptions = {
   },
 
   pages: {
-    signIn: "/auth/signin",
-    error: "/auth/error",
+    signIn: '/auth/signin',
+    error: '/auth/error',
   },
 }
 
