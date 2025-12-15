@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthOptions } from "next-auth"
+import NextAuth, { type NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import { syncUserDirect } from "@/app/api/auth/sync-user/route"
 
@@ -9,6 +9,9 @@ const ADMIN_EMAIL = (process.env.ADM1N_EM41L || "zairtre@gmail.com")
 export const authOptions: NextAuthOptions = {
   debug: true,
 
+  // Cloud Run + proxy + dominio custom
+  trustHost: true,
+
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -17,11 +20,10 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
+  // OBLIGATORIO en producción
   secret: process.env.NEXTAUTH_SECRET,
 
-  session: {
-    strategy: "jwt",
-  },
+  session: { strategy: "jwt" },
 
   callbacks: {
     async jwt({ token, user }) {
@@ -34,9 +36,9 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ session, token }) {
-      if (session.user && token) {
-        session.user.id = token.sub!
-        session.user.role = token.role as string
+      if (session.user && token?.sub) {
+        ;(session.user as any).id = token.sub
+        ;(session.user as any).role = token.role as string
       }
       return session
     },
@@ -50,12 +52,12 @@ export const authOptions: NextAuthOptions = {
             image: user.image,
           })
 
-          user.id = dbUser.id
-          user.role = dbUser.role
+          ;(user as any).id = dbUser.id
+          ;(user as any).role = dbUser.role
         } catch (error) {
           console.error("🔥 Error syncing user:", error)
           const cleanEmail = user.email.toLowerCase().trim()
-          user.role = cleanEmail === ADMIN_EMAIL ? "admin" : "fan"
+          ;(user as any).role = cleanEmail === ADMIN_EMAIL ? "admin" : "fan"
         }
       }
       return true
