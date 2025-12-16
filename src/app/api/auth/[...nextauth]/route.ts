@@ -1,10 +1,7 @@
-import NextAuth, { type NextAuthOptions } from "next-auth"
+import NextAuth, { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import { syncUserDirect } from "@/app/api/auth/sync-user/route"
 
-/**
- * Normalizar el email del ADMIN para evitar fallos por mayúsculas
- */
 const ADMIN_EMAIL = (process.env.ADM1N_EM41L || "zairtre@gmail.com")
   .toLowerCase()
   .trim()
@@ -12,17 +9,72 @@ const ADMIN_EMAIL = (process.env.ADM1N_EM41L || "zairtre@gmail.com")
 export const authOptions: NextAuthOptions = {
   debug: process.env.NEXTAUTH_DEBUG === "true",
 
-  /**
-   * Cloud Run + reverse proxy / custom domain:
-   * Esto evita problemas de host detection.
-   */
-  trustHost: true,
+  // En Cloud Run + HTTPS + dominio custom
+  useSecureCookies: true,
 
-  /**
-   * En producción (HTTPS) fuerza cookies seguras automáticamente.
-   * NO sobrescribas "cookies:" manualmente o rompes el OAuth (state/pkce).
-   */
-  useSecureCookies: process.env.NODE_ENV === "production",
+  // IMPORTANTE: si estás en NextAuth v4, el trust host lo haces por env:
+  // NEXTAUTH_TRUST_HOST=true
+  // (si fuera v5, sería trustHost: true)
+
+  cookies: {
+    sessionToken: {
+      name: "__Secure-next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+      },
+    },
+    callbackUrl: {
+      name: "__Secure-next-auth.callback-url",
+      options: {
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+      },
+    },
+    csrfToken: {
+      name: "__Secure-next-auth.csrf-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+      },
+    },
+
+    // 🔥 ESTAS DOS SON LAS QUE TE ESTÁN MATANDO (state/pkce)
+    state: {
+      name: "__Secure-next-auth.state",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+      },
+    },
+    pkceCodeVerifier: {
+      name: "__Secure-next-auth.pkce.code_verifier",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+      },
+    },
+
+    // (Opcional pero recomendado para Google OIDC)
+    nonce: {
+      name: "__Secure-next-auth.nonce",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+      },
+    },
+  },
 
   providers: [
     GoogleProvider({
@@ -34,8 +86,11 @@ export const authOptions: NextAuthOptions = {
 
   secret: process.env.NEXTAUTH_SECRET,
 
-  session: {
-    strategy: "jwt",
+  session: { strategy: "jwt" },
+
+  pages: {
+    signIn: "/auth/signin",
+    error: "/auth/error",
   },
 
   callbacks: {
@@ -50,8 +105,8 @@ export const authOptions: NextAuthOptions = {
 
     async session({ session, token }) {
       if (session.user && token) {
-        session.user.id = token.sub!
-        session.user.role = token.role as string
+        ;(session.user as any).id = token.sub
+        ;(session.user as any).role = token.role
       }
       return session
     },
@@ -65,21 +120,16 @@ export const authOptions: NextAuthOptions = {
             image: user.image,
           })
 
-          user.id = dbUser.id
-          user.role = dbUser.role
+          ;(user as any).id = dbUser.id
+          ;(user as any).role = dbUser.role
         } catch (error) {
-          console.error("🔥 Error syncing user via direct DB call:", error)
+          console.error("🔥 Error syncing user:", error)
           const cleanEmail = user.email.toLowerCase().trim()
-          user.role = cleanEmail === ADMIN_EMAIL ? "admin" : "fan"
+          ;(user as any).role = cleanEmail === ADMIN_EMAIL ? "admin" : "fan"
         }
       }
       return true
     },
-  },
-
-  pages: {
-    signIn: "/auth/signin",
-    error: "/auth/error",
   },
 }
 
