@@ -2,15 +2,27 @@ import NextAuth, { type NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import { syncUserDirect } from "@/app/api/auth/sync-user/route"
 
+/**
+ * Normalizar el email del ADMIN para evitar fallos por mayúsculas
+ */
 const ADMIN_EMAIL = (process.env.ADM1N_EM41L || "zairtre@gmail.com")
   .toLowerCase()
   .trim()
 
 export const authOptions: NextAuthOptions = {
-  debug: true,
+  debug: process.env.NEXTAUTH_DEBUG === "true",
 
-  // Cloud Run + proxy + dominio custom
+  /**
+   * Cloud Run + reverse proxy / custom domain:
+   * Esto evita problemas de host detection.
+   */
   trustHost: true,
+
+  /**
+   * En producción (HTTPS) fuerza cookies seguras automáticamente.
+   * NO sobrescribas "cookies:" manualmente o rompes el OAuth (state/pkce).
+   */
+  useSecureCookies: process.env.NODE_ENV === "production",
 
   providers: [
     GoogleProvider({
@@ -20,10 +32,11 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  // OBLIGATORIO en producción
   secret: process.env.NEXTAUTH_SECRET,
 
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+  },
 
   callbacks: {
     async jwt({ token, user }) {
@@ -36,9 +49,9 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ session, token }) {
-      if (session.user && token?.sub) {
-        ;(session.user as any).id = token.sub
-        ;(session.user as any).role = token.role as string
+      if (session.user && token) {
+        session.user.id = token.sub!
+        session.user.role = token.role as string
       }
       return session
     },
@@ -52,12 +65,12 @@ export const authOptions: NextAuthOptions = {
             image: user.image,
           })
 
-          ;(user as any).id = dbUser.id
-          ;(user as any).role = dbUser.role
+          user.id = dbUser.id
+          user.role = dbUser.role
         } catch (error) {
-          console.error("🔥 Error syncing user:", error)
+          console.error("🔥 Error syncing user via direct DB call:", error)
           const cleanEmail = user.email.toLowerCase().trim()
-          ;(user as any).role = cleanEmail === ADMIN_EMAIL ? "admin" : "fan"
+          user.role = cleanEmail === ADMIN_EMAIL ? "admin" : "fan"
         }
       }
       return true
