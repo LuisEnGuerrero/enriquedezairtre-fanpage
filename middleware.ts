@@ -1,46 +1,51 @@
 // middleware.ts
-import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
-import { getToken } from "next-auth/jwt"
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-const PRIMARY_HOST = "zairtre.site"
-const ALLOWED_HOSTS = new Set([PRIMARY_HOST, "localhost:3000"])
+const CANONICAL_HOST = "zairtre.site";
 
-export async function middleware(req: NextRequest) {
-  const url = req.nextUrl
-  const host = req.headers.get("host") || ""
+function isCloudRunHost(host: string) {
+  // cubre *.run.app y *.a.run.app
+  return host.endsWith(".run.app") || host.endsWith(".a.run.app");
+}
 
-  // ✅ 1) Si llega por *.a.run.app (o cualquier host no permitido), redirige al dominio real
-  //    (IMPORTANTE: conserva pathname + search)
-  if (host && !ALLOWED_HOSTS.has(host)) {
-    const dest = new URL(url.pathname + url.search, `https://${PRIMARY_HOST}`)
-    return NextResponse.redirect(dest, 308)
+export async function middleware(request: NextRequest) {
+  const host = request.headers.get("host") || "";
+  const { pathname, search } = request.nextUrl;
+
+  // 0) Si entra por Cloud Run domain -> redirigir al dominio canónico preservando path+query
+  if (isCloudRunHost(host)) {
+    const url = new URL(`https://${CANONICAL_HOST}${pathname}${search}`);
+    return NextResponse.redirect(url, 308);
   }
 
-  // ✅ 2) Tu protección /admin (se mantiene)
-  if (url.pathname.startsWith("/admin")) {
+  // 1) Proteger /admin/*
+  if (pathname.startsWith("/admin")) {
     const token = await getToken({
-      req,
+      req: request,
       secret: process.env.NEXTAUTH_SECRET,
-    })
+    });
 
     if (!token) {
-      const loginUrl = new URL("/auth/signin", url.origin)
-      loginUrl.searchParams.set("callbackUrl", url.pathname)
-      return NextResponse.redirect(loginUrl)
+      const loginUrl = new URL("/auth/signin", request.url);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(loginUrl);
     }
 
     if ((token as any).role !== "admin") {
-      const deniedUrl = new URL("/auth/error", url.origin)
-      deniedUrl.searchParams.set("error", "AccessDenied")
-      return NextResponse.redirect(deniedUrl)
+      const deniedUrl = new URL("/auth/error", request.url);
+      deniedUrl.searchParams.set("error", "AccessDenied");
+      return NextResponse.redirect(deniedUrl);
     }
   }
 
-  return NextResponse.next()
+  return NextResponse.next();
 }
 
 export const config = {
-  // ✅ importantísimo: incluye /api/auth/* para que el callback de Google NO se procese en *.a.run.app
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
-}
+  matcher: [
+    // aplica a todo excepto assets estáticos típicos
+    "/((?!_next/static|_next/image|favicon.ico).*)",
+  ],
+};
