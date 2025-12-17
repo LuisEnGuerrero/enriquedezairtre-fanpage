@@ -1,38 +1,46 @@
 // middleware.ts
-
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { getToken } from "next-auth/jwt"
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+const PRIMARY_HOST = "zairtre.site"
+const ALLOWED_HOSTS = new Set([PRIMARY_HOST, "localhost:3000"])
 
-  // Solo aplicamos lógica a rutas /admin/*
-  if (pathname.startsWith("/admin")) {
+export async function middleware(req: NextRequest) {
+  const url = req.nextUrl
+  const host = req.headers.get("host") || ""
+
+  // ✅ 1) Si llega por *.a.run.app (o cualquier host no permitido), redirige al dominio real
+  //    (IMPORTANTE: conserva pathname + search)
+  if (host && !ALLOWED_HOSTS.has(host)) {
+    const dest = new URL(url.pathname + url.search, `https://${PRIMARY_HOST}`)
+    return NextResponse.redirect(dest, 308)
+  }
+
+  // ✅ 2) Tu protección /admin (se mantiene)
+  if (url.pathname.startsWith("/admin")) {
     const token = await getToken({
-      req: request,
+      req,
       secret: process.env.NEXTAUTH_SECRET,
     })
 
-    // 1) No autenticado → enviar a login
     if (!token) {
-      const loginUrl = new URL("/auth/signin", request.url)
-      loginUrl.searchParams.set("callbackUrl", pathname)
+      const loginUrl = new URL("/auth/signin", url.origin)
+      loginUrl.searchParams.set("callbackUrl", url.pathname)
       return NextResponse.redirect(loginUrl)
     }
 
-    // 2) Autenticado pero sin rol admin → AccessDenied
-    if (token.role !== "admin") {
-      const deniedUrl = new URL("/auth/error", request.url)
+    if ((token as any).role !== "admin") {
+      const deniedUrl = new URL("/auth/error", url.origin)
       deniedUrl.searchParams.set("error", "AccessDenied")
       return NextResponse.redirect(deniedUrl)
     }
   }
 
-  // Todas las demás rutas pasan normal
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  // ✅ importantísimo: incluye /api/auth/* para que el callback de Google NO se procese en *.a.run.app
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 }
