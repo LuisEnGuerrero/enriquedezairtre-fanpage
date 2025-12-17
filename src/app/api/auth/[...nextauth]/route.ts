@@ -1,5 +1,5 @@
 // app/api/auth/[...nextauth]/route.ts
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, { type NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { syncUserDirect } from "@/app/api/auth/sync-user/route";
 
@@ -7,16 +7,13 @@ const ADMIN_EMAIL = (process.env.ADM1N_EM41L || "zairtre@gmail.com")
   .toLowerCase()
   .trim();
 
-const isProd = process.env.NODE_ENV === "production";
-const COOKIE_DOMAIN = "zairtre.site";
-
 export const authOptions: NextAuthOptions = {
   debug: true,
   secret: process.env.NEXTAUTH_SECRET,
-  session: { strategy: "jwt" },
 
-  // ✅ recomendado en proxies/CDN/Cloud Run
-  useSecureCookies: isProd,
+  // En Cloud Run SIEMPRE estás en HTTPS hacia el usuario final,
+  // aunque internamente haya proxy.
+  useSecureCookies: true,
 
   providers: [
     GoogleProvider({
@@ -26,51 +23,12 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  // ✅ cookies consistentes para zairtre.site
-  cookies: isProd
-    ? {
-        state: {
-          name: "__Secure-next-auth.state",
-          options: {
-            httpOnly: true,
-            sameSite: "lax",
-            path: "/",
-            secure: true,
-            domain: `.${COOKIE_DOMAIN}`,
-          },
-        },
-        pkceCodeVerifier: {
-          name: "__Secure-next-auth.pkce.code_verifier",
-          options: {
-            httpOnly: true,
-            sameSite: "lax",
-            path: "/",
-            secure: true,
-            domain: `.${COOKIE_DOMAIN}`,
-          },
-        },
-        callbackUrl: {
-          name: "__Secure-next-auth.callback-url",
-          options: {
-            sameSite: "lax",
-            path: "/",
-            secure: true,
-            domain: `.${COOKIE_DOMAIN}`,
-          },
-        },
-        sessionToken: {
-          name: "__Secure-next-auth.session-token",
-          options: {
-            httpOnly: true,
-            sameSite: "lax",
-            path: "/",
-            secure: true,
-            domain: `.${COOKIE_DOMAIN}`,
-          },
-        },
-        // csrfToken: déjalo default (mejor no tocarlo)
-      }
-    : undefined,
+  session: { strategy: "jwt" },
+
+  // ✅ Importante: deja que NextAuth maneje cookies default.
+  // Tus overrides de cookies/domain suelen ser la fuente del "state missing"
+  // en setups con proxy + dominios.
+  // cookies: { ... }   <-- NO
 
   callbacks: {
     async signIn({ user, account }) {
@@ -101,21 +59,23 @@ export const authOptions: NextAuthOptions = {
         token.email = email;
         token.role = email === ADMIN_EMAIL ? "admin" : "fan";
       }
+
       if (user && (user as any).role) token.role = (user as any).role;
       if (!token.role) token.role = "fan";
+
       return token;
     },
 
     async session({ session, token }) {
       if (session.user && token) {
         (session.user as any).id = token.sub;
-        (session.user as any).role = (token as any).role;
+        (session.user as any).role = token.role;
       }
       return session;
     },
 
+    // ✅ Obliga a volver siempre al origen correcto
     async redirect({ url, baseUrl }) {
-      // ✅ evita que te “escape” a run.app u otros hosts
       if (url.startsWith("/")) return `${baseUrl}${url}`;
       try {
         const u = new URL(url);
