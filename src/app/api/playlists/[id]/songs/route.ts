@@ -1,8 +1,7 @@
+﻿import { requireUser } from "@/lib/auth";
 // src/app/api/playlists/[id]/songs/route.ts
 
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../../auth/[...nextauth]/route";
 
 import { firestore } from "@/lib/firebase";
 import {
@@ -18,7 +17,7 @@ import {
 
 
 /* ============================================================
-   GET → Obtener canciones de una playlist oficial
+   GET â†’ Obtener canciones de una playlist oficial
    ============================================================ */
 export async function GET(
   request: Request,
@@ -54,25 +53,19 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error("🔥 Error GET playlist/songs:", error);
+    console.error("ðŸ”¥ Error GET playlist/songs:", error);
     return NextResponse.json({ error: "Error fetching playlist songs" }, { status: 500 });
   }
 }
 
 /* ============================================================
-   POST → Añadir una canción a playlist oficial (ADMIN)
+   POST â†’ AÃ±adir una canciÃ³n a playlist oficial (ADMIN)
    ============================================================ */
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session || session.user?.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const { id } = params;
     const { songId } = await request.json();
 
@@ -100,7 +93,7 @@ export async function POST(
     });
 
   } catch (error) {
-    console.error("🔥 Error POST playlist/songs:", error);
+    console.error("ðŸ”¥ Error POST playlist/songs:", error);
     return NextResponse.json(
       { error: "Error adding song to playlist" },
       { status: 500 }
@@ -109,19 +102,13 @@ export async function POST(
 }
 
 /* ============================================================
-   DELETE → Eliminar una canción de playlist oficial (ADMIN)
+   DELETE â†’ Eliminar una canciÃ³n de playlist oficial (ADMIN)
    ============================================================ */
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session || session.user?.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const { id } = params;
     const { songId } = await request.json();
 
@@ -149,7 +136,7 @@ export async function DELETE(
     });
 
   } catch (error) {
-    console.error("🔥 Error DELETE playlist/songs:", error);
+    console.error("ðŸ”¥ Error DELETE playlist/songs:", error);
     return NextResponse.json(
       { error: "Error removing song from playlist" },
       { status: 500 }

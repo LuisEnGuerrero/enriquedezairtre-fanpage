@@ -1,8 +1,7 @@
 // src/app/api/admin/export/route.ts
 
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { requireAdmin } from "@/lib/auth";
 
 import { firestore } from "@/lib/firebase";
 import {
@@ -12,51 +11,43 @@ import {
 
 /**
  * GET → Exportar todos los datos principales de Firestore
- * en un JSON descargable.
+ * en un JSON descargable (solo ADMIN).
  */
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session || session.user?.role !== "admin") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    // 🔐 Seguridad: solo administradores
+    await requireAdmin();
 
     // -------------------------------------------
     // 1) SONGS
     // -------------------------------------------
     const songsSnap = await getDocs(collection(firestore, "songs"));
-    const songs = songsSnap.docs.map((docSnap) => ({
+    const songs = songsSnap.docs.map(docSnap => ({
       id: docSnap.id,
-      ...(docSnap.data() as any),
+      ...docSnap.data(),
     }));
 
     // -------------------------------------------
-    // 2) PLAYLISTS + sus SONGS (subcolección)
+    // 2) PLAYLISTS + subcolección SONGS
     // -------------------------------------------
     const playlistsSnap = await getDocs(collection(firestore, "playlists"));
     const playlists: any[] = [];
 
     for (const playlistDoc of playlistsSnap.docs) {
-      const playlistData = playlistDoc.data();
       const playlistId = playlistDoc.id;
 
-      // Subcolección: playlists/{id}/songs
       const playlistSongsSnap = await getDocs(
         collection(firestore, "playlists", playlistId, "songs")
       );
 
-      const playlistSongs = playlistSongsSnap.docs.map((songDoc) => ({
+      const playlistSongs = playlistSongsSnap.docs.map(songDoc => ({
         id: songDoc.id,
-        ...(songDoc.data() as any),
+        ...songDoc.data(),
       }));
 
       playlists.push({
         id: playlistId,
-        ...playlistData,
+        ...playlistDoc.data(),
         songs: playlistSongs,
       });
     }
@@ -65,58 +56,58 @@ export async function GET() {
     // 3) USERS
     // -------------------------------------------
     const usersSnap = await getDocs(collection(firestore, "users"));
-    const users = usersSnap.docs.map((docSnap) => ({
+    const users = usersSnap.docs.map(docSnap => ({
       id: docSnap.id,
-      ...(docSnap.data() as any),
+      ...docSnap.data(),
     }));
 
     // -------------------------------------------
     // 4) FAVORITES
     // -------------------------------------------
     const favoritesSnap = await getDocs(collection(firestore, "favorites"));
-    const favorites = favoritesSnap.docs.map((docSnap) => ({
+    const favorites = favoritesSnap.docs.map(docSnap => ({
       id: docSnap.id,
-      ...(docSnap.data() as any),
+      ...docSnap.data(),
     }));
 
     // -------------------------------------------
     // 5) REWARDS
     // -------------------------------------------
     const rewardsSnap = await getDocs(collection(firestore, "rewards"));
-    const rewards = rewardsSnap.docs.map((docSnap) => ({
+    const rewards = rewardsSnap.docs.map(docSnap => ({
       id: docSnap.id,
-      ...(docSnap.data() as any),
+      ...docSnap.data(),
     }));
 
     // -------------------------------------------
     // 6) ACTIVITIES
     // -------------------------------------------
     const activitiesSnap = await getDocs(collection(firestore, "activities"));
-    const activities = activitiesSnap.docs.map((docSnap) => ({
+    const activities = activitiesSnap.docs.map(docSnap => ({
       id: docSnap.id,
-      ...(docSnap.data() as any),
+      ...docSnap.data(),
     }));
 
     // -------------------------------------------
-    // 7) USER PLAYLISTS (playlists personales)
+    // 7) USER PLAYLISTS
     // -------------------------------------------
     const userPlaylistsSnap = await getDocs(
       collection(firestore, "userPlaylists")
     );
-    const userPlaylists = userPlaylistsSnap.docs.map((docSnap) => ({
+    const userPlaylists = userPlaylistsSnap.docs.map(docSnap => ({
       id: docSnap.id,
-      ...(docSnap.data() as any),
+      ...docSnap.data(),
     }));
 
     // -------------------------------------------
-    // 8) USER PLAYLIST SONGS (relación playlist ↔ song)
+    // 8) USER PLAYLIST SONGS
     // -------------------------------------------
     const userPlaylistSongsSnap = await getDocs(
       collection(firestore, "userPlaylistSongs")
     );
-    const userPlaylistSongs = userPlaylistSongsSnap.docs.map((docSnap) => ({
+    const userPlaylistSongs = userPlaylistSongsSnap.docs.map(docSnap => ({
       id: docSnap.id,
-      ...(docSnap.data() as any),
+      ...docSnap.data(),
     }));
 
     // -------------------------------------------
@@ -125,7 +116,8 @@ export async function GET() {
     const exportData = {
       version: "2.0",
       engine: "firestore",
-      exportDate: new Date().toISOString(),
+      exportedAt: new Date().toISOString(),
+      environment: process.env.NODE_ENV ?? "unknown",
       data: {
         songs,
         playlists,
@@ -145,7 +137,11 @@ export async function GET() {
           'attachment; filename="enrique-zairtre-backup.json"',
       },
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message === "UNAUTHORIZED" || error?.message === "FORBIDDEN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     console.error("🔥 Error exporting data:", error);
     return NextResponse.json(
       { error: "Error exporting data" },

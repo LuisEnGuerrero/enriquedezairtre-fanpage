@@ -2,21 +2,35 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Music, Users, ListMusic, Settings, LogOut } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { SongManager } from '@/components/admin/SongManager'
 import { PlaylistManager } from '@/components/admin/PlaylistManager'
 import { SettingsPanel } from '@/components/admin/SettingsPanel'
 import { FanManager } from '@/components/admin/FanManager'
 
+/* =========================
+   Types
+========================= */
+
+type AppUser = {
+  id: string
+  email: string
+  role: 'admin' | 'fan'
+  name?: string
+  image?: string
+}
+
 export default function AdminDashboard() {
-  const { data: session, status } = useSession()
   const router = useRouter()
+
+  const [user, setUser] = useState<AppUser | null>(null)
+  const [checkingAuth, setCheckingAuth] = useState(true)
 
   const [stats, setStats] = useState({
     totalSongs: 0,
@@ -24,63 +38,96 @@ export default function AdminDashboard() {
     totalPlays: 0,
   })
 
-  //
-  // ðŸ”’ 1. ProtecciÃ³n de acceso en /admin
-  //
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.replace('/auth/signin')
-      return
-    }
+  /* =========================
+     ðŸ”’ Auth check (client)
+     Usa session cookie + /api/me
+  ========================= */
 
-    if (status === 'authenticated' && session?.user?.role !== 'admin') {
-      router.replace('/auth/error?error=AccessDenied')
-      return
-    }
-  }, [status, session, router])
-
-  //
-  // ðŸ“Š 2. Cargar estadÃ­sticas del panel
-  //
   useEffect(() => {
-    const fetchStats = async () => {
+    const checkAuth = async () => {
       try {
-        const response = await fetch('/api/admin/stats')
-        if (response.ok) {
-          const data = await response.json()
-          setStats(data)
+        const res = await fetch('/api/me')
+        if (!res.ok) throw new Error('unauthorized')
+
+        const data = await res.json()
+        const me: AppUser | null = data?.user ?? null
+
+        if (!me) {
+          router.replace('/admin/login')
+          return
         }
-      } catch (error) {
-        console.error('Error fetching stats:', error)
+
+        if (me.role !== 'admin') {
+          router.replace('/auth/error?error=AccessDenied')
+          return
+        }
+
+        setUser(me)
+      } catch {
+        router.replace('/admin/login')
+      } finally {
+        setCheckingAuth(false)
       }
     }
 
-    if (session?.user?.role === 'admin') {
-      fetchStats()
-    }
-  }, [session])
+    checkAuth()
+  }, [router])
 
-  //
-  // ðŸ”„ Loader mientras se verifica la sesiÃ³n
-  //
-  if (status === 'loading' || !session) {
+  /* =========================
+     ðŸ“Š Load admin stats
+  ========================= */
+
+  useEffect(() => {
+    if (!user || user.role !== 'admin') return
+
+    const fetchStats = async () => {
+      try {
+        const res = await fetch('/api/admin/stats')
+        if (res.ok) {
+          setStats(await res.json())
+        }
+      } catch (e) {
+        console.error('Error fetching stats:', e)
+      }
+    }
+
+    fetchStats()
+  }, [user])
+
+  /* =========================
+     ðŸšª Logout
+  ========================= */
+
+  const handleLogout = async () => {
+    await fetch('/api/logout', { method: 'POST' })
+    toast.success('SesiÃ³n cerrada')
+    router.replace('/')
+  }
+
+  /* =========================
+     Loader while checking auth
+  ========================= */
+
+  if (checkingAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="text-white text-lg">Verificando sesiÃ³n...</div>
+        <div className="text-white text-lg">Verificando sesiÃ³nâ€¦</div>
       </div>
     )
   }
 
-  //
-  // ðŸ”‘ Si no es admin, evitamos renderizar el panel
-  //
-  if (session.user.role !== 'admin') {
+  /* =========================
+     Safety: should not render
+  ========================= */
+
+  if (!user || user.role !== 'admin') {
     return null
   }
 
-  //
-  // âœ… Panel administrativo
-  //
+  /* =========================
+     âœ… Admin panel
+  ========================= */
+
   return (
     <Suspense fallback={<div>Cargando...</div>}>
       <div className="min-h-screen bg-gray-900 text-white">
@@ -102,17 +149,17 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <img
-                  src={session.user?.image || ''}
-                  alt={session.user?.name || ''}
+                  src={user.image || '/default-avatar.png'}
+                  alt={user.name || user.email}
                   className="w-8 h-8 rounded-full"
                 />
-                <span className="text-sm">{session.user?.name}</span>
+                <span className="text-sm">{user.name || user.email}</span>
               </div>
 
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => signOut({ callbackUrl: '/' })}
+                onClick={handleLogout}
                 className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
               >
                 <LogOut className="w-4 h-4 mr-2" />
@@ -122,7 +169,7 @@ export default function AdminDashboard() {
           </div>
         </header>
 
-        {/* Main Content */}
+        {/* Main */}
         <main className="container mx-auto px-4 py-8">
 
           {/* Stats */}

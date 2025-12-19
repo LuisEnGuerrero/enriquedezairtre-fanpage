@@ -1,6 +1,7 @@
+﻿// src/app/api/user-playlists/[id]/songs/route.ts
+
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../../auth/[...nextauth]/route";
+import { requireUser } from "@/lib/auth";
 
 import { firestore } from "@/lib/firebase";
 import {
@@ -18,17 +19,14 @@ import {
 const now = () => Date.now();
 
 /* ============================================================
-   POST → Añadir canción a playlist
+   POST → Añadir canción a playlist del usuario
    ============================================================ */
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const user = await requireUser();
 
     const { songId } = await request.json();
     const playlistId = params.id;
@@ -41,7 +39,7 @@ export async function POST(
     }
 
     /* ------------------------------------------------------------
-       1) Validar que la playlist existe y es del usuario
+       1) Validar que la playlist existe y pertenece al usuario
        ------------------------------------------------------------ */
     const plRef = collection(firestore, "userPlaylists");
     const plQuery = query(plRef, where("__name__", "==", playlistId));
@@ -55,7 +53,7 @@ export async function POST(
     }
 
     const plData = plSnap.docs[0].data();
-    if (plData.userId !== session.user.id) {
+    if (plData.userId !== user.id) {
       return NextResponse.json(
         { error: "Access denied" },
         { status: 403 }
@@ -96,7 +94,7 @@ export async function POST(
         : (posSnap.docs[posSnap.docs.length - 1].data().position ?? 0) + 1;
 
     /* ------------------------------------------------------------
-       4) Crear entrada userPlaylistSong
+       4) Crear relación playlist ↔ song
        ------------------------------------------------------------ */
     const newPlSong = {
       playlistId,
@@ -110,23 +108,23 @@ export async function POST(
     /* ------------------------------------------------------------
        5) Registrar actividad
        ------------------------------------------------------------ */
-    const activityRef = collection(firestore, "activities");
-    await addDoc(activityRef, {
-      userId: session.user.id,
+    await addDoc(collection(firestore, "activities"), {
+      userId: user.id,
       songId,
       type: "playlist_add_song",
-      metadata: JSON.stringify({
+      metadata: {
         playlistId,
         playlistName: plData.name,
-      }),
+      },
       createdAt: now(),
     });
 
-    return NextResponse.json({
-      ...newPlSong,
-      id: songId,
-    });
-  } catch (error) {
+    return NextResponse.json(newPlSong);
+  } catch (error: any) {
+    if (error?.message === "UNAUTHORIZED") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     console.error("🔥 Error adding song to playlist:", error);
     return NextResponse.json(
       { error: "Error adding song to playlist" },
@@ -136,17 +134,14 @@ export async function POST(
 }
 
 /* ============================================================
-   DELETE → Eliminar canción de playlist
+   DELETE → Eliminar canción de playlist del usuario
    ============================================================ */
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const user = await requireUser();
 
     const { songId } = await request.json();
     const playlistId = params.id;
@@ -159,7 +154,7 @@ export async function DELETE(
     }
 
     /* ------------------------------------------------------------
-       1) Verificar que playlist pertenece al usuario
+       1) Validar propiedad de la playlist
        ------------------------------------------------------------ */
     const plRef = collection(firestore, "userPlaylists");
     const plQuery = query(plRef, where("__name__", "==", playlistId));
@@ -173,8 +168,7 @@ export async function DELETE(
     }
 
     const plData = plSnap.docs[0].data();
-
-    if (plData.userId !== session.user.id) {
+    if (plData.userId !== user.id) {
       return NextResponse.json(
         { error: "Access denied" },
         { status: 403 }
@@ -182,7 +176,7 @@ export async function DELETE(
     }
 
     /* ------------------------------------------------------------
-       2) Eliminar la canción
+       2) Eliminar canción
        ------------------------------------------------------------ */
     const plSongsRef = collection(firestore, "userPlaylistSongs");
     const delQuery = query(
@@ -192,8 +186,8 @@ export async function DELETE(
     );
 
     const delSnap = await getDocs(delQuery);
-    for (const docItem of delSnap.docs) {
-      await deleteDoc(doc(firestore, "userPlaylistSongs", docItem.id));
+    for (const d of delSnap.docs) {
+      await deleteDoc(doc(firestore, "userPlaylistSongs", d.id));
     }
 
     /* ------------------------------------------------------------
@@ -206,16 +200,20 @@ export async function DELETE(
     );
 
     const remainingSnap = await getDocs(remainingQuery);
-
     let pos = 1;
-    for (const docItem of remainingSnap.docs) {
-      await updateDoc(doc(firestore, "userPlaylistSongs", docItem.id), {
+
+    for (const d of remainingSnap.docs) {
+      await updateDoc(doc(firestore, "userPlaylistSongs", d.id), {
         position: pos++,
       });
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message === "UNAUTHORIZED") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     console.error("🔥 Error removing song from playlist:", error);
     return NextResponse.json(
       { error: "Error removing song from playlist" },

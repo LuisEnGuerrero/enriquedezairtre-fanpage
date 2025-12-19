@@ -1,7 +1,6 @@
+﻿import { requireUser } from "@/lib/auth";
 // src/app/api/songs/route.ts
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
 
 import { firestore } from "@/lib/firebase";
 import {
@@ -17,7 +16,7 @@ import {
 const now = () => Date.now();
 
 /* ============================================================
-   GET → Obtener todas las canciones publicadas
+   GET â†’ Obtener todas las canciones publicadas
    ============================================================ */
 export async function GET() {
   try {
@@ -35,7 +34,7 @@ export async function GET() {
 
     return NextResponse.json(songs);
   } catch (error) {
-    console.error("🔥 Error fetching songs:", error);
+    console.error("ðŸ”¥ Error fetching songs:", error);
     return NextResponse.json(
       { error: "Error fetching songs" },
       { status: 500 }
@@ -44,16 +43,12 @@ export async function GET() {
 }
 
 /* ============================================================
-   PUT → Actualizar canción (ADMIN)
+   PUT â†’ Actualizar canciÃ³n (ADMIN)
    ============================================================ */
 export async function PUT(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
 
-    // Validación ADMIN
-    if (!session || session.user?.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // ValidaciÃ³n ADMIN
 
     const body = await request.json();
     const { id, ...rest } = body;
@@ -74,7 +69,7 @@ export async function PUT(request: Request) {
 
     return NextResponse.json({ id, ...rest });
   } catch (error) {
-    console.error("🔥 Error updating song:", error);
+    console.error("ðŸ”¥ Error updating song:", error);
     return NextResponse.json(
       { error: "Error updating song" },
       { status: 500 }
@@ -83,16 +78,12 @@ export async function PUT(request: Request) {
 }
 
 /* ============================================================
-   DELETE → Eliminar canción (ADMIN)
+   DELETE â†’ Eliminar canciÃ³n (ADMIN)
    ============================================================ */
 export async function DELETE(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
 
-    // Validación ADMIN
-    if (!session || session.user?.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // ValidaciÃ³n ADMIN
 
     const { id } = await request.json();
 
@@ -109,7 +100,7 @@ export async function DELETE(request: Request) {
       message: "Song deleted successfully",
     });
   } catch (error) {
-    console.error("🔥 Error deleting song:", error);
+    console.error("ðŸ”¥ Error deleting song:", error);
     return NextResponse.json(
       { error: "Error deleting song" },
       { status: 500 }

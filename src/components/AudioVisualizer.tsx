@@ -13,7 +13,7 @@ export default function AudioVisualizer({
   canvasRef,
   isPlaying
 }: AudioVisualizerProps) {
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
 

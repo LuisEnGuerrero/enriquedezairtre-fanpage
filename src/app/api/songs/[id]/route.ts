@@ -1,23 +1,17 @@
-// src/app/api/songs/[id]/route.ts
+﻿// src/app/api/songs/[id]/route.ts
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { requireAdmin } from "@/lib/auth";
 
 import { firestore } from "@/lib/firebase";
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  deleteDoc,
-} from "firebase/firestore";
+import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 
 const now = () => Date.now();
 
 /* ============================================================
-   GET → Obtener una canción por ID
+   GET → Obtener una canción por ID (PÚBLICO)
    ============================================================ */
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -40,11 +34,9 @@ export async function GET(
       );
     }
 
-    const data = snapshot.data() as Record<string, any>;
-
     return NextResponse.json({
       id: snapshot.id,
-      ...data,
+      ...(snapshot.data() as Record<string, any>),
     });
   } catch (error) {
     console.error("🔥 Error fetching song by id:", error);
@@ -63,14 +55,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session || session.user?.role !== "admin") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    await requireAdmin(); // ✅ guard real
 
     const { id } = params;
     if (!id) {
@@ -83,7 +68,6 @@ export async function PUT(
     const body = await request.json();
 
     const songRef = doc(firestore, "songs", id);
-
     await updateDoc(songRef, {
       ...body,
       updatedAt: now(),
@@ -93,7 +77,14 @@ export async function PUT(
       id,
       ...body,
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message === "UNAUTHORIZED") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (error?.message === "FORBIDDEN") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     console.error("🔥 Error updating song by id:", error);
     return NextResponse.json(
       { error: "Error updating song" },
@@ -106,18 +97,11 @@ export async function PUT(
    DELETE → Eliminar canción (ADMIN)
    ============================================================ */
 export async function DELETE(
-  request: Request,
+  _request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session || session.user?.role !== "admin") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    await requireAdmin(); // ✅ guard real
 
     const { id } = params;
     if (!id) {
@@ -133,7 +117,14 @@ export async function DELETE(
     return NextResponse.json({
       message: "Song deleted successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message === "UNAUTHORIZED") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (error?.message === "FORBIDDEN") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     console.error("🔥 Error deleting song by id:", error);
     return NextResponse.json(
       { error: "Error deleting song" },

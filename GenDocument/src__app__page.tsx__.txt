@@ -1,8 +1,9 @@
 ﻿# page.tsx
+// src/app/page.tsx
+
 'use client'
 
 import { useState, useEffect, useRef, Suspense } from 'react'
-import { useSession, signIn, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import {
   Play,
@@ -25,7 +26,19 @@ import { Slider } from '@/components/ui/slider'
 import { toast } from 'sonner'
 import { Plus } from 'lucide-react'
 
+/* ============================
+   Tipos
+============================ */
+
 type RepeatMode = 'off' | 'all' | 'one'
+
+type AppUser = {
+  id: string
+  email: string
+  role: 'admin' | 'fan'
+  name?: string
+  image?: string
+}
 
 interface Song {
   id: string
@@ -47,6 +60,17 @@ interface PlaylistSummary {
   songIds?: string[]
 }
 
+type UserPlaylist = {
+  id: string
+  name: string
+  description?: string
+  songIds?: string[]
+}
+
+/* ============================
+   Fallback
+============================ */
+
 const fallbackSong: Song = {
   id: 'fallback-1',
   title: 'CanciÃ³n de Ejemplo',
@@ -57,19 +81,18 @@ const fallbackSong: Song = {
   lyrics: 'Letra de ejemplo...',
 }
 
-// este tipo es para las playlists del usuario
-type UserPlaylist = {
-  id: string
-  name: string
-  description?: string
-  songIds?: string[]
-}
-
+/* ============================
+   PÃ¡gina principal
+============================ */
 
 export default function HomePage() {
-  const { data: session } = useSession()
   const router = useRouter()
-  
+
+  /* ðŸ” Usuario autenticado (Firebase session cookie) */
+  const [user, setUser] = useState<AppUser | null>(null)
+  const isLoggedIn = !!user
+
+  /* ðŸŽµ Estados de mÃºsica */
   const [songs, setSongs] = useState<Song[]>([])
   const [favorites, setFavorites] = useState<string[]>([])
   const [currentSong, setCurrentSong] = useState<Song>(fallbackSong)
@@ -78,1135 +101,184 @@ export default function HomePage() {
   const [volume, setVolume] = useState(75)
   const [isShuffleOn, setIsShuffleOn] = useState(false)
   const [repeatMode, setRepeatMode] = useState<RepeatMode>('off')
+
+  /* ðŸŽ¼ Playlists */
   const [showPlaylistPanel, setShowPlaylistPanel] = useState(false)
   const [officialPlaylists, setOfficialPlaylists] = useState<PlaylistSummary[]>([])
   const [userPlaylists, setUserPlaylists] = useState<UserPlaylist[]>([])
   const [selectedPlaylistId, setSelectedPlaylistId] = useState<'all' | string>('all')
-  
-  // NUEVOS ESTADOS PARA EL MODAL DE PLAYLIST
+
+  /* ðŸ§  UI extra */
+  const [showLyrics, setShowLyrics] = useState(false)
+  const [colorPhase, setColorPhase] = useState(0)
+  const [avatarIndex, setAvatarIndex] = useState(0)
+
+  /* ðŸ†• Crear playlist */
   const [showNewPlaylistModal, setShowNewPlaylistModal] = useState(false)
   const [newPlaylistName, setNewPlaylistName] = useState('')
   const [newPlaylistDescription, setNewPlaylistDescription] = useState('')
   const [selectedSongIds, setSelectedSongIds] = useState<string[]>([])
   const [isSavingPlaylist, setIsSavingPlaylist] = useState(false)
-  const [showPlaylistSongsModal, setShowPlaylistSongsModal] = useState(false)
-
-  const [showLyrics, setShowLyrics] = useState(false)
-  const [colorPhase, setColorPhase] = useState(0)
-  const [avatarIndex, setAvatarIndex] = useState(0)
-  const [playlists, setPlaylists] = useState<PlaylistSummary[]>([])
-  
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  // ImÃ¡genes locales que quieres alternar
   const avatarImages = ['/assets/Zairtre.jpg', '/assets/photo.jpg']
 
-  // Fondo animado
+  /* ============================
+     Auth: /api/me
+  ============================ */
   useEffect(() => {
-    const interval = setInterval(() => {
-      setColorPhase((prev) => (prev + 1) % 360)
-    }, 50)
-    return () => clearInterval(interval)
+    fetch('/api/me')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => setUser(data?.user ?? null))
+      .catch(() => setUser(null))
   }, [])
 
-  // Cambio de foto del header
+  /* ============================
+     Background animado
+  ============================ */
   useEffect(() => {
-    const interval = setInterval(() => {
-      setAvatarIndex((prev) => (prev + 1) % avatarImages.length)
-    }, 33000) // cada 33s
-    return () => clearInterval(interval)
+    const i = setInterval(() => setColorPhase(p => (p + 1) % 360), 50)
+    return () => clearInterval(i)
+  }, [])
+
+  useEffect(() => {
+    const i = setInterval(
+      () => setAvatarIndex(p => (p + 1) % avatarImages.length),
+      33000
+    )
+    return () => clearInterval(i)
   }, [avatarImages.length])
 
-  // Volumen
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume / 100
-    }
+    if (audioRef.current) audioRef.current.volume = volume / 100
   }, [volume])
 
-  // Cargar canciones, favoritos y playlists (oficiales + usuario)
+  /* ============================
+     Carga de datos
+  ============================ */
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        // 1) Canciones
-        const songsResponse = await fetch('/api/songs')
-        if (songsResponse.ok) {
-          const songsData = await songsResponse.json()
+    const load = async () => {
+      const songsRes = await fetch('/api/songs')
+      const songsData = songsRes.ok ? await songsRes.json() : []
+      const normalized = Array.isArray(songsData) && songsData.length
+        ? songsData.map((s: any) => ({
+            id: s.id ?? crypto.randomUUID(),
+            title: s.title,
+            artist: s.artist ?? 'Enrique de Zairtre',
+            duration: s.duration ?? 0,
+            coverUrl: s.coverUrl ?? '/assets/vortex.jpg',
+            audioUrl: s.audioUrl ?? '/assets/vortex.mp3',
+            lyrics: s.lyrics ?? '',
+            published: s.published ?? true,
+          }))
+        : [fallbackSong]
 
-          if (Array.isArray(songsData) && songsData.length > 0) {
-            const normalized: Song[] = songsData.map((s: any) => ({
-              id: s.id ?? s.songId ?? s.code ?? crypto.randomUUID(),
-              title: s.title,
-              artist: s.artist ?? 'Enrique de Zairtre',
-              duration: s.duration ?? 0,
-              coverUrl:
-                s.coverUrl ??
-                s.coverImage ??
-                '/assets/vortex.jpg',
-              audioUrl: s.audioUrl ?? s.audio ?? '/assets/vortex.mp3',
-              lyrics: s.lyrics ?? '',
-              published: s.published ?? true,
-            }))
+      setSongs(normalized)
+      setCurrentSong(normalized[0])
 
-            setSongs(normalized)
-            setCurrentSong(normalized[0])
-          } else {
-            setSongs([fallbackSong])
-            setCurrentSong(fallbackSong)
-          }
-        } else {
-          setSongs([fallbackSong])
-          setCurrentSong(fallbackSong)
+      if (isLoggedIn) {
+        const fav = await fetch('/api/favorites')
+        if (fav.ok) {
+          const f = await fav.json()
+          setFavorites(f.map((x: any) => x.songId))
         }
-
-        // 2) Favoritos (si hay sesiÃ³n)
-        if (session?.user?.id) {
-          const favResponse = await fetch('/api/favorites')
-          if (favResponse.ok) {
-            const favData = await favResponse.json()
-            setFavorites(favData.map((f: any) => f.songId))
-          }
-        }
-
-        // 3) Playlists oficiales (admin / globales)
-        try {
-          const plResponse = await fetch('/api/playlists')
-          if (plResponse.ok) {
-            const plData = await plResponse.json()
-
-            const mappedOfficial: PlaylistSummary[] = plData.map((p: any) => ({
-              id: p.id ?? p.code ?? p.playlistId ?? p.name,
-              name: p.name,
-              description: p.description,
-              isOfficial:
-                p.isOfficial ??
-                p.is_official ??
-                (p.code === 'vortex' ||
-                p.code === 'baladas_oscuras'),
-              songCount: Array.isArray(p.songIds ?? p.song_ids)
-                ? (p.songIds ?? p.song_ids).length
-                : undefined,
-              songIds: Array.isArray(p.songIds ?? p.song_ids)
-                ? (p.songIds ?? p.song_ids)
-                : [],
-            }))
-
-            // Solo guardamos las oficiales aquÃ­
-            setOfficialPlaylists(
-              mappedOfficial.filter((pl) => pl.isOfficial),
-            )
-          } else {
-            setOfficialPlaylists([])
-          }
-        } catch (err) {
-          console.error('Error cargando playlists oficiales:', err)
-          setOfficialPlaylists([])
-        }
-
-        // 4) Playlists del usuario (si hay sesiÃ³n)
-        if (session?.user?.id) {
-          try {
-            const userPlResponse = await fetch('/api/user-playlists')
-            if (userPlResponse.ok) {
-              const userPlData = await userPlResponse.json()
-
-              const mappedUser: UserPlaylist[] = userPlData.map(
-                (p: any) => ({
-                  id: p.id ?? p.playlistId ?? p.name,
-                  name: p.name,
-                  description: p.description,
-                  songIds: Array.isArray(p.songIds ?? p.song_ids)
-                    ? (p.songIds ?? p.song_ids)
-                    : [],
-                }),
-              )
-
-              setUserPlaylists(mappedUser)
-            } else {
-              // Si 401 o 500, simplemente dejamos vacÃ­o
-              setUserPlaylists([])
-            }
-          } catch (err) {
-            console.error('Error cargando playlists de usuario:', err)
-            setUserPlaylists([])
-          }
-        } else {
-          setUserPlaylists([])
-        }
-      } catch (error) {
-        console.error('Error global cargando data:', error)
       }
     }
 
-    loadData()
-  }, [session])
+    load().catch(console.error)
+  }, [isLoggedIn])
 
-  // Crear playlist llamando a la API
-  const handleCreatePlaylist = async () => {
-    if (!session?.user?.id) {
-      toast.error('Debes iniciar sesiÃ³n para crear playlists')
-      return
-    }
-
-    if (!newPlaylistName.trim()) {
-      toast.error('Ponle un nombre a tu playlist')
-      return
-    }
-
-    try {
-      setIsSavingPlaylist(true)
-
-      const res = await fetch('/api/user-playlists', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: newPlaylistName.trim(),
-          description: newPlaylistDescription.trim() || undefined,
-          songIds: selectedSongIds,
-        }),
-      })
-
-      if (!res.ok) {
-        throw new Error('Error creando playlist')
-      }
-
-      const created = await res.json()
-
-      // Actualizar lista en memoria
-      setUserPlaylists(prev => [...prev, created])
-
-      toast.success('Playlist creada')
-
-      // Limpiar modal
-      setShowNewPlaylistModal(false)
-      setNewPlaylistName('')
-      setNewPlaylistDescription('')
-      setSelectedSongIds([])
-    } catch (err) {
-      console.error(err)
-      toast.error('No se pudo crear la playlist')
-    } finally {
-      setIsSavingPlaylist(false)
-    }
+  /* ============================
+     Auth actions
+  ============================ */
+  const handleLogout = async () => {
+    await fetch('/api/logout', { method: 'POST' })
+    setUser(null)
+    toast.success('SesiÃ³n cerrada')
   }
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = Math.floor(seconds % 60)
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
+  const handleLogin = () => router.push('/admin/login')
 
-  const getDynamicColor = () =>
-    `hsl(${(colorPhase + 240) % 360}, 70%, 15%)`
-
-  const getAccentColor = () =>
-    `hsl(${(colorPhase + 280) % 360}, 90%, 55%)`
+  /* ============================
+     Utilidades
+  ============================ */
+  const formatTime = (s: number) =>
+    `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, '0')}`
 
   const playSong = (song: Song) => {
     setCurrentSong(song)
     setCurrentTime(0)
-
-    // esperamos a que React pinte el nuevo src
-    setTimeout(() => {
-      const audio = audioRef.current
-      if (!audio) return
-      audio.currentTime = 0
-      audio
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch((err) => {
-          console.error('Error al reproducir:', err)
-          toast.error('No se pudo reproducir la canciÃ³n')
-        })
-    }, 0)
+    setTimeout(() => audioRef.current?.play().then(() => setIsPlaying(true)), 0)
   }
 
   const handlePlayPause = () => {
-    const audio = audioRef.current
-    if (!audio) return
-
+    if (!audioRef.current) return
     if (isPlaying) {
-      audio.pause()
+      audioRef.current.pause()
       setIsPlaying(false)
     } else {
-      audio
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch((err) => {
-          console.error('Error al reproducir:', err)
-          toast.error('No se pudo reproducir la canciÃ³n')
-        })
+      audioRef.current.play().then(() => setIsPlaying(true))
     }
   }
 
-  const handleNext = () => {
-    if (!songs.length) return
-
-    const index = songs.findIndex((s) => s.id === currentSong.id)
-    if (index === -1) {
-      playSong(songs[0])
-      return
-    }
-
-    const nextIndex = isShuffleOn
-      ? Math.floor(Math.random() * songs.length)
-      : (index + 1) % songs.length
-
-    playSong(songs[nextIndex])
-  }
-
-  const handlePrevious = () => {
-    if (!songs.length) return
-
-    const index = songs.findIndex((s) => s.id === currentSong.id)
-    if (index === -1) {
-      playSong(songs[0])
-      return
-    }
-
-    const prevIndex = index - 1 < 0 ? songs.length - 1 : index - 1
-    playSong(songs[prevIndex])
-  }
-
-  const handleFavorite = async () => {
-    if (!session?.user?.id) {
-      toast.error('Debes iniciar sesiÃ³n')
-      return
-    }
-
-    try {
-      const response = await fetch('/api/favorites', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ songId: currentSong.id }),
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        if (data.favorited) {
-          setFavorites((prev) => [...prev, currentSong.id])
-          toast.success('AÃ±adido a favoritos')
-        } else {
-          setFavorites((prev) => prev.filter((id) => id !== currentSong.id))
-          toast.info('Eliminado de favoritos')
-        }
-      }
-    } catch {
-      toast.error('Error al gestionar favorito')
-    }
-  }
-
-  const handleShare = async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: `${currentSong.title} - Enrique de Zairtre`,
-          text: `Escucha "${currentSong.title}"`,
-          url: window.location.href,
-        })
-      } else {
-        await navigator.clipboard.writeText(window.location.href)
-        toast.success('Enlace copiado al portapapeles')
-      }
-    } catch (err) {
-      console.error(err)
-    }
-  }
-
-  // ðŸ§  onEnded con 3 modos:
-  // 'off' â†’ lista una vez; se detiene al terminar la Ãºltima
-  // 'all' â†’ lista en bucle
-  // 'one' â†’ solo repite la canciÃ³n actual
-  const handleEnded = () => {
-    const audio = audioRef.current
-    if (!audio || !songs.length) {
-      setIsPlaying(false)
-      return
-    }
-
-    if (repeatMode === 'one') {
-      audio.currentTime = 0
-      audio
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch(() => setIsPlaying(false))
-      return
-    }
-
-    const currentIndex = songs.findIndex((s) => s.id === currentSong.id)
-    const safeIndex = currentIndex === -1 ? 0 : currentIndex
-
-    if (repeatMode === 'off') {
-      // solo avanzar mientras no sea la Ãºltima
-      if (safeIndex >= songs.length - 1) {
-        setIsPlaying(false)
-        setCurrentTime(0)
-        return
-      }
-
-      const nextIndex = isShuffleOn
-        ? Math.floor(Math.random() * songs.length)
-        : safeIndex + 1
-
-      playSong(songs[nextIndex])
-      return
-    }
-
-    // repeatMode === 'all' â†’ bucle de la lista
-    const nextIndex = isShuffleOn
-      ? Math.floor(Math.random() * songs.length)
-      : (safeIndex + 1) % songs.length
-
-    playSong(songs[nextIndex])
-  }
-
-  const cycleRepeatMode = () => {
-    setRepeatMode((prev) =>
-      prev === 'off' ? 'all' : prev === 'all' ? 'one' : 'off',
-    )
-  }
-
-  const repeatButtonTitle =
-    repeatMode === 'off'
-      ? 'Reproducir lista una vez'
-      : repeatMode === 'all'
-      ? 'Repetir lista'
-      : 'Repetir canciÃ³n actual'
-
-  const repeatButtonClass =
-    repeatMode === 'off'
-      ? 'text-gray-400'
-      : repeatMode === 'all'
-      ? 'text-purple-400'
-      : 'text-red-400'
-
-  const isCurrentFavorite = favorites.includes(currentSong.id)
-
+  /* ============================
+     Render
+  ============================ */
   return (
-    <Suspense fallback={<div>Cargando...</div>}>
-      <div
-        className="min-h-screen relative overflow-hidden transition-all duration-1000"
-        style={{ backgroundColor: getDynamicColor() }}
-      >
-        {/* Background blobs */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div
-            className="absolute w-96 h-96 rounded-full opacity-10 blur-3xl"
-            style={{
-              backgroundColor: getAccentColor(),
-              top: '10%',
-              left: '10%',
-              animation: 'float 20s infinite ease-in-out',
-            }}
-          />
-          <div
-            className="absolute w-96 h-96 rounded-full opacity-10 blur-3xl"
-            style={{
-              backgroundColor: getAccentColor(),
-              bottom: '10%',
-              right: '10%',
-              animation: 'float 25s infinite ease-in-out reverse',
-            }}
-          />
-        </div>
+    <Suspense fallback={<div>Cargandoâ€¦</div>}>
+      <div className="min-h-screen bg-black text-white">
 
-        <div className="relative z-10 container mx-auto px-4 py-8">
-          {/* HEADER */}
-          <header className="text-center mb-12">
-            <div className="relative inline-block mb-6">
-              <div
-                className="w-48 h-48 rounded-full overflow-hidden border-4 shadow-2xl"
-                style={{ borderColor: getAccentColor() }}
-              >
-                <img
-                  src={avatarImages[avatarIndex]}
-                  alt="Enrique de Zairtre"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute -bottom-2 -right-2 bg-red-600 text-white rounded-full p-2">
-                <Music className="w-6 h-6" />
-              </div>
-            </div>
+        {/* HEADER */}
+        <header className="text-center py-10">
+          <h1 className="text-5xl font-bold mb-4">Enrique de Zairtre</h1>
 
-            <h1
-              className="text-5xl md:text-7xl font-bold text-white mb-4 tracking-wider"
-              style={{ textShadow: '0 0 20px rgba(255,255,255,0.3)' }}
-            >
-              Enrique de Zairtre
-            </h1>
-
-            <div className="flex flex-wrap justify-center gap-2 mb-6">
-              {['Poeta', 'Artista', 'Productor', 'Estrella de Rock'].map(
-                (role, index) => (
-                  <span
-                    key={index}
-                    className="px-4 py-2 rounded-full text-sm font-medium text-white border"
-                    style={{
-                      borderColor: getAccentColor(),
-                      backgroundColor: `${getAccentColor()}20`,
-                    }}
-                  >
-                    {role}
-                  </span>
-                ),
-              )}
-            </div>
-
-            {/* Auth Button */}
-            <div className="flex justify-center mb-6">
-              {session ? (
-                <div className="flex items-center gap-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => router.push('/profile')}
-                    className="border-gray-600 text-white hover:bg-gray-800"
-                  >
-                    <User className="w-4 h-4" />
-                    <span className="sr-only">Mi Perfil</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => signOut({ callbackUrl: '/' })}
-                    className="border-gray-600 text-white hover:bg-gray-800"
-                  >
-                    <LogIn className="w-4 h-4" />
-                    <span className="sr-only">Cerrar sesiÃ³n</span>
-                  </Button>
-                </div>
-              ) : (
-                <Button
-                  onClick={() => signIn('google', { callbackUrl: '/' })}
-                  className="bg-purple-600 hover:bg-purple-700 text-white"
-                >
-                  <LogIn className="w-4 h-4" />
-                  <span className="sr-only">Iniciar sesiÃ³n</span>
+          <div className="flex justify-center gap-4">
+            {isLoggedIn ? (
+              <>
+                <Button variant="outline" onClick={() => router.push('/profile')}>
+                  <User className="w-4 h-4" />
                 </Button>
-              )}
-            </div>
-          </header>
-
-          {/* MAIN PLAYER */}
-          <Card className="max-w-4xl mx-auto bg-black/50 backdrop-blur-lg border-gray-700 text-white overflow-hidden">
-            <div className="grid md:grid-cols-2 gap-6 p-6">
-              {/* Cover */}
-              <div className="space-y-4">
-                <div className="relative aspect-square rounded-lg overflow-hidden">
-                  <img
-                    src={currentSong.coverUrl ?? './assets/vortex.jpg'}
-                    alt={currentSong.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="text-center">
-                  <h2 className="text-2xl font-bold mb-2">
-                    {currentSong.title}
-                  </h2>
-                  <p className="text-gray-300">{currentSong.artist}</p>
-                </div>
-              </div>
-
-              {/* Controls */}
-              <div className="space-y-6">
-                {/* Progress */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm text-gray-300">
-                    <span>{formatTime(currentTime)}</span>
-                    <span>{formatTime(currentSong.duration ?? 0)}</span>
-                  </div>
-                  <Slider
-                    value={[currentTime]}
-                    max={currentSong.duration ?? 0}
-                    step={1}
-                    className="w-full"
-                    onValueChange={(value) => {
-                      const t = value[0]
-                      setCurrentTime(t)
-                      if (audioRef.current) {
-                        audioRef.current.currentTime = t
-                      }
-                    }}
-                  />
-                </div>
-
-                {/* Buttons fila central */}
-                <div className="flex justify-center items-center gap-4">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsShuffleOn((prev) => !prev)}
-                    className={isShuffleOn ? 'text-purple-400' : 'text-gray-400'}
-                  >
-                    <Shuffle className="w-4 h-4" />
-                    <span className="sr-only">Shuffle</span>
-                  </Button>
-
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={handlePrevious}
-                    className="text-white hover:text-purple-400"
-                  >
-                    <SkipBack className="w-6 h-6" />
-                    <span className="sr-only">Anterior</span>
-                  </Button>
-
-                  <Button
-                    type="button"
-                    size="icon"
-                    onClick={handlePlayPause}
-                    className="w-16 h-16 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: getAccentColor() }}
-                  >
-                    {isPlaying ? (
-                      <Pause className="w-6 h-6" />
-                    ) : (
-                      <Play className="w-6 h-6 ml-1" />
-                    )}
-                    <span className="sr-only">
-                      {isPlaying ? 'Pausar' : 'Reproducir'}
-                    </span>
-                  </Button>
-
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleNext}
-                    className="text-white hover:text-purple-400"
-                  >
-                    <SkipForward className="w-6 h-6" />
-                    <span className="sr-only">Siguiente</span>
-                  </Button>
-
-                  {/* BotÃ³n de repeat con 3 estados */}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={cycleRepeatMode}
-                    title={repeatButtonTitle}
-                    className={repeatButtonClass}
-                  >
-                    <Repeat className="w-4 h-4" />
-                    <span className="sr-only">{repeatButtonTitle}</span>
-                  </Button>
-                </div>
-
-                {/* Volumen */}
-                <div className="flex items-center gap-3">
-                  <Volume2 className="w-4 h-4 text-gray-400" />
-                  <Slider
-                    value={[volume]}
-                    max={100}
-                    step={1}
-                    className="flex-1"
-                    onValueChange={(value) => setVolume(value[0])}
-                  />
-                </div>
-
-                {/* Botones inferiores, solo iconos */}
-                <div className="flex gap-2 justify-between">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={handleFavorite}
-                    className={`border-gray-600 text-white hover:bg-gray-800 ${
-                      isCurrentFavorite ? 'bg-red-900/30 border-red-600' : ''
-                    }`}
-                  >
-                    <Heart
-                      className={`w-4 h-4 ${
-                        isCurrentFavorite ? 'fill-current text-red-500' : ''
-                      }`}
-                    />
-                    <span className="sr-only">Favorito</span>
-                  </Button>
-
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setShowPlaylistPanel((prev) => !prev)}
-                    className="border-gray-600 text-white hover:bg-gray-800"
-                  >
-                    <List className="w-4 h-4" />
-                    <span className="sr-only">Playlists</span>
-                  </Button>
-
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setShowLyrics((prev) => !prev)}
-                    className="border-gray-600 text-white hover:bg-gray-800"
-                  >
-                    <Music className="w-4 h-4" />
-                    <span className="sr-only">Letras</span>
-                  </Button>
-
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={handleShare}
-                    className="border-gray-600 text-white hover:bg-gray-800"
-                  >
-                    <Share2 className="w-4 h-4" />
-                    <span className="sr-only">Compartir</span>
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* PANEL / MODAL DE PLAYLISTS - ESBOZO */}
-            {showPlaylistPanel && (
-              <div className="border-t border-gray-700 p-4 max-h-72 overflow-y-auto bg-black/40">
-                <h3 className="text-lg font-semibold mb-3">Playlists</h3>
-
-                {/* Playlist actual = todas las canciones */}
-                <div className="mb-4">
-                  <p className="text-sm text-gray-300 mb-2">
-                    Playlist actual (todas las canciones)
-                  </p>
-                  <div className="space-y-2">
-                    {songs.map((song) => (
-                      <button
-                        key={song.id}
-                        onClick={() => playSong(song)}
-                        className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors ${
-                          currentSong.id === song.id
-                            ? 'bg-purple-900/40'
-                            : 'hover:bg-gray-800'
-                        }`}
-                      >
-                        <img
-                          src={
-                            song.coverUrl ??
-                            './assets/vortex.jpg'
-                          }
-                          alt={song.title}
-                          className="w-10 h-10 rounded"
-                        />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">{song.title}</p>
-                          <p className="text-xs text-gray-400">
-                            {song.artist}
-                          </p>
-                        </div>
-                        <span className="text-xs text-gray-400">
-                          {formatTime(song.duration ?? 0)}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Playlists oficiales y de usuario (solo estructura) */}
-                <div className="grid md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <h4 className="font-semibold mb-2">Oficiales</h4>
-                    {officialPlaylists.length === 0 && (
-                      <p className="text-gray-400 text-xs">
-                        AÃºn no hay playlists oficiales.
-                      </p>
-                    )}
-                    <div className="space-y-2">
-                      {officialPlaylists.map((pl) => (
-                        <div
-                          key={pl.id}
-                          className="p-2 rounded-lg bg-gray-900/40 border border-gray-700"
-                        >
-                          <p className="font-medium">{pl.name}</p>
-                          {pl.description && (
-                            <p className="text-xs text-gray-400">
-                              {pl.description}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold mb-2">Tus playlists</h4>
-                    {userPlaylists.length === 0 && (
-                      <p className="text-gray-400 text-xs">
-                        AquÃ­ aparecerÃ¡n las playlists que crees.
-                      </p>
-                    )}
-                    <div className="space-y-2">
-                      {userPlaylists.map((pl) => (
-                        <div
-                          key={pl.id}
-                          className="p-2 rounded-lg bg-gray-900/40 border border-gray-700"
-                        >
-                          <p className="font-medium">{pl.name}</p>
-                          {pl.description && (
-                            <p className="text-xs text-gray-400">
-                              {pl.description}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                    {showPlaylistPanel && (
-                      <div className="border-t border-gray-700 bg-black/40 backdrop-blur-sm">
-                        <div className="grid grid-cols-1 md:grid-cols-[260px,1fr] max-h-80">
-                          {/* === Columna izquierda: listas === */}
-                          <div className="border-r border-border p-4 space-y-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                                Playlists
-                              </h3>
-
-                              <Button
-                                type="button"
-                                size="icon"
-                                variant="ghost"
-                                className="icon-button text-muted-foreground"
-                                onClick={() => setShowNewPlaylistModal(true)}
-                                title="Crear nueva playlist"
-                              >
-                                <Plus className="w-4 h-4" />
-                              </Button>
-                            </div>
-
-                            <div className="space-y-1 text-sm">
-                              {/* Playlist "Todas las canciones" */}
-                              <button
-                                type="button"
-                                onClick={() => setSelectedPlaylistId('all')}
-                                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
-                                  selectedPlaylistId === 'all'
-                                    ? 'bg-zairtre-surface text-zairtre-accent'
-                                    : 'hover:bg-zairtre-surface/40 text-muted-foreground'
-                                }`}
-                              >
-                                Todas las canciones
-                              </button>
-
-                              {/* Playlists oficiales */}
-                              {officialPlaylists.length > 0 && (
-                                <>
-                                  <p className="mt-3 mb-1 text-[11px] uppercase tracking-wide text-muted-foreground">
-                                    Oficiales
-                                  </p>
-                                  {officialPlaylists.map((pl) => (
-                                    <button
-                                      key={pl.id}
-                                      type="button"
-                                      onClick={() => setSelectedPlaylistId(pl.id)}
-                                      className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
-                                        selectedPlaylistId === pl.id
-                                          ? 'bg-zairtre-surface text-zairtre-accent'
-                                          : 'hover:bg-zairtre-surface/40 text-muted-foreground'
-                                      }`}
-                                    >
-                                      {pl.name}
-                                    </button>
-                                  ))}
-                                </>
-                              )}
-
-                              {/* Playlists del usuario */}
-                              {userPlaylists.length > 0 && (
-                                <>
-                                  <p className="mt-3 mb-1 text-[11px] uppercase tracking-wide text-muted-foreground">
-                                    Tus playlists
-                                  </p>
-                                  {userPlaylists.map((pl) => (
-                                    <button
-                                      key={pl.id}
-                                      type="button"
-                                      onClick={() => setSelectedPlaylistId(pl.id)}
-                                      className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
-                                        selectedPlaylistId === pl.id
-                                          ? 'bg-zairtre-surface text-zairtre-accent'
-                                          : 'hover:bg-zairtre-surface/40 text-muted-foreground'
-                                      }`}
-                                    >
-                                      {pl.name}
-                                    </button>
-                                  ))}
-                                </>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* === Columna derecha: canciones de la playlist seleccionada === */}
-                          <div className="p-4 overflow-y-auto">
-                            <h4 className="text-sm font-semibold mb-3">
-                              {selectedPlaylistId === 'all'
-                                ? 'Todas las canciones'
-                                : [
-                                    ...officialPlaylists,
-                                    ...userPlaylists
-                                  ].find((p) => p.id === selectedPlaylistId)?.name ?? 'Playlist'}
-                            </h4>
-
-                            {/* visibleSongs: calcula las canciones segÃºn la playlist seleccionada */}
-                            <div className="space-y-2">
-                              {(
-                                selectedPlaylistId === 'all'
-                                  ? songs
-                                  : songs.filter((song) => {
-                                      const pl = [...officialPlaylists, ...userPlaylists].find(
-                                        (p) => p.id === selectedPlaylistId
-                                      )
-                                      if (!pl?.songIds) return false
-                                      return pl.songIds.includes(song.id)
-                                    })
-                              ).map((song) => (
-                                <button
-                                  key={song.id}
-                                  type="button"
-                                  onClick={() => {
-                                    setCurrentSong(song)
-                                    setCurrentTime(0)
-                                    setIsPlaying(true)
-                                    setTimeout(() => {
-                                      audioRef.current?.play()
-                                    }, 0)
-                                  }}
-                                  className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                                    currentSong.id === song.id
-                                      ? 'bg-zairtre-surface text-zairtre-accent'
-                                      : 'hover:bg-zairtre-surface/40 text-foreground'
-                                  }`}
-                                >
-                                  <img
-                                    src={song.coverUrl}
-                                    alt={song.title}
-                                    className="w-10 h-10 rounded object-cover"
-                                  />
-                                  <div className="flex-1 text-left">
-                                    <p className="text-sm font-medium">{song.title}</p>
-                                    <p className="text-xs text-muted-foreground">
-                                      {song.artist}
-                                    </p>
-                                  </div>
-                                  <span className="text-xs text-muted-foreground">
-                                    {formatTime(song.duration)}
-                                  </span>
-                                </button>
-                              ))}
-
-                              {selectedPlaylistId !== 'all' &&
-                                songs.filter((song) => {
-                                  const pl = [...officialPlaylists, ...userPlaylists].find(
-                                    (p) => p.id === selectedPlaylistId
-                                  )
-                                  if (!pl?.songIds) return false
-                                  return pl.songIds.includes(song.id)
-                                }).length === 0 && (
-                                  <p className="text-xs text-muted-foreground">
-                                    Esta playlist todavÃ­a no tiene canciones.
-                                  </p>
-                                )}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Modal para "Nueva playlist" */}
-                        {showNewPlaylistModal && (
-                          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-                            <div className="w-full max-w-md bg-card border border-border rounded-xl p-6 space-y-4">
-                              <h3 className="text-lg font-semibold">Nueva playlist</h3>
-
-                              <p className="text-sm text-muted-foreground">
-                                Ponle un nombre a tu playlist y elige quÃ© canciones quieres agregar.
-                              </p>
-
-                              {/* Nombre de la playlist */}
-                              <div className="space-y-1">
-                                <label className="text-sm font-medium">Nombre</label>
-                                <input
-                                  type="text"
-                                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
-                                  placeholder="Ej: Noches con Zairtre"
-                                  value={newPlaylistName}
-                                  onChange={e => setNewPlaylistName(e.target.value)}
-                                />
-                              </div>
-
-                              {/* DescripciÃ³n opcional */}
-                              <div className="space-y-1">
-                                <label className="text-sm font-medium">DescripciÃ³n (opcional)</label>
-                                <textarea
-                                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary resize-none"
-                                  rows={2}
-                                  placeholder="Algo que describa el mood de esta playlistâ€¦"
-                                  value={newPlaylistDescription}
-                                  onChange={e => setNewPlaylistDescription(e.target.value)}
-                                />
-                              </div>
-
-                              {/* Lista de canciones para seleccionar */}
-                              <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-sm font-medium">Canciones</span>
-                                  <span className="text-xs text-muted-foreground">
-                                    {selectedSongIds.length} seleccionadas
-                                  </span>
-                                </div>
-
-                                <div className="max-h-48 overflow-y-auto border border-border rounded-md divide-y divide-border/60">
-                                  {songs.length === 0 && (
-                                    <div className="p-3 text-sm text-muted-foreground">
-                                      No hay canciones disponibles todavÃ­a.
-                                    </div>
-                                  )}
-
-                                  {songs.map(song => {
-                                    const checked = selectedSongIds.includes(song.id)
-
-                                    const toggleSongInNewPlaylist = (songId: string) => {
-                                      setSelectedSongIds((prev) =>
-                                        prev.includes(songId)
-                                          ? prev.filter((id) => id !== songId)
-                                          : [...prev, songId]
-                                      )
-                                    }
-                                    return (
-                                      <button
-                                        key={song.id}
-                                        type="button"
-                                        onClick={() => toggleSongInNewPlaylist(song.id)}
-                                        className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm transition-colors ${
-                                          checked
-                                            ? 'bg-primary/20 text-primary-foreground'
-                                            : 'hover:bg-muted/40'
-                                        }`}
-                                      >
-                                        <input
-                                          type="checkbox"
-                                          readOnly
-                                          checked={checked}
-                                          className="h-3 w-3 accent-primary"
-                                        />
-                                        <div className="flex-1">
-                                          <div className="font-medium">{song.title}</div>
-                                          <div className="text-xs text-muted-foreground">
-                                            {song.artist}
-                                          </div>
-                                        </div>
-                                        <span className="text-xs text-muted-foreground">
-                                          {formatTime(song.duration)}
-                                        </span>
-                                      </button>
-                                    )
-                                  })}
-                                </div>
-                              </div>
-
-                              {/* Botones de acciÃ³n */}
-                              <div className="flex justify-end gap-2 pt-2">
-                                <Button
-                                  variant="ghost"
-                                  type="button"
-                                  onClick={() => {
-                                    setShowNewPlaylistModal(false)
-                                    setNewPlaylistName('')
-                                    setNewPlaylistDescription('')
-                                    setSelectedSongIds([])
-                                  }}
-                                >
-                                  Cerrar
-                                </Button>
-
-                                <Button
-                                  type="button"
-                                  disabled={isSavingPlaylist}
-                                  onClick={handleCreatePlaylist}
-                                >
-                                  {isSavingPlaylist ? 'Guardandoâ€¦' : 'Guardar playlist'}
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+                <Button variant="outline" onClick={handleLogout}>
+                  <LogIn className="w-4 h-4" />
+                </Button>
+              </>
+            ) : (
+              <Button onClick={handleLogin}>
+                <LogIn className="w-4 h-4" />
+              </Button>
             )}
+          </div>
+        </header>
 
-            {/* LETRAS */}
-            {showLyrics && (
-              <div className="border-t border-gray-700 p-4">
-                <h3 className="text-lg font-semibold mb-3">Letras</h3>
-                <div className="text-center space-y-2 text-gray-300 font-medium">
-                  {(currentSong.lyrics || '').split('\n').map((line, index) => (
-                    <p key={index}>{line}</p>
-                  ))}
-                </div>
-              </div>
-            )}
-          </Card>
+        {/* PLAYER */}
+        <Card className="max-w-3xl mx-auto p-6 bg-black/60">
+          <div className="text-center mb-4">
+            <h2 className="text-2xl font-bold">{currentSong.title}</h2>
+            <p className="text-gray-400">{currentSong.artist}</p>
+          </div>
 
-          {/* AUDIO REAL */}
-          <audio
-            ref={audioRef}
-            src={currentSong.audioUrl}
-            onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
-            onEnded={handleEnded}
+          <div className="flex justify-center gap-4">
+            <Button onClick={handlePlayPause}>
+              {isPlaying ? <Pause /> : <Play />}
+            </Button>
+          </div>
+
+          <Slider
+            value={[currentTime]}
+            max={currentSong.duration}
+            onValueChange={v => {
+              setCurrentTime(v[0])
+              if (audioRef.current) audioRef.current.currentTime = v[0]
+            }}
           />
+        </Card>
 
-          {/* Footer minimal con enlaces a streaming / redes */}
-          <footer className="mt-10 text-center text-sm text-gray-400">
-            <div className="flex justify-center gap-6 mb-2">
-              {/* SmartLink streaming */}
-              <a
-                href="https://ditto.fm/vortex_9cadd2c9"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 hover:text-white transition"
-              >
-                <Music className="w-4 h-4" />
-                <span className="underline">EscÃºchalo en tu plataforma favorita</span>
-              </a>
-
-              {/* Facebook */}
-              <a
-                href="https://www.facebook.com/profile.php?id=61584058261395#"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 hover:text-white transition"
-              >
-                <Share2 className="w-4 h-4" />
-                <span className="underline">Facebook Oficial</span>
-              </a>
-            </div>
-
-            <p className="text-xs text-gray-500">
-              Â© {new Date().getFullYear()} Enrique de Zairtre. Todos los derechos reservados.
-            </p>
-          </footer>
-
-        </div>
-
-
-        <style jsx>{`
-          @keyframes float {
-            0%,
-            100% {
-              transform: translateY(0px) rotate(0deg);
-            }
-            33% {
-              transform: translateY(-30px) rotate(120deg);
-            }
-            66% {
-              transform: translateY(30px) rotate(240deg);
-            }
-          }
-        `}</style>
+        <audio
+          ref={audioRef}
+          src={currentSong.audioUrl}
+          onTimeUpdate={e => setCurrentTime(e.currentTarget.currentTime)}
+        />
       </div>
     </Suspense>
   )

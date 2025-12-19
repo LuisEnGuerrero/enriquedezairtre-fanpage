@@ -1,60 +1,72 @@
 /**
  * scripts/firebase-admin.js
- * Versión FINAL, usando el bucket real de Firebase Storage
+ *
+ * Inicialización de Firebase Admin EXCLUSIVA para scripts
+ * (seed / reset / tareas administrativas).
+ *
+ * ⚠️ Este archivo NO se importa en Next.js runtime.
+ * ⚠️ Aquí SÍ validamos credenciales de forma estricta.
  */
 
 const fs = require("fs");
 const path = require("path");
 const admin = require("firebase-admin");
 
-// Ruta al archivo local con credenciales
+// =====================================================
+// 1️⃣ Cargar credenciales (local → env)
+// =====================================================
+
 const localKeyPath = path.join(__dirname, "../secrets/zairtre-admin.json");
 
 let serviceAccount = null;
 
-// 1) Intentar cargar credenciales locales
+// 1) Credenciales locales (desarrollo)
 if (fs.existsSync(localKeyPath)) {
-  console.log("🔐 Usando credenciales locales desde secrets/zairtre-admin.json");
+  console.log("🔐 Firebase Admin: usando credenciales locales");
   serviceAccount = require(localKeyPath);
 }
 
-// 2) Si no existe archivo, usar variables de entorno (Render)
+// 2) Variables de entorno (Cloud Run / CI)
 if (!serviceAccount && process.env.FIREBASE_PRIVATE_KEY) {
-  console.log("🔐 Usando credenciales desde variables de entorno");
+  console.log("🔐 Firebase Admin: usando credenciales desde variables de entorno");
 
   serviceAccount = {
     type: "service_account",
     project_id: process.env.FIREBASE_PROJECT_ID,
-    private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
     private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
     client_email: process.env.FIREBASE_CLIENT_EMAIL,
-    client_id: process.env.FIREBASE_CLIENT_ID,
     token_uri: "https://oauth2.googleapis.com/token",
   };
 }
 
-// 3) Error si no hay credenciales
+// 3) Validación estricta (scripts NO deben continuar sin credenciales)
 if (!serviceAccount) {
-  throw new Error("❌ No se encontraron credenciales de Firebase Admin.");
+  console.error("❌ Firebase Admin: no se encontraron credenciales válidas.");
+  console.error("   - secrets/zairtre-admin.json");
+  console.error("   - o variables de entorno FIREBASE_*");
+  process.exit(1);
 }
 
 // =====================================================
-// 🔥 RESOLVER *CORRECTAMENTE* EL BUCKET DE STORAGE
+// 2️⃣ Resolver bucket de Firebase Storage
 // =====================================================
-// Prioridad:
+// Prioridad clara:
 //   1) FIREBASE_STORAGE_BUCKET
 //   2) NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-//   3) `${project_id}.firebasestorage.app`
+//   3) <project-id>.firebasestorage.app
 const STORAGE_BUCKET =
   process.env.FIREBASE_STORAGE_BUCKET ||
   process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ||
   `${serviceAccount.project_id}.firebasestorage.app`;
 
-// Inicializar Firebase una sola vez
+// =====================================================
+// 3️⃣ Inicializar Firebase Admin (una sola vez)
+// =====================================================
+
 if (!admin.apps.length) {
-  console.log("🔥 Inicializando Firebase Admin con:");
-  console.log("   projectId        =", serviceAccount.project_id);
-  console.log("   storageBucket    =", STORAGE_BUCKET);
+  console.log("🔥 Inicializando Firebase Admin (scripts)");
+  console.log("   projectId     =", serviceAccount.project_id);
+  console.log("   storageBucket =", STORAGE_BUCKET);
 
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -63,12 +75,15 @@ if (!admin.apps.length) {
   });
 }
 
-// Exportaciones reales y correctas
+// =====================================================
+// 4️⃣ Exportaciones para scripts
+// =====================================================
+
 const db = admin.firestore();
-const bucket = admin.storage().bucket();
+const storageBucket = admin.storage().bucket();
 
 module.exports = {
   admin,
   db,
-  storageBucket: bucket, // <- ESTE es el que usas en seed-firestore.js
+  storageBucket, // usado por seed-firestore.js y reset-firestore.js
 };

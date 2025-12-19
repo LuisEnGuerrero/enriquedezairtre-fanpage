@@ -1,55 +1,71 @@
-import GoogleProvider from "next-auth/providers/google"
-import { syncUserDirect } from "@/app/api/auth/sync-user/route"
+// src/lib/auth.ts
+import { cookies } from "next/headers";
+import { getFirebaseAdmin } from "@/lib/firebaseAdmin";
+import { doc, getDoc } from "firebase/firestore";
+import { firestore } from "@/lib/firebase";
 
-const ADMIN_EMAIL = process.env.ADM1N_EM41L || 'enrique.zairtre@example.com'
+const SESSION_COOKIE_NAME = process.env.SESSION_COOKIE_NAME || "__session";
 
-export const authOptions = {
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-  ],
+export type AppUser = {
+  id: string; // email en tu modelo
+  email: string;
+  role: "admin" | "fan";
+  name?: string;
+  image?: string;
+};
 
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user?.email) {
-        token.role = user.email === ADMIN_EMAIL ? 'admin' : 'fan'
-      }
+/**
+ * Obtiene el usuario a partir de la Session Cookie (Firebase).
+ *
+ * - Devuelve null si no hay sesión o no es válida.
+ * - No debe romper builds (errores se manejan y retornan null).
+ */
+export async function getUserFromSessionCookie(): Promise<AppUser | null> {
+  try {
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+    if (!sessionCookie) return null;
 
-      return token
-    },
+    // Inicializa Firebase Admin SOLO en runtime cuando realmente se usa
+    const app = getFirebaseAdmin();
+    const auth = app.auth();
 
-    async session({ session, token }) {
-      session.user.id = token.sub!
-      session.user.role = token.role
-      return session
-    },
+    // checkRevoked=true recomendado en endpoints admin (más seguro)
+    const decoded = await auth.verifySessionCookie(sessionCookie, true);
 
-    async signIn({ user, account }) {
-      if (account?.provider === 'google' && user.email) {
-        try {
-          const dbUser = await syncUserDirect({
-            email: user.email,
-            name: user.name,
-            image: user.image,
-          })
+    // decoded.email suele venir en Google provider; fallback a uid
+    const email = (decoded.email || decoded.uid || "").toLowerCase();
+    if (!email) return null;
 
-          user.id = dbUser.id
-          user.role = dbUser.role ?? 'fan'
-        } catch (err) {
-          user.role = user.email === ADMIN_EMAIL ? 'admin' : 'fan'
-        }
-      }
+    // Users se guardan por email como docId
+    const userRef = doc(firestore, "users", email);
+    const snap = await getDoc(userRef);
+    if (!snap.exists()) return null;
 
-      return true
-    },
-  },
+    const data = snap.data() as any;
 
-  pages: {
-    signIn: "/auth/signin",
-    error: "/auth/error",
-  },
+    return {
+      id: email,
+      email,
+      role: (data.role || "fan") as "admin" | "fan",
+      name: data.name,
+      image: data.image,
+    };
+  } catch {
+    // ⚠️ Cualquier error de cookie inválida, revocada, envs faltantes en build, etc.
+    // debe traducirse a "no autenticado"
+    return null;
+  }
+}
 
-  secret: process.env.NEXTAUTH_SECRET,
+export async function requireUser(): Promise<AppUser> {
+  const user = await getUserFromSessionCookie();
+  if (!user) throw new Error("UNAUTHORIZED");
+  return user;
+}
+
+export async function requireAdmin(): Promise<AppUser> {
+  const user = await requireUser();
+  if (user.role !== "admin") throw new Error("FORBIDDEN");
+  return user;
 }

@@ -1,6 +1,7 @@
+﻿// src/app/api/user/profile/route.ts
+
+import { requireUser } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
 import { firestore } from "@/lib/firebase";
 import {
   doc,
@@ -14,20 +15,16 @@ import {
 
 // ------------------------------------------------------
 // Helper para serializar fechas de Firestore/Date/number
-// de forma segura a string ISO (lo que el frontend ya usa)
 // ------------------------------------------------------
 function serializeDate(value: any): string | null {
   if (!value) return null;
 
-  // Ya viene como string ISO
   if (typeof value === "string") return value;
 
-  // Viene como timestamp numérico (Date.now())
   if (typeof value === "number") {
     return new Date(value).toISOString();
   }
 
-  // Firestore Timestamp
   if (typeof value === "object" && value.toDate) {
     try {
       return value.toDate().toISOString();
@@ -40,17 +37,13 @@ function serializeDate(value: any): string | null {
 }
 
 /* ============================================================
-   GET  →  Obtener perfil del usuario desde Firestore
+   GET → Obtener perfil del usuario desde Firestore
    ============================================================ */
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const userId = session.user.id;
+    // 🔐 Autenticación
+    const user = await requireUser();
+    const userId = user.id;
 
     // 1) Leer documento del usuario
     const userRef = doc(firestore, "users", userId);
@@ -63,7 +56,6 @@ export async function GET() {
     const userData = userSnap.data() || {};
 
     // 2) Traer recompensas asociadas al usuario
-    //    (colección "rewards" con campo userId)
     const rewardsRef = collection(firestore, "rewards");
     const rewardsQuery = query(rewardsRef, where("userId", "==", userId));
     const rewardsSnap = await getDocs(rewardsQuery);
@@ -73,11 +65,11 @@ export async function GET() {
       ...d.data(),
     }));
 
-    // 3) Normalizar fechas para que el front pueda hacer new Date(...)
+    // 3) Normalizar fechas
     const joinDate = serializeDate(userData.joinDate);
     const lastLogin = serializeDate(userData.lastLogin);
 
-    // 4) Construir respuesta similar a la que devolvía Prisma
+    // 4) Respuesta final
     return NextResponse.json({
       id: userSnap.id,
       name: userData.name ?? null,
@@ -91,20 +83,21 @@ export async function GET() {
       loyaltyPoints: userData.loyaltyPoints ?? 0,
       tier: userData.tier ?? "bronze",
 
-      // Campos adicionales
       phone: userData.phone ?? "",
       bio: userData.bio ?? "",
 
-      // Métricas almacenadas en el doc de usuario
       favoriteCount: userData.favoriteCount ?? 0,
       playlistCount: userData.playlistCount ?? 0,
       totalPlays: userData.totalPlays ?? 0,
 
-      // Lista completa de recompensas
       rewards,
     });
-  } catch (error) {
-    console.error("🔥 Error GET /api/user/profile (Firestore):", error);
+  } catch (error: any) {
+    if (error?.message === "UNAUTHORIZED") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    console.error("🔥 Error GET /api/user/profile:", error);
     return NextResponse.json(
       { error: "Server error fetching profile" },
       { status: 500 }
@@ -117,13 +110,10 @@ export async function GET() {
    ============================================================ */
 export async function PUT(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    // 🔐 Autenticación
+    const user = await requireUser();
+    const userId = user.id;
 
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const userId = session.user.id;
     const body = await request.json();
 
     const userRef = doc(firestore, "users", userId);
@@ -133,16 +123,15 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Actualizar solo algunos campos de perfil
+    // Actualizar campos permitidos
     await updateDoc(userRef, {
       name: body.name ?? null,
       phone: body.phone ?? "",
       bio: body.bio ?? "",
-      // Si quieres registrar la fecha de última actualización del perfil:
       profileUpdatedAt: Date.now(),
     });
 
-    // Volver a leer el usuario para devolver datos actualizados
+    // Volver a leer usuario
     const updatedSnap = await getDoc(userRef);
     const updatedData = updatedSnap.data() || {};
 
@@ -165,8 +154,12 @@ export async function PUT(request: Request) {
       playlistCount: updatedData.playlistCount ?? 0,
       totalPlays: updatedData.totalPlays ?? 0,
     });
-  } catch (error) {
-    console.error("🔥 Error PUT /api/user/profile (Firestore):", error);
+  } catch (error: any) {
+    if (error?.message === "UNAUTHORIZED") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    console.error("🔥 Error PUT /api/user/profile:", error);
     return NextResponse.json(
       { error: "Error updating profile" },
       { status: 500 }

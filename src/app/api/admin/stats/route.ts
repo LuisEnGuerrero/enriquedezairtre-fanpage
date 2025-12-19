@@ -1,19 +1,15 @@
 // src/app/api/admin/stats/route.ts
 
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { requireAdmin } from "@/lib/auth";
 
 import { firestore } from "@/lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session || session.user?.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // 🔐 Verificación de administrador (Firebase Session Cookie)
+    await requireAdmin();
 
     // 🔹 1. Total de canciones
     const songsSnap = await getDocs(collection(firestore, "songs"));
@@ -23,7 +19,7 @@ export async function GET() {
     const playlistsSnap = await getDocs(collection(firestore, "playlists"));
     const totalPlaylists = playlistsSnap.size;
 
-    // 🔹 3. Total de reproducciones (sumando totalPlays desde users)
+    // 🔹 3. Total de reproducciones (sumatoria desde users)
     const usersSnap = await getDocs(collection(firestore, "users"));
     let totalPlays = 0;
 
@@ -37,7 +33,12 @@ export async function GET() {
       totalPlaylists,
       totalPlays,
     });
-  } catch (error) {
+  } catch (error: any) {
+    // 🚫 Errores de auth
+    if (error?.message === "UNAUTHORIZED" || error?.message === "FORBIDDEN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     console.error("🔥 Error fetching admin stats:", error);
     return NextResponse.json(
       { error: "Error fetching stats" },

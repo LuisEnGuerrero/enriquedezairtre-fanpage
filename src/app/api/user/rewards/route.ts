@@ -1,6 +1,5 @@
+﻿import { requireUser } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
 import { firestore } from "@/lib/firebase";
 import {
   collection,
@@ -18,6 +17,7 @@ function serializeDate(value: any): string | null {
 
   if (typeof value === "string") return value;
   if (typeof value === "number") return new Date(value).toISOString();
+
   if (typeof value === "object" && value.toDate) {
     try {
       return value.toDate().toISOString();
@@ -25,6 +25,7 @@ function serializeDate(value: any): string | null {
       return null;
     }
   }
+
   return null;
 }
 
@@ -33,14 +34,9 @@ function serializeDate(value: any): string | null {
    ============================================================ */
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.id) {
-      console.warn("❌ Unauthorized request to /api/user/rewards");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const userId = session.user.id;
+    // 🔐 Autenticación
+    const user = await requireUser();
+    const userId = user.id;
 
     // 1) Referencia a la colección rewards
     const rewardsRef = collection(firestore, "rewards");
@@ -71,7 +67,11 @@ export async function GET() {
       total: rewards.length,
       rewards,
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message === "UNAUTHORIZED") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     console.error("🔥 Error GET /api/user/rewards (Firestore):", error);
     return NextResponse.json(
       { error: "Server error fetching rewards" },

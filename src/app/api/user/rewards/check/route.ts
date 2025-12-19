@@ -1,6 +1,5 @@
+﻿import { requireUser } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../../auth/[...nextauth]/route";
 
 import { firestore, storage } from "@/lib/firebase";
 import {
@@ -14,7 +13,7 @@ import {
 import { ref, getDownloadURL } from "firebase/storage";
 
 /* ============================================================
-   🔥 Configuración de tiers (idéntico al original)
+   🔥 Configuración de tiers
    ============================================================ */
 export const REWARD_TIERS = [
   {
@@ -41,7 +40,7 @@ export const REWARD_TIERS = [
 ];
 
 /* ============================================================
-   Helper para serializar fechas Firestore
+   Helper timestamp
    ============================================================ */
 function toTimestamp(date: Date): number {
   return date.getTime();
@@ -52,13 +51,9 @@ function toTimestamp(date: Date): number {
    ============================================================ */
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const userId = session.user.id;
+    // 🔐 Autenticación
+    const user = await requireUser();
+    const userId = user.id;
 
     /* ------------------------------------------------------------
        1) Leer usuario desde Firestore
@@ -78,7 +73,10 @@ export async function GET() {
        2) Leer recompensas ya desbloqueadas
      ------------------------------------------------------------ */
     const rewardsRef = collection(firestore, "rewards");
-    const existingRewardsQuery = query(rewardsRef, where("userId", "==", userId));
+    const existingRewardsQuery = query(
+      rewardsRef,
+      where("userId", "==", userId)
+    );
     const rewardsSnap = await getDocs(existingRewardsQuery);
 
     const unlockedTiers = new Set(
@@ -88,7 +86,7 @@ export async function GET() {
     const newRewards: any[] = [];
 
     /* ------------------------------------------------------------
-       3) Revisar qué tiers debe desbloquear el usuario
+       3) Evaluar tiers
      ------------------------------------------------------------ */
     for (const tier of REWARD_TIERS) {
       const alreadyUnlocked = unlockedTiers.has(tier.tier);
@@ -97,13 +95,13 @@ export async function GET() {
       if (alreadyUnlocked || !meetsRequirement) continue;
 
       /* ------------------------------------------------------------
-         4) Obtener URLs reales desde Firebase Storage
+         4) Obtener URLs desde Firebase Storage
        ------------------------------------------------------------ */
       const badgeUrl = await getDownloadURL(ref(storage, tier.badge));
       const soundUrl = await getDownloadURL(ref(storage, tier.sound));
 
       /* ------------------------------------------------------------
-         5) Crear recompensa en Firestore
+         5) Crear recompensa
        ------------------------------------------------------------ */
       const rewardPayload = {
         userId,
@@ -118,7 +116,7 @@ export async function GET() {
       const rewardDoc = await addDoc(rewardsRef, rewardPayload);
 
       /* ------------------------------------------------------------
-         6) Registrar actividad en Firestore
+         6) Registrar actividad
        ------------------------------------------------------------ */
       const activityRef = collection(firestore, "activities");
       await addDoc(activityRef, {
@@ -146,7 +144,11 @@ export async function GET() {
         ? "Rewards unlocked"
         : "No new rewards",
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message === "UNAUTHORIZED") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     console.error("🔥 Error in /api/user/rewards/check:", error);
     return NextResponse.json(
       { error: "Error checking rewards" },

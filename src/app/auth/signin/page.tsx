@@ -1,3 +1,7 @@
+// src/app/auth/signin/page.tsx
+
+export const dynamic = "force-dynamic";
+
 import React, { Suspense } from 'react'
 import ClientSignIn from './ClientSignIn'
 

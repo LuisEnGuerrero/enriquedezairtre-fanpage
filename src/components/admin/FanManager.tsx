@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -11,8 +10,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
-import { Users, Award, Star, Crown, Gift, Power, PowerOff, Mail, Calendar } from 'lucide-react'
+import { Users, Award, Star, Crown, Gift, Power, PowerOff, Calendar } from 'lucide-react'
 import { toast } from 'sonner'
+
+type AppUser = {
+  id: string
+  email: string
+  role: 'admin' | 'fan'
+  name?: string
+  image?: string
+}
 
 interface Fan {
   id: string
@@ -36,30 +43,63 @@ interface Fan {
 }
 
 export function FanManager() {
-  const { data: session } = useSession()
+  const [me, setMe] = useState<AppUser | null>(null)
+
   const [fans, setFans] = useState<Fan[]>([])
   const [loading, setLoading] = useState(true)
+
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedFan, setSelectedFan] = useState<Fan | null>(null)
+
   const [actionData, setActionData] = useState({
     action: '',
     type: '',
     title: '',
-    description: ''
+    description: '',
   })
 
+  // 1) Verificar sesión/rol admin (cookie session -> /api/me)
   useEffect(() => {
-    fetchFans()
+    const loadMe = async () => {
+      try {
+        const res = await fetch('/api/me')
+        if (!res.ok) throw new Error('unauthorized')
+
+        const data = await res.json()
+        const user: AppUser | null = data?.user ?? null
+        setMe(user)
+      } catch {
+        setMe(null)
+      }
+    }
+
+    loadMe()
   }, [])
+
+  // 2) Cargar fans solo si soy admin
+  useEffect(() => {
+    if (!me) return
+    if (me.role !== 'admin') {
+      setLoading(false)
+      return
+    }
+    fetchFans()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [me])
 
   const fetchFans = async () => {
     try {
+      setLoading(true)
       const response = await fetch('/api/admin/fans')
       if (response.ok) {
         const data = await response.json()
         setFans(data)
+      } else if (response.status === 401 || response.status === 403) {
+        toast.error('No autorizado para ver fans')
+      } else {
+        toast.error('Error al cargar fans')
       }
-    } catch (error) {
+    } catch {
       toast.error('Error al cargar fans')
     } finally {
       setLoading(false)
@@ -72,12 +112,10 @@ export function FanManager() {
     try {
       const response = await fetch('/api/admin/fans', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: selectedFan.id,
-          ...actionData
+          ...actionData,
         }),
       })
 
@@ -87,36 +125,66 @@ export function FanManager() {
         setSelectedFan(null)
         setActionData({ action: '', type: '', title: '', description: '' })
         fetchFans()
+      } else if (response.status === 401 || response.status === 403) {
+        toast.error('No autorizado para realizar esta acción')
       } else {
         toast.error('Error al realizar acción')
       }
-    } catch (error) {
+    } catch {
       toast.error('Error al realizar acción')
     }
   }
 
   const getTierColor = (tier: string) => {
     switch (tier) {
-      case 'platinum': return 'bg-purple-600'
-      case 'gold': return 'bg-yellow-600'
-      case 'silver': return 'bg-gray-400'
-      case 'bronze': return 'bg-orange-600'
-      default: return 'bg-gray-600'
+      case 'platinum':
+        return 'bg-purple-600'
+      case 'gold':
+        return 'bg-yellow-600'
+      case 'silver':
+        return 'bg-gray-400'
+      case 'bronze':
+        return 'bg-orange-600'
+      default:
+        return 'bg-gray-600'
     }
   }
 
   const getTierIcon = (tier: string) => {
     switch (tier) {
-      case 'platinum': return <Crown className="w-4 h-4" />
-      case 'gold': return <Star className="w-4 h-4" />
-      case 'silver': return <Award className="w-4 h-4" />
-      case 'bronze': return <Users className="w-4 h-4" />
-      default: return <Users className="w-4 h-4" />
+      case 'platinum':
+        return <Crown className="w-4 h-4" />
+      case 'gold':
+        return <Star className="w-4 h-4" />
+      case 'silver':
+        return <Award className="w-4 h-4" />
+      case 'bronze':
+        return <Users className="w-4 h-4" />
+      default:
+        return <Users className="w-4 h-4" />
     }
   }
 
+  // Loader general
   if (loading) {
     return <div className="text-center py-8">Cargando fans...</div>
+  }
+
+  // Si no hay sesión / o no es admin
+  if (!me) {
+    return (
+      <div className="text-center py-8 text-gray-300">
+        Debes iniciar sesión para ver este módulo.
+      </div>
+    )
+  }
+
+  if (me.role !== 'admin') {
+    return (
+      <div className="text-center py-8 text-gray-300">
+        No tienes permisos para acceder a la gestión de fans.
+      </div>
+    )
   }
 
   return (
@@ -138,6 +206,7 @@ export function FanManager() {
             </div>
           </div>
         </CardHeader>
+
         <CardContent>
           <div className="space-y-4">
             {/* Stats Cards */}
@@ -148,43 +217,43 @@ export function FanManager() {
                     <Crown className="w-5 h-5 text-purple-400" />
                     <div>
                       <p className="text-sm text-gray-400">Platinum</p>
-                      <p className="text-xl font-bold">{fans.filter(f => f.tier === 'platinum').length}</p>
+                      <p className="text-xl font-bold">{fans.filter((f) => f.tier === 'platinum').length}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card className="bg-yellow-900/20 border-yellow-500/30">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2">
                     <Star className="w-5 h-5 text-yellow-400" />
                     <div>
                       <p className="text-sm text-gray-400">Gold</p>
-                      <p className="text-xl font-bold">{fans.filter(f => f.tier === 'gold').length}</p>
+                      <p className="text-xl font-bold">{fans.filter((f) => f.tier === 'gold').length}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card className="bg-gray-900/20 border-gray-500/30">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2">
                     <Award className="w-5 h-5 text-gray-400" />
                     <div>
                       <p className="text-sm text-gray-400">Silver</p>
-                      <p className="text-xl font-bold">{fans.filter(f => f.tier === 'silver').length}</p>
+                      <p className="text-xl font-bold">{fans.filter((f) => f.tier === 'silver').length}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card className="bg-orange-900/20 border-orange-500/30">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2">
                     <Users className="w-5 h-5 text-orange-400" />
                     <div>
                       <p className="text-sm text-gray-400">Bronze</p>
-                      <p className="text-xl font-bold">{fans.filter(f => f.tier === 'bronze').length}</p>
+                      <p className="text-xl font-bold">{fans.filter((f) => f.tier === 'bronze').length}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -205,13 +274,14 @@ export function FanManager() {
                   <TableHead>Acciones</TableHead>
                 </TableRow>
               </TableHeader>
+
               <TableBody>
                 {fans.map((fan) => (
                   <TableRow key={fan.id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <img 
-                          src={fan.image || '/default-avatar.png'} 
+                        <img
+                          src={fan.image || '/default-avatar.png'}
                           alt={fan.name || 'Fan'}
                           className="w-8 h-8 rounded-full"
                         />
@@ -221,6 +291,7 @@ export function FanManager() {
                         </div>
                       </div>
                     </TableCell>
+
                     <TableCell>
                       <Badge className={`${getTierColor(fan.tier)} text-white`}>
                         <div className="flex items-center gap-1">
@@ -229,27 +300,35 @@ export function FanManager() {
                         </div>
                       </Badge>
                     </TableCell>
+
                     <TableCell>
                       <div className="flex items-center gap-1">
                         <Star className="w-4 h-4 text-yellow-400" />
                         {fan.loyaltyPoints}
                       </div>
                     </TableCell>
+
                     <TableCell>{fan._count.favorites}</TableCell>
                     <TableCell>{fan._count.playlists}</TableCell>
+
                     <TableCell>
                       <div className="flex items-center gap-1 text-sm text-gray-400">
                         <Calendar className="w-4 h-4" />
                         {new Date(fan.joinDate).toLocaleDateString()}
                       </div>
                     </TableCell>
+
                     <TableCell>
                       <Badge variant={fan.isActive ? 'default' : 'secondary'}>
                         {fan.isActive ? 'Activo' : 'Inactivo'}
                       </Badge>
                     </TableCell>
+
                     <TableCell>
-                      <Dialog open={isDialogOpen && selectedFan?.id === fan.id} onOpenChange={setIsDialogOpen}>
+                      <Dialog
+                        open={isDialogOpen && selectedFan?.id === fan.id}
+                        onOpenChange={setIsDialogOpen}
+                      >
                         <DialogTrigger asChild>
                           <Button
                             size="sm"
@@ -261,6 +340,7 @@ export function FanManager() {
                             SAC
                           </Button>
                         </DialogTrigger>
+
                         <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-md">
                           <DialogHeader>
                             <DialogTitle className="flex items-center gap-2">
@@ -271,11 +351,16 @@ export function FanManager() {
                               {selectedFan?.name || selectedFan?.email} - Nivel {selectedFan?.tier}
                             </DialogDescription>
                           </DialogHeader>
-                          
+
                           <div className="space-y-4">
                             <div>
                               <Label htmlFor="action">Acción</Label>
-                              <Select value={actionData.action} onValueChange={(value) => setActionData({ ...actionData, action: value })}>
+                              <Select
+                                value={actionData.action}
+                                onValueChange={(value) =>
+                                  setActionData({ ...actionData, action: value })
+                                }
+                              >
                                 <SelectTrigger className="bg-gray-800 border-gray-600">
                                   <SelectValue placeholder="Selecciona una acción" />
                                 </SelectTrigger>
@@ -296,7 +381,9 @@ export function FanManager() {
                                   id="type"
                                   type="number"
                                   value={actionData.type}
-                                  onChange={(e) => setActionData({ ...actionData, type: e.target.value })}
+                                  onChange={(e) =>
+                                    setActionData({ ...actionData, type: e.target.value })
+                                  }
                                   className="bg-gray-800 border-gray-600"
                                   placeholder="100"
                                 />
@@ -309,7 +396,9 @@ export function FanManager() {
                                 <Input
                                   id="type"
                                   value={actionData.type}
-                                  onChange={(e) => setActionData({ ...actionData, type: e.target.value })}
+                                  onChange={(e) =>
+                                    setActionData({ ...actionData, type: e.target.value })
+                                  }
                                   className="bg-gray-800 border-gray-600"
                                   placeholder="🏆"
                                 />
@@ -319,7 +408,12 @@ export function FanManager() {
                             {actionData.action === 'upgrade_tier' && (
                               <div>
                                 <Label htmlFor="type">Nuevo Nivel</Label>
-                                <Select value={actionData.type} onValueChange={(value) => setActionData({ ...actionData, type: value })}>
+                                <Select
+                                  value={actionData.type}
+                                  onValueChange={(value) =>
+                                    setActionData({ ...actionData, type: value })
+                                  }
+                                >
                                   <SelectTrigger className="bg-gray-800 border-gray-600">
                                     <SelectValue placeholder="Selecciona nivel" />
                                   </SelectTrigger>
@@ -332,14 +426,18 @@ export function FanManager() {
                               </div>
                             )}
 
-                            {(actionData.action === 'award_points' || actionData.action === 'award_badge' || actionData.action === 'upgrade_tier') && (
+                            {(actionData.action === 'award_points' ||
+                              actionData.action === 'award_badge' ||
+                              actionData.action === 'upgrade_tier') && (
                               <>
                                 <div>
                                   <Label htmlFor="title">Título</Label>
                                   <Input
                                     id="title"
                                     value={actionData.title}
-                                    onChange={(e) => setActionData({ ...actionData, title: e.target.value })}
+                                    onChange={(e) =>
+                                      setActionData({ ...actionData, title: e.target.value })
+                                    }
                                     className="bg-gray-800 border-gray-600"
                                     placeholder="Título de la recompensa"
                                   />
@@ -350,7 +448,9 @@ export function FanManager() {
                                   <Textarea
                                     id="description"
                                     value={actionData.description}
-                                    onChange={(e) => setActionData({ ...actionData, description: e.target.value })}
+                                    onChange={(e) =>
+                                      setActionData({ ...actionData, description: e.target.value })
+                                    }
                                     className="bg-gray-800 border-gray-600"
                                     rows={3}
                                     placeholder="Descripción detallada"
@@ -360,20 +460,31 @@ export function FanManager() {
                             )}
 
                             <div className="flex justify-end space-x-2">
-                              <Button className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                              <Button
+                                className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
+                                variant="outline"
+                                onClick={() => setIsDialogOpen(false)}
+                              >
                                 Cancelar
                               </Button>
-                              <Button 
+
+                              <Button
                                 onClick={handleAction}
                                 className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400"
                                 disabled={!actionData.action}
                               >
                                 {actionData.action === 'activate' ? (
-                                  <><Power className="w-4 h-4 mr-2" /> Activar</>
+                                  <>
+                                    <Power className="w-4 h-4 mr-2" /> Activar
+                                  </>
                                 ) : actionData.action === 'deactivate' ? (
-                                  <><PowerOff className="w-4 h-4 mr-2" /> Desactivar</>
+                                  <>
+                                    <PowerOff className="w-4 h-4 mr-2" /> Desactivar
+                                  </>
                                 ) : (
-                                  <><Gift className="w-4 h-4 mr-2" /> Otorgar</>
+                                  <>
+                                    <Gift className="w-4 h-4 mr-2" /> Otorgar
+                                  </>
                                 )}
                               </Button>
                             </div>

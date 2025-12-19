@@ -2,8 +2,7 @@
 // src/app/api/admin/settings/route.ts
 
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { requireAdmin } from "@/lib/auth";
 
 import { firestore } from "@/lib/firebase";
 import {
@@ -18,19 +17,13 @@ import {
 // ------------------------------------------------------------------
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session || session.user?.role !== "admin") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    // ðŸ” Solo administradores
+    await requireAdmin();
 
     const settingsRef = doc(firestore, "settings", "site");
     const snapshot = await getDoc(settingsRef);
 
-    // Si no existe, inicializamos el documento con valores por defecto
+    // Si no existe, inicializamos con valores por defecto
     if (!snapshot.exists()) {
       const defaultSettings = {
         siteName: "Enrique de Zairtre",
@@ -62,7 +55,11 @@ export async function GET() {
       id: snapshot.id,
       ...snapshot.data(),
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message === "UNAUTHORIZED" || error?.message === "FORBIDDEN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     console.error("ðŸ”¥ Error fetching settings:", error);
     return NextResponse.json(
       { error: "Error fetching settings" },
@@ -76,17 +73,10 @@ export async function GET() {
 // ------------------------------------------------------------------
 export async function PUT(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session || session.user?.role !== "admin") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    // ðŸ” Solo administradores
+    await requireAdmin();
 
     const body = await request.json();
-
     const settingsRef = doc(firestore, "settings", "site");
 
     await updateDoc(settingsRef, {
@@ -97,9 +87,12 @@ export async function PUT(request: Request) {
     return NextResponse.json({
       message: "Settings updated successfully",
     });
-  } catch (error) {
-    console.error("ðŸ”¥ Error updating settings:", error);
+  } catch (error: any) {
+    if (error?.message === "UNAUTHORIZED" || error?.message === "FORBIDDEN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
+    console.error("ðŸ”¥ Error updating settings:", error);
     return NextResponse.json(
       { error: "Error saving settings" },
       { status: 500 }

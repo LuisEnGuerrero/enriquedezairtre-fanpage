@@ -1,40 +1,149 @@
 ﻿# middleware.ts
 // middleware.ts
-
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { getToken } from "next-auth/jwt"
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+const CANONICAL_HOST = "zairtre.site"
+const SESSION_COOKIE_NAME = process.env.SESSION_COOKIE_NAME || "__session"
 
-  // Solo aplicamos lÃ³gica a rutas /admin/*
-  if (pathname.startsWith("/admin")) {
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
+/* -------------------------
+   Helpers de rutas
+--------------------------*/
+function isAdminPath(pathname: string) {
+  return pathname === "/admin" || pathname.startsWith("/admin/")
+}
+
+function isAdminApiPath(pathname: string) {
+  return pathname.startsWith("/api/admin/")
+}
+
+function isAdminLogin(pathname: string) {
+  return pathname === "/admin/login"
+}
+
+function isBypassPath(pathname: string) {
+  // Next internals / assets
+  if (pathname.startsWith("/_next")) return true
+  if (pathname.startsWith("/favicon")) return true
+  if (pathname.startsWith("/robots.txt")) return true
+  if (pathname.startsWith("/sitemap")) return true
+
+  // Auth endpoints propios (Firebase)
+  if (pathname.startsWith("/api/login")) return true
+  if (pathname.startsWith("/api/logout")) return true
+  if (pathname.startsWith("/api/me")) return true
+
+  return false
+}
+
+/* -------------------------
+   Middleware principal
+--------------------------*/
+export async function middleware(req: NextRequest) {
+  const host = req.headers.get("host") || ""
+  const { pathname, search } = req.nextUrl
+
+  /* 1ï¸âƒ£ Bypass inicial */
+  if (isBypassPath(pathname)) {
+    return NextResponse.next()
+  }
+
+  /* 2ï¸âƒ£ Canonical host (tu lÃ³gica actual intacta) */
+  if (host !== CANONICAL_HOST) {
+    const url = new URL(`https://${CANONICAL_HOST}${pathname}${search}`)
+    return NextResponse.redirect(url)
+  }
+
+  /* 3ï¸âƒ£ Determinar si es zona admin */
+  const protectAdminUI = isAdminPath(pathname) && !isAdminLogin(pathname)
+  const protectAdminApi = isAdminApiPath(pathname)
+
+  if (!protectAdminUI && !protectAdminApi) {
+    return NextResponse.next()
+  }
+
+  /* 4ï¸âƒ£ Requisito mÃ­nimo: cookie de sesiÃ³n */
+  const sessionCookie = req.cookies.get(SESSION_COOKIE_NAME)?.value
+  if (!sessionCookie) {
+    if (protectAdminApi) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const loginUrl = req.nextUrl.clone()
+    loginUrl.pathname = "/admin/login"
+    loginUrl.searchParams.set(
+      "callbackUrl",
+      req.nextUrl.pathname + req.nextUrl.search
+    )
+    return NextResponse.redirect(loginUrl)
+  }
+
+  /* 5ï¸âƒ£ Validar rol admin vÃ­a /api/me */
+  try {
+    const meUrl = req.nextUrl.clone()
+    meUrl.pathname = "/api/me"
+    meUrl.search = ""
+
+    const meRes = await fetch(meUrl, {
+      headers: {
+        cookie: req.headers.get("cookie") || "",
+      },
+      cache: "no-store",
     })
 
-    // 1) No autenticado â†’ enviar a login
-    if (!token) {
-      const loginUrl = new URL("/auth/signin", request.url)
-      loginUrl.searchParams.set("callbackUrl", pathname)
+    if (!meRes.ok) {
+      if (protectAdminApi) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      }
+
+      const loginUrl = req.nextUrl.clone()
+      loginUrl.pathname = "/admin/login"
+      loginUrl.searchParams.set(
+        "callbackUrl",
+        req.nextUrl.pathname + req.nextUrl.search
+      )
       return NextResponse.redirect(loginUrl)
     }
 
-    // 2) Autenticado pero sin rol admin â†’ AccessDenied
-    if (token.role !== "admin") {
-      const deniedUrl = new URL("/auth/error", request.url)
-      deniedUrl.searchParams.set("error", "AccessDenied")
-      return NextResponse.redirect(deniedUrl)
-    }
-  }
+    const data = await meRes.json()
+    const role = data?.user?.role
 
-  // Todas las demÃ¡s rutas pasan normal
-  return NextResponse.next()
+    if (role !== "admin") {
+      if (protectAdminApi) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+      }
+
+      const loginUrl = req.nextUrl.clone()
+      loginUrl.pathname = "/admin/login"
+      loginUrl.searchParams.set(
+        "callbackUrl",
+        req.nextUrl.pathname + req.nextUrl.search
+      )
+      loginUrl.searchParams.set("error", "not_admin")
+      return NextResponse.redirect(loginUrl)
+    }
+
+    /* 6ï¸âƒ£ Admin OK */
+    return NextResponse.next()
+  } catch (err) {
+    if (protectAdminApi) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const loginUrl = req.nextUrl.clone()
+    loginUrl.pathname = "/admin/login"
+    loginUrl.searchParams.set(
+      "callbackUrl",
+      req.nextUrl.pathname + req.nextUrl.search
+    )
+    return NextResponse.redirect(loginUrl)
+  }
 }
 
+/* -------------------------
+   Matcher
+--------------------------*/
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/((?!_next).*)"],
 }
 

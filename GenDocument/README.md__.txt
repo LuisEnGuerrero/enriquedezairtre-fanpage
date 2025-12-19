@@ -1,277 +1,191 @@
 ﻿# README.md
 # ðŸŽ¤ **Enrique de Zairtre â€” Plataforma Oficial & Fan Experience**
 
-### **Next.js 15 Â· Firestore Â· Modern Frontend Architecture Â· Scalable Cloud Design**
+### **Next.js App Router Â· Firebase Auth Â· Firestore Â· Cloud Run Â· Arquitectura de ProducciÃ³n**
 
 Este proyecto es la **plataforma oficial** de *Enrique de Zairtre*, un artista conceptual que fusiona rock, folk latino y narrativa poÃ©tica.
-MÃ¡s que una simple FanPage, este repositorio demuestra una **arquitectura web moderna**, **orientada a la experiencia de usuario**, y diseÃ±ada con estÃ¡ndares de **producciÃ³n**, **escalabilidad** y **mantenibilidad profesional**.
 
-Este README estÃ¡ redactado para:
+MÃ¡s que una fanpage, este repositorio representa una **aplicaciÃ³n web moderna de nivel productivo**, diseÃ±ada con criterios reales de **seguridad**, **escalabilidad**, **mantenibilidad** y **arquitectura cloud profesional**.
 
-âœ… **Reclutadores tÃ©cnicos**
-âœ… **Ingenieros senior que evalÃºan arquitectura**
-âœ… **Desarrolladores que revisan buenas prÃ¡cticas**
-âœ… **Usuarios o fans que desean comprender el proyecto final**
+Este README estÃ¡ pensado para:
+
+* âœ… Reclutadores tÃ©cnicos
+* âœ… Ingenieros/as senior evaluando arquitectura
+* âœ… Desarrolladores/as interesados en buenas prÃ¡cticas
+* âœ… Revisiones de portafolio de nivel profesional
 
 ---
 
-# ðŸš€ **VisiÃ³n TÃ©cnica del Proyecto**
+## ðŸš€ VisiÃ³n General del Proyecto
 
-La plataforma evoluciona desde una FanPage hacia un ecosistema completo:
+La plataforma evoluciona desde una fanpage hacia un **ecosistema digital completo**, con:
 
 * ðŸŽ§ **Streaming de mÃºsica** con reproductor persistente
-* â­ **Sistema de favoritos con cachÃ© inteligente**
-* ðŸŽ **Rewards y sistema de lealtad gamificado**
-* ðŸŽ›ï¸ **Panel administrativo con gestiÃ³n de contenido**
+* â­ **Sistema de favoritos**
 * ðŸŽµ **Playlists oficiales y personalizadas**
-* ðŸ” **AutenticaciÃ³n segura con Google (NextAuth)**
-* â˜ï¸ **Infraestructura serverless con Firestore + Firebase Storage**
+* ðŸŽ›ï¸ **Panel administrativo protegido**
+* ðŸ‘¥ **GestiÃ³n de usuarios (fans / admin)**
+* ðŸ” **AutenticaciÃ³n segura con Google (Firebase Auth)**
+* â˜ï¸ **Infraestructura serverless y containerizada**
 
-Este proyecto combina:
-
-* **Arquitectura moderna (Next.js App Router + React Server Components)**
-* **Backend serverless escalable (Firestore)**
-* **UI profesional (shadcn/ui + Radix)**
-* **Patrones reales de producciÃ³n**
-* **Scripts automatizados de seed/reset para entornos cloud**
-
-Es, en esencia, una aplicaciÃ³n de nivel comercial construida con estÃ¡ndares de startup.
+Todo el sistema estÃ¡ diseÃ±ado para **ejecutarse en entornos Linux**, desplegado mediante **contenedores Docker** en **Google Cloud Run**.
 
 ---
 
-# ðŸ—ï¸ **Arquitectura de Alto Nivel**
+## ðŸ—ï¸ Arquitectura de Alto Nivel
 
-La plataforma se diseÃ±Ã³ bajo principios de:
+### 1ï¸âƒ£ Enfoque Serverless + Containers
 
-### **1. Serverless First**
-
-FireStore y Firebase Storage eliminan la necesidad de un servidor dedicado.
-Permite escalar globalmente, reducir latencias y simplificar el mantenimiento.
-
-### **2. Clean API Layer (Next.js Route Handlers)**
-
-La API se organiza en mÃ³dulos independientes:
+* **Cloud Run** ejecuta el backend como contenedor Docker (Linux)
+* **Firestore** como base de datos NoSQL escalable
+* **Firebase Storage** para audios, imÃ¡genes y recursos
+* **Firebase Hosting** como frontend gateway con rewrites a Cloud Run
 
 ```
-/api
- â”œâ”€â”€ songs/
- â”œâ”€â”€ playlists/
- â”œâ”€â”€ favorites/
- â”œâ”€â”€ user/
- â”œâ”€â”€ admin/
- â””â”€â”€ auth/
-```
-
-Cada endpoint incluye:
-
-* ValidaciÃ³n de sesiÃ³n
-* Roles y permisos
-* Control avanzado de errores
-* LÃ³gica desacoplada del frontend
-
-### **3. Client/UI desacoplado con React Server Components**
-
-* RSC para lectura de datos de Firestore
-* Client Components para audio, player controls y UI interactiva
-* React Query para sincronizaciÃ³n en tiempo real donde aplica
-
-### **4. Capa de dominio clara**
-
-* Songs
-* Favorites
-* Playlists
-* Activities
-* Rewards
-* Fans
-
-Cada mÃ³dulo estÃ¡ bien definido y fÃ¡cilmente extensible.
-
----
-
-# â˜ï¸ **Infraestructura Cloud**
-
-### **Base de Datos**
-
-âœ” Firestore
-âœ” Subcolecciones para favoritos, playlists y actividad
-âœ” Ãndices optimizados
-âœ” Costos controlados mediante:
-
-* Batch reads
-* CachÃ© inteligente en endpoints
-* Evitar n+1 queries innecesarias
-* TTL opcional para logs de actividades
-
-### **Almacenamiento**
-
-âœ” Firebase Storage
-âœ” Scripts automatizados que suben portadas, audios y badges
-âœ” Fallback automÃ¡tico si falla la subida (Ãºtil en CI/CD)
-
-### **AutenticaciÃ³n**
-
-âœ” NextAuth con Google
-âœ” SincronizaciÃ³n automÃ¡tica de perfil con Firestore
-âœ” AsignaciÃ³n automÃ¡tica de roles (admin vs fan)
-
----
-
-# ðŸ› ï¸ **Stack TecnolÃ³gico Moderno**
-
-### **Frontend / App Framework**
-
-* Next.js 15 (App Router)
-* React 19
-* TypeScript 5
-* Tailwind CSS 4
-* shadcn/ui (Radix)
-* Framer Motion
-* Zustand
-* TanStack Query
-* MDX Editor
-* Recharts
-
-### **Backend Serverless**
-
-* Firestore (NoSQL)
-* Firebase Storage
-* NextAuth
-* Firebase Admin SDK (algunas tareas internas opcionales)
-
-### **Audio & UX**
-
-* Reproductor persistente
-* Waveform animations
-* Accesibilidad garantizada por Radix
-
----
-
-# ðŸ“ **Estructura del Proyecto (Nivel Profesional)**
-
-```
-src/
-â”œâ”€â”€ app/                     # App Router - rutas, layouts y pÃ¡ginas
-â”‚   â”œâ”€â”€ (public)/            # UI pÃºblica
-â”‚   â”œâ”€â”€ dashboard/           # Panel admin
-â”‚   â””â”€â”€ api/                 # API serverless
-â”‚
-â”œâ”€â”€ components/
-â”‚   â”œâ”€â”€ ui/                  # Biblioteca shadcn/ui adaptada
-â”‚   â”œâ”€â”€ player/              # Sistema de reproducciÃ³n
-â”‚   â””â”€â”€ music/               # Bloques funcionales
-â”‚
-â”œâ”€â”€ lib/
-â”‚   â”œâ”€â”€ firebase/            # ConfiguraciÃ³n Firestore/Storage
-â”‚   â”œâ”€â”€ auth/                # NextAuth + sync
-â”‚   â””â”€â”€ utils/               # Helpers
-â”‚
-â””â”€â”€ scripts/
-    â”œâ”€â”€ seed-firestore.js    # Seed automatizado del sistema
-    â””â”€â”€ reset-firestore.js   # Borrado completo + re-seed
+Usuario â†’ Firebase Hosting â†’ Cloud Run (Next.js)
+                             â†“
+                        Firestore / Storage
 ```
 
 ---
 
-# ðŸŒ± **Seeds & Reset AutomÃ¡tico**
+### 2ï¸âƒ£ AutenticaciÃ³n moderna y segura (SIN NextAuth)
 
-Una caracterÃ­stica clave (muy Ãºtil para entornos reales):
+La autenticaciÃ³n se implementa con un **flujo profesional usado en producciÃ³n**:
 
-### **Seed (carga inicial de datos):**
+1. Login con Google usando **Firebase Auth (cliente)**
+2. ObtenciÃ³n de **ID Token**
+3. Intercambio por **Session Cookie httpOnly** en `/api/login`
+4. ValidaciÃ³n server-side con **Firebase Admin SDK**
+5. ProtecciÃ³n de rutas mediante **middleware**
 
-```
-npm run seed
-```
-
-Incluye:
-
-* CreaciÃ³n automÃ¡tica del usuario admin
-* Subida de audios y portadas a Firebase Storage
-* CreaciÃ³n de canciones oficiales
-* Playlists oficiales
-* Badges y sistema de rewards
-* Registro de actividad inicial
-
-### **Reset Completo (modo desarrollo/testing):**
-
-```
-npm run reset
-```
-
-Realiza:
-
-1. Borrado completo de Firestore (colecciones + subcolecciones)
-2. Limpieza de Storage (carpetas de audios/covers/badges)
-3. EjecuciÃ³n del seed para dejar el proyecto "limpio"
+âœ” Cookies seguras
+âœ” Sin tokens expuestos al cliente
+âœ” Roles validados en backend
+âœ” Compatible con Edge + Node runtimes
 
 ---
 
-# ðŸ” **AutenticaciÃ³n & Roles**
+### 3ï¸âƒ£ Control de acceso por roles
 
 Roles soportados:
 
-* **admin**: acceso total al panel de control
-* **fan**: usuario regular
+* **admin**
+* **fan**
 
-El sistema `sync-user` asigna rol automÃ¡ticamente segÃºn:
+La asignaciÃ³n se realiza automÃ¡ticamente en el endpoint de sincronizaciÃ³n de usuario:
 
-```js
-if (email === ADMIN_EMAIL) role = "admin"
+```ts
+if (email === ADM1N_EM41L) role = "admin"
 else role = "fan"
 ```
 
-Y actualiza:
+El sistema incluye:
 
-* Nombre
-* Foto
-* Fecha de Ãºltimo login
-* Registro de actividad
-
----
-
-# ðŸ§  **CaracterÃ­sticas Avanzadas de IngenierÃ­a**
-
-### âœ” CachÃ© inteligente para reducir costos Firestore
-
-Endpoints como `/api/favorites` y `/api/songs` implementan:
-
-* LRU in-memory cache
-* ExpiraciÃ³n automÃ¡tica
-* Invalidation por mutaciÃ³n
-* Evita grandes lecturas repetitivas
-
-### âœ” Pipeline de datos consistente
-
-Todo cambio del usuario registra:
-
-* Actividad
-* Puntos de lealtad
-* EstadÃ­sticas agregadas
-
-### âœ” Seguridad de producciÃ³n
-
-* CSRF y Session Protection (NextAuth)
-* ValidaciÃ³n estricta de inputs
-* API roles-based
-* Firestore security rules (opcional para producciÃ³n)
-
-### âœ” CÃ³digo desacoplado y testeable
-
-* MÃ³dulos pequeÃ±os
-* Servicios exportables
-* Scripts self-contained
-* Componentes UI reutilizables
+* Middleware de protecciÃ³n para `/admin/*`
+* ProtecciÃ³n de `/api/admin/*`
+* Bloqueo inmediato de usuarios no autorizados
 
 ---
 
-# âš™ï¸ **CÃ³mo Ejecutar el Proyecto**
+## ðŸ” Seguridad de ProducciÃ³n
 
-### 1ï¸âƒ£ Instalar dependencias
+* Session Cookies `httpOnly`
+* ValidaciÃ³n de sesiÃ³n en backend (Firebase Admin)
+* Middleware Edge para control de acceso
+* SeparaciÃ³n clara cliente / servidor
+* EliminaciÃ³n total de NextAuth y dependencias innecesarias
+* RedirecciÃ³n forzada a dominio canÃ³nico (`zairtre.site`)
 
-```bash
-npm install
+---
+
+## ðŸ“¦ Stack TecnolÃ³gico
+
+### Frontend / Framework
+
+* **Next.js (App Router)**
+* React
+* TypeScript
+* Tailwind CSS
+* shadcn/ui
+* Radix UI
+* Framer Motion
+
+### Backend / Cloud
+
+* Firebase Auth
+* Firebase Admin SDK
+* Firestore
+* Firebase Storage
+* Docker (Linux)
+* Google Cloud Run
+* Firebase Hosting (rewrites)
+
+---
+
+## ðŸ“ Estructura del Proyecto
+
+```
+src/
+â”œâ”€â”€ app/
+â”‚   â”œâ”€â”€ (public)/              # UI pÃºblica
+â”‚   â”œâ”€â”€ admin/                 # Panel administrativo
+â”‚   â””â”€â”€ api/                   # API serverless
+â”‚       â”œâ”€â”€ login/             # Crear sesiÃ³n
+â”‚       â”œâ”€â”€ logout/            # Cerrar sesiÃ³n
+â”‚       â”œâ”€â”€ me/                # Usuario actual
+â”‚       â”œâ”€â”€ admin/             # Endpoints protegidos
+â”‚
+â”œâ”€â”€ components/
+â”‚   â”œâ”€â”€ ui/
+â”‚   â”œâ”€â”€ player/
+â”‚   â””â”€â”€ music/
+â”‚
+â”œâ”€â”€ lib/
+â”‚   â”œâ”€â”€ firebaseClient.ts      # Firebase client SDK
+â”‚   â”œâ”€â”€ firebaseAdmin.ts       # Firebase Admin SDK
+â”‚   â”œâ”€â”€ auth.ts                # Helpers de sesiÃ³n / roles
+â”‚
+â”œâ”€â”€ scripts/
+â”‚   â”œâ”€â”€ seed-firestore.js
+â”‚   â””â”€â”€ reset-firestore.js
+â”‚
+â”œâ”€â”€ middleware.ts              # Middleware global (admin + canonical)
+â””â”€â”€ Dockerfile
 ```
 
-### 2ï¸âƒ£ Variables de entorno (ejemplo)
+---
+
+## ðŸŒ± Seeds y Reset del Sistema
+
+### Seed inicial
+
+```bash
+npm run seed
+```
+
+Crea:
+
+* Usuario administrador
+* Canciones
+* Playlists
+* Datos base del sistema
+
+### Reset completo
+
+```bash
+npm run reset
+```
+
+* Limpia Firestore
+* Limpia Firebase Storage
+* Ejecuta nuevamente el seed
+
+---
+
+## âš™ï¸ Variables de Entorno (ProducciÃ³n)
+
+### Cliente (Firebase)
 
 ```
 NEXT_PUBLIC_FIREBASE_API_KEY=
@@ -280,97 +194,502 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
-
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-
-NEXTAUTH_SECRET=
-NEXTAUTH_URL=http://localhost:3000
-
-ADM1N_EM41L=tu_correo_admin
 ```
 
-### 3ï¸âƒ£ Ejecutar en modo desarrollo
+### Backend / Cloud Run
+
+```
+FIREBASE_PROJECT_ID=
+FIREBASE_CLIENT_EMAIL=
+FIREBASE_PRIVATE_KEY=
+
+ADM1N_EM41L=correo_admin
+SESSION_COOKIE_NAME=__session
+SESSION_EXPIRES_DAYS=7
+CANONICAL_HOST=zairtre.site
+```
+
+âŒ **No se utilizan variables NEXTAUTH_***
+âŒ **NextAuth no forma parte del sistema**
+
+---
+
+## ðŸ³ Deploy (ProducciÃ³n Real)
+
+El proyecto se despliega mediante:
+
+1. **Docker build** (Linux target)
+2. **Push a Artifact Registry**
+3. **Deploy a Cloud Run**
+4. **Firebase Hosting como gateway**
 
 ```bash
-npm run dev
+docker build -t us-central1-docker.pkg.dev/PROJECT/REPO/APP:prod .
+docker push us-central1-docker.pkg.dev/PROJECT/REPO/APP:prod
+gcloud run deploy zairtre-cloudrun --image ...
 ```
 
-### 4ï¸âƒ£ Build de producciÃ³n
+---
+
+## ðŸ§  Enfoque de IngenierÃ­a
+
+Este proyecto demuestra:
+
+* Arquitectura moderna y desacoplada
+* AutenticaciÃ³n profesional sin dependencias innecesarias
+* Seguridad real (no solo â€œlogin funcionalâ€)
+* PreparaciÃ³n para entornos Linux desde Windows
+* Buen uso de contenedores y serverless
+* CÃ³digo mantenible y escalable
+
+---
+
+## ðŸŽµ PropÃ³sito ArtÃ­stico
+
+La tecnologÃ­a estÃ¡ al servicio de una narrativa artÃ­stica:
+sonido, identidad, estÃ©tica y experiencia se integran en una sola plataforma.
+
+---
+
+
+## ðŸ” Security Model (Enterprise-Grade)
+
+Esta plataforma implementa un **modelo de seguridad multicapa**, diseÃ±ado bajo principios de **Zero Trust**, **defensa en profundidad** y **mÃ­nimo privilegio**, adecuado para entornos de **producciÃ³n real** y despliegues en la nube.
+
+---
+
+### 1ï¸âƒ£ Principios de Seguridad
+
+El sistema se fundamenta en los siguientes principios:
+
+* **Zero Trust**: ninguna peticiÃ³n es confiable por defecto.
+* **Server-side authority**: toda validaciÃ³n crÃ­tica ocurre en el servidor.
+* **Least Privilege**: los usuarios solo acceden a lo estrictamente necesario.
+* **Separation of concerns**: autenticaciÃ³n, autorizaciÃ³n y lÃ³gica de negocio estÃ¡n desacopladas.
+* **Fail closed**: ante cualquier error, el acceso es denegado.
+
+---
+
+### 2ï¸âƒ£ Identidad y AutenticaciÃ³n
+
+#### Flujo de AutenticaciÃ³n
+
+La identidad del usuario se gestiona mediante **Firebase Authentication (Google OAuth)**, siguiendo un patrÃ³n seguro de intercambio de tokens:
+
+1. El cliente autentica al usuario mediante Google OAuth (Firebase Auth).
+2. Firebase devuelve un **ID Token de corta duraciÃ³n**.
+3. El cliente envÃ­a el ID Token al endpoint `/api/login`.
+4. El backend valida el token usando **Firebase Admin SDK**.
+5. Se emite una **Session Cookie httpOnly**, firmada y gestionada por Firebase.
+6. El cliente opera Ãºnicamente con la cookie; **nunca almacena tokens sensibles**.
+
+**Ventajas clave:**
+
+* No se exponen tokens JWT en el frontend.
+* ProtecciÃ³n automÃ¡tica contra XSS y token leakage.
+* RotaciÃ³n y revocaciÃ³n de sesiones controlada por el backend.
+
+---
+
+### 3ï¸âƒ£ GestiÃ³n de SesiÃ³n
+
+* **Session Cookies**:
+
+  * `httpOnly`
+  * `secure`
+  * `sameSite=lax`
+  * ExpiraciÃ³n controlada (`SESSION_EXPIRES_DAYS`)
+
+* **ValidaciÃ³n server-side**:
+
+  * Cada peticiÃ³n protegida valida la sesiÃ³n usando Firebase Admin SDK.
+  * Las sesiones revocadas o expiradas son rechazadas automÃ¡ticamente.
+
+* **Logout seguro**:
+
+  * EliminaciÃ³n explÃ­cita de la cookie.
+  * InvalidaciÃ³n inmediata de la sesiÃ³n en el backend.
+
+---
+
+### 4ï¸âƒ£ AutorizaciÃ³n Basada en Roles (RBAC)
+
+El sistema implementa **Role-Based Access Control (RBAC)**:
+
+| Rol     | Capacidades                                    |
+| ------- | ---------------------------------------------- |
+| `fan`   | Acceso a funcionalidades pÃºblicas              |
+| `admin` | Acceso completo a panel y APIs administrativas |
+
+* El rol se almacena en Firestore y **no puede ser alterado desde el cliente**.
+* La asignaciÃ³n inicial es automÃ¡tica y controlada por el backend.
+* El rol es validado **en cada request protegida**.
+
+```ts
+if (user.role !== 'admin') {
+  denyAccess()
+}
+```
+
+---
+
+### 5ï¸âƒ£ ProtecciÃ³n de Rutas y APIs
+
+#### Middleware Edge (Primera Barrera)
+
+Un **middleware global en Edge Runtime** protege:
+
+* `/admin/*`
+* `/api/admin/*`
+
+Funciones clave:
+
+* VerificaciÃ³n de existencia de sesiÃ³n.
+* ValidaciÃ³n de rol mediante `/api/me`.
+* RedirecciÃ³n o bloqueo inmediato ante acceso no autorizado.
+* ProtecciÃ³n previa a la ejecuciÃ³n del cÃ³digo de aplicaciÃ³n.
+
+#### ValidaciÃ³n Backend (Segunda Barrera)
+
+Incluso si el middleware es bypassed:
+
+* Cada endpoint administrativo vuelve a validar:
+
+  * SesiÃ³n
+  * Rol
+* El backend **no confÃ­a en el middleware como Ãºnica defensa**.
+
+---
+
+### 6ï¸âƒ£ Seguridad de API
+
+* ValidaciÃ³n estricta de inputs.
+* Respuestas de error controladas (sin filtrado de informaciÃ³n sensible).
+* SeparaciÃ³n clara entre APIs pÃºblicas y administrativas.
+* Uso de mÃ©todos HTTP semÃ¡nticamente correctos (`GET`, `POST`, `PUT`, `DELETE`).
+
+---
+
+### 7ï¸âƒ£ Seguridad de Infraestructura
+
+* **Cloud Run**:
+
+  * Contenedores aislados.
+  * Escalado automÃ¡tico.
+  * Sin acceso directo al sistema operativo.
+* **Docker**:
+
+  * ImÃ¡genes Linux reproducibles.
+  * Sin dependencias del entorno host.
+* **Variables sensibles**:
+
+  * Inyectadas Ãºnicamente en runtime.
+  * Nunca versionadas.
+  * Sin exposiciÃ³n al cliente.
+
+---
+
+### 8ï¸âƒ£ Dominio CanÃ³nico y MitigaciÃ³n de Riesgos
+
+* RedirecciÃ³n forzada al dominio canÃ³nico (`zairtre.site`).
+* PrevenciÃ³n de:
+
+  * Session fixation
+  * Host header attacks
+  * Ambientes de ejecuciÃ³n no autorizados
+
+---
+
+### 9ï¸âƒ£ Defensa ante Amenazas Comunes
+
+| Amenaza               | MitigaciÃ³n                           |
+| --------------------- | ------------------------------------ |
+| XSS                   | Cookies httpOnly                     |
+| CSRF                  | sameSite cookies + server validation |
+| Token theft           | Tokens nunca accesibles al cliente   |
+| Privilege escalation  | RBAC server-side                     |
+| Session hijacking     | Cookies secure + revocaciÃ³n          |
+| Acceso directo a APIs | Middleware + validaciÃ³n backend      |
+
+---
+
+### ðŸ”Ÿ AuditorÃ­a y Mantenibilidad
+
+* CÃ³digo de seguridad centralizado y auditable.
+* EliminaciÃ³n completa de dependencias obsoletas (NextAuth).
+* Arquitectura fÃ¡cilmente extensible para:
+
+  * MFA
+  * Nuevos providers OAuth
+  * PolÃ­ticas de seguridad adicionales
+
+---
+
+# ðŸš€ Deployment Pipeline (Staging & Production)
+
+Esta aplicaciÃ³n se despliega mediante un **pipeline automatizado y reproducible**, basado en **Docker + Google Cloud Run**, siguiendo buenas prÃ¡cticas de **CI/CD manual controlado**.
+
+El flujo soporta:
+
+* âœ”ï¸ Entornos **staging** y **production**
+* âœ”ï¸ Versionado automÃ¡tico vÃ­a **git tags**
+* âœ”ï¸ Rollback seguro a revisiones previas
+* âœ”ï¸ Uso de **Google Secret Manager**
+* âœ”ï¸ Control de costos en Cloud Run
+* âœ”ï¸ Health checks y readiness probes
+
+---
+
+## ðŸ§± Infraestructura Base
+
+Antes del primer despliegue, deben existir los siguientes recursos en GCP:
 
 ```bash
-npm run build
-npm start
+# APIs necesarias
+gcloud services enable \
+  run.googleapis.com \
+  artifactregistry.googleapis.com \
+  secretmanager.googleapis.com
 ```
 
----
+```bash
+# Artifact Registry (una sola vez)
+gcloud artifacts repositories create zairtre-repo \
+  --repository-format=docker \
+  --location=us-central1 \
+  --description="Zairtre containers"
+```
 
-# ðŸŒ **Deploy**
-
-Compatible con:
-
-* Vercel
-* Render
-* Railway
-* Firebase Hosting + Cloud Functions
-* Fly.io
-
-Requiere:
-
-* Variables de entorno
-* Firebase project configurado
-* Reglas de seguridad Firestore (si aplica)
-* Seed opcional en primera ejecuciÃ³n
+> El repositorio **zairtre-repo** almacena las imÃ¡genes Docker versionadas.
 
 ---
 
-# ðŸ¤ **ContribuciÃ³n**
+## ðŸ³ Contenedor Docker (ProducciÃ³n)
 
-Si eres desarrollador y deseas mejorar esta plataforma:
+La aplicaciÃ³n se empaqueta usando un **Dockerfile multi-stage optimizado**, que:
 
-1. Crea un branch
-2. EnvÃ­a un PR documentado
-3. Sigue las convenciones del proyecto
-4. Escribe cÃ³digo con intenciÃ³n, claridad y respeto por la arquitectura existente
+* Construye Next.js en modo `standalone`
+* Genera una imagen final **ligera**
+* Escucha en el **puerto 8080** (Cloud Run standard)
 
----
+Variables clave dentro del contenedor:
 
-# ðŸ§¬ **PropÃ³sito ArtÃ­stico**
+```dockerfile
+ENV NODE_ENV=production
+ENV PORT=8080
+EXPOSE 8080
+```
 
-La plataforma no es solo un proyecto tÃ©cnico.
-Es una forma de expresar:
-
-* Sonidos conceptuales
-* Narrativas poÃ©ticas
-* Dimensiones emocionales
-* El universo musical de Enrique de Zairtre
-
-Toda ampliaciÃ³n del proyecto respeta esta identidad.
+Cloud Run inyecta el puerto automÃ¡ticamente, por lo que **no se usa docker-compose en producciÃ³n**.
 
 ---
 
-# ðŸ **ConclusiÃ³n**
+## ðŸ” GestiÃ³n de Secretos (Secret Manager)
 
-Este repositorio demuestra:
+Todas las credenciales sensibles se almacenan en **Google Secret Manager** y se inyectan en runtime:
 
-### ðŸ”¥ Arquitectura moderna
+```bash
+gcloud secrets create FIREBASE_PRIVATE_KEY --data-file=-
+gcloud secrets create FIREBASE_CLIENT_EMAIL --data-file=-
+gcloud secrets create ADM1N_EM41L --data-file=-
+```
 
-### ðŸ“ˆ Escalabilidad serverless real
+En Cloud Run, los secretos se asocian al servicio:
 
-### ðŸŽ¨ UI profesional
+```bash
+--set-secrets FIREBASE_PRIVATE_KEY=FIREBASE_PRIVATE_KEY:latest
+```
 
-### âš™ï¸ IngenierÃ­a limpia y documentada
-
-### ðŸ§± Scripts de automatizaciÃ³n avanzados
-
-### ðŸ§‘â€ðŸ’» Buenas prÃ¡cticas para producciÃ³n
-
-Es un proyecto ideal para presentar en portafolio porque:
-
-* Integra mÃºltiples tecnologÃ­as reales del mercado
-* Muestra capacidad de diseÃ±o arquitectÃ³nico
-* Demuestra pensamiento de ingenierÃ­a
-* Es visualmente atractivo y funcional
+âœ”ï¸ NingÃºn secreto vive en el repositorio
+âœ”ï¸ NingÃºn `.env` en producciÃ³n
+âœ”ï¸ RotaciÃ³n segura y auditable
 
 ---
+
+## ðŸ·ï¸ Versionado AutomÃ¡tico (Git Tags)
+
+El versionado sigue **SemVer** (`vX.Y.Z`) y se genera automÃ¡ticamente:
+
+```bash
+.\scripts\tag-release.ps1 -Type patch
+```
+
+Esto:
+
+* Calcula la siguiente versiÃ³n
+* Crea el `git tag`
+* Lo empuja al repositorio remoto
+
+El mismo tag se usa para **nombrar la imagen Docker**, evitando inconsistencias.
+
+---
+
+## ðŸš¦ Entornos Soportados
+
+| Entorno | Servicio Cloud Run | TrÃ¡fico |
+| ------- | ------------------ | ------- |
+| staging | `zairtre-staging`  | Interno |
+| prod    | `zairtre-app`      | PÃºblico |
+
+Cada entorno usa:
+
+* Imagen distinta
+* Variables de entorno independientes
+* Escalado controlado
+
+---
+
+## â–¶ï¸ Despliegue Manual (Recomendado)
+
+### ðŸ”¹ Staging
+
+```powershell
+.\scripts\deploy-staging.ps1
+```
+
+### ðŸ”¹ ProducciÃ³n
+
+```powershell
+.\scripts\deploy-prod.ps1
+```
+
+Ambos scripts:
+
+1. Construyen la imagen Docker
+2. La suben a Artifact Registry
+3. Despliegan a Cloud Run
+4. Configuran recursos, puertos y secretos
+5. Crean una nueva **revision inmutable**
+
+---
+
+## ðŸ§  Script Orquestador (One-Command Deploy)
+
+Para evitar errores humanos y discrepancias de versiÃ³n, el proyecto incluye un **script orquestador**:
+
+```powershell
+.\scripts\release.ps1 -Env prod
+```
+
+Este script ejecuta **en orden**:
+
+1. `npx tsc --noEmit`
+2. `tag-release.ps1`
+3. `deploy-(staging|prod).ps1`
+4. VerificaciÃ³n del servicio en Cloud Run
+
+âœ”ï¸ Una sola fuente de verdad
+âœ”ï¸ Sin versionado manual
+âœ”ï¸ Reproducible y auditable
+
+---
+
+## â™»ï¸ Rollback Seguro
+
+Cloud Run mantiene **todas las revisiones**.
+
+Rollback inmediato:
+
+```bash
+gcloud run services update-traffic zairtre-app \
+  --to-revisions zairtre-app-00012-abc=100
+```
+
+âœ”ï¸ Sin rebuild
+âœ”ï¸ Sin downtime
+âœ”ï¸ Reversible en segundos
+
+---
+
+## â¤ï¸ Health Checks & Readiness
+
+El contenedor expone correctamente el puerto `8080`, y Cloud Run gestiona:
+
+* Startup probe
+* Readiness automÃ¡tica
+* Restart en fallos
+
+Opcionalmente puede aÃ±adirse:
+
+```ts
+GET /api/health
+```
+
+Para chequeos externos o monitoreo.
+
+---
+
+## ðŸ’¸ Control de Costos (Cloud Run)
+
+ConfiguraciÃ³n aplicada:
+
+* `min-instances = 0` â†’ **$0 en idle**
+* `max-instances = 2`
+* CPU throttling habilitado
+* Concurrency controlada
+
+Esto garantiza:
+
+âœ”ï¸ Bajo costo
+âœ”ï¸ Escalado automÃ¡tico
+âœ”ï¸ Sin servidores permanentes
+
+---
+
+## ðŸ“Œ Notas Importantes
+
+* `docker-compose.yml` **solo se usa en local**
+* ProducciÃ³n usa **Cloud Run + Artifact Registry**
+* El puerto **8080 es obligatorio** en Cloud Run
+* NextAuth **no existe** en este proyecto
+* Toda autenticaciÃ³n es Firebase-native
+
+---
+
+## ðŸ§  Estado del Proyecto
+
+âœ”ï¸ CompilaciÃ³n TypeScript limpia
+âœ”ï¸ Contenedor construido correctamente
+âœ”ï¸ Imagen versionada
+âœ”ï¸ Servicios creados en Cloud Run
+âœ”ï¸ Listo para trÃ¡fico real
+
+---
+## ðŸ ConclusiÃ³n
+
+Este repositorio no es un demo.
+
+Es una **aplicaciÃ³n web moderna de nivel productivo**, adecuada para:
+
+* Portafolios tÃ©cnicos avanzados
+* Evaluaciones de arquitectura
+* Referencia de autenticaciÃ³n moderna con Firebase
+* Ejemplo real de despliegue con Docker + Cloud Run
+
+
+A continuaciÃ³n te entrego una **secciÃ³n â€œSecurity Modelâ€ de nivel enterprise**, lista para **pegar directamente en el README**, alineada con tu arquitectura real (Firebase Auth + Session Cookies + Cloud Run + Middleware Edge).
+
+El tono estÃ¡ pensado para **auditorÃ­a tÃ©cnica**, **revisiÃ³n senior**, **arquitectura enterprise** y **portafolio avanzado**.
+
+---
+### ðŸ§  Sobre el Modelo de Seguridad
+
+Este sistema implementa un **modelo de seguridad moderno, robusto y alineado con estÃ¡ndares enterprise**, demostrando:
+
+* Dominio de autenticaciÃ³n avanzada
+* ComprensiÃ³n profunda de amenazas reales
+* SeparaciÃ³n clara de responsabilidades
+* PreparaciÃ³n para auditorÃ­as tÃ©cnicas y escalado futuro
+
+No se trata solo de â€œusuarios que inician sesiÃ³nâ€, sino de **una arquitectura de seguridad diseÃ±ada conscientemente**.
+
+---
+
+## ðŸ“ CrÃ©ditos
+### Desarrollo y DiseÃ±o
+
+Este sitio web ha sido diseÃ±ado y desarrollado por
+**Luis Enrique Guerrero**
+-https://luisenguerrero.netlify.app-
+WhatsApp: +57 3208172936
 

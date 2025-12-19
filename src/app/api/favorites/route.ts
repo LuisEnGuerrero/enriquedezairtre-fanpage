@@ -1,74 +1,45 @@
-// src/app/api/favorites/route.ts
+﻿// src/app/api/favorites/route.ts
 
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { requireUser } from "@/lib/auth";
+
 import { firestore } from "@/lib/firebase";
-import { getSongCached } from "@/lib/songs";
 import {
   collection,
-  doc,
-  getDoc,
-  getDocs,
-  setDoc,
-  deleteDoc,
-  updateDoc,
-  increment,
-  addDoc,
   query,
-  orderBy,
+  where,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  doc,
   serverTimestamp,
+  updateDoc,
 } from "firebase/firestore";
 
-interface FavoriteWithSong {
-  id: string;
-  userId: string;
-  songId: string;
-  createdAt: any;
-  song: any | null;
-}
-
-// ------------------------------------------------------------
-// GET → Obtener favoritos del usuario (Optimizado)
-// ------------------------------------------------------------
+/* ============================================================
+   GET → Obtener favoritos del usuario
+   ============================================================ */
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const user = await requireUser();
+    const userId = user.id;
+
+    const favoritesRef = collection(firestore, "favorites");
+    const q = query(favoritesRef, where("userId", "==", userId));
+    const snap = await getDocs(q);
+
+    const favorites = snap.docs.map((d) => ({
+      id: d.id,
+      ...(d.data() as any),
+    }));
+
+    return NextResponse.json(favorites);
+  } catch (error: any) {
+    if (error?.message === "UNAUTHORIZED") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
-
-    // 1. Obtener favoritos del usuario (UNA lectura)
-    const favoritesRef = collection(firestore, "users", userId, "favorites");
-    const q = query(favoritesRef, orderBy("createdAt", "desc"));
-    const snapshot = await getDocs(q);
-
-    if (snapshot.empty) {
-      return NextResponse.json([]);
-    }
-
-    const favorites = await Promise.all(
-      snapshot.docs.map(async (favDoc) => {
-        const fav = favDoc.data() as any;
-
-        // 2. Obtener canción desde caché
-        const song = await getSongCached(fav.songId);
-
-        return {
-          id: favDoc.id,
-          userId,
-          songId: fav.songId,
-          createdAt: fav.createdAt,
-          song,
-        };
-      })
-    );
-
-    return NextResponse.json(favorites);
-  } catch (error) {
-    console.error("🔥 Error fetching optimized favorites:", error);
+    console.error("🔥 Error fetching favorites:", error);
     return NextResponse.json(
       { error: "Error fetching favorites" },
       { status: 500 }
@@ -76,20 +47,15 @@ export async function GET() {
   }
 }
 
-
-/* ------------------------------------------------------------
-   POST → Toggle favorito (Add / Remove)
------------------------------------------------------------- */
+/* ============================================================
+   POST → Añadir favorito
+   ============================================================ */
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const user = await requireUser();
+    const userId = user.id;
 
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const body = await request.json();
-    const songId = String(body.songId || "").trim();
+    const { songId } = await request.json();
 
     if (!songId) {
       return NextResponse.json(
@@ -98,74 +64,70 @@ export async function POST(request: Request) {
       );
     }
 
-    const userId = session.user.id;
+    const favoritesRef = collection(firestore, "favorites");
 
-    const favRef = doc(firestore, "users", userId, "favorites", songId);
-    const existing = await getDoc(favRef);
+    await addDoc(favoritesRef, {
+      userId,
+      songId,
+      createdAt: serverTimestamp(),
+    });
 
-    /* ------------------------------------------------------------
-       ❌ 1. Si YA existe → eliminar favorito
-    ------------------------------------------------------------ */
-    if (existing.exists()) {
-      await deleteDoc(favRef);
+    await updateDoc(doc(firestore, "users", userId), {
+      favoriteCount: serverTimestamp(), // o increment si lo usas
+    });
 
-      // Actualizar estadísticas
-      await updateDoc(doc(firestore, "users", userId), {
-        favoriteCount: increment(-1),
-      });
-
-      // Registrar actividad
-      await addDoc(collection(firestore, "activities"), {
-        userId,
-        type: "unfavorite",
-        songId,
-        createdAt: serverTimestamp(),
-        metadata: { action: "removed_from_favorites" },
-      });
-
-      return NextResponse.json({ favorited: false });
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    if (error?.message === "UNAUTHORIZED") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    /* ------------------------------------------------------------
-       ✅ 2. Si NO existe → agregar favorito
-    ------------------------------------------------------------ */
-    await setDoc(favRef, {
-      userId,
-      songId,
-      createdAt: serverTimestamp(),
-    });
-
-    // Obtener canción
-    const songSnap = await getDoc(doc(firestore, "songs", songId));
-
-    // Actualizar stats
-    await updateDoc(doc(firestore, "users", userId), {
-      favoriteCount: increment(1),
-      loyaltyPoints: increment(5),
-    });
-
-    // Registrar actividad
-    await addDoc(collection(firestore, "activities"), {
-      userId,
-      type: "favorite",
-      songId,
-      createdAt: serverTimestamp(),
-      metadata: { action: "added_to_favorites" },
-    });
-
-    return NextResponse.json({
-      favorited: true,
-      favorite: {
-        songId,
-        song: songSnap.exists()
-          ? { id: songSnap.id, ...songSnap.data() }
-          : null,
-      },
-    });
-  } catch (error) {
-    console.error("🔥 Error managing favorite:", error);
+    console.error("🔥 Error adding favorite:", error);
     return NextResponse.json(
-      { error: "Error managing favorite" },
+      { error: "Error adding favorite" },
+      { status: 500 }
+    );
+  }
+}
+
+/* ============================================================
+   DELETE → Eliminar favorito
+   ============================================================ */
+export async function DELETE(request: Request) {
+  try {
+    const user = await requireUser();
+    const userId = user.id;
+
+    const { songId } = await request.json();
+
+    if (!songId) {
+      return NextResponse.json(
+        { error: "Song ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const favoritesRef = collection(firestore, "favorites");
+    const q = query(
+      favoritesRef,
+      where("userId", "==", userId),
+      where("songId", "==", songId)
+    );
+
+    const snap = await getDocs(q);
+    for (const d of snap.docs) {
+      await deleteDoc(doc(firestore, "favorites", d.id));
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    if (error?.message === "UNAUTHORIZED") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    console.error("🔥 Error removing favorite:", error);
+    return NextResponse.json(
+      { error: "Error removing favorite" },
       { status: 500 }
     );
   }

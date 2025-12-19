@@ -1,6 +1,7 @@
+﻿// src/app/api/user-playlists/route.ts
+
+import { requireUser } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
 
 import { firestore } from "@/lib/firebase";
 import {
@@ -15,7 +16,7 @@ import {
 } from "firebase/firestore";
 
 /* ============================================================
-   Helper para timestamp y seguridad
+   Helper para timestamp
    ============================================================ */
 const now = () => Date.now();
 
@@ -24,18 +25,13 @@ const now = () => Date.now();
    ============================================================ */
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.id) {
-      console.warn("❌ GET /api/user-playlists → Unauthorized");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const userId = session.user.id;
+    // 🔐 Autenticación
+    const user = await requireUser();
+    const userId = user.id;
 
     /* ------------------------------------------------------------
        1) Buscar playlists del usuario
-     ------------------------------------------------------------ */
+       ------------------------------------------------------------ */
     const playlistsRef = collection(firestore, "userPlaylists");
     const plQuery = query(
       playlistsRef,
@@ -53,7 +49,7 @@ export async function GET() {
 
       /* ------------------------------------------------------------
          2) Buscar canciones de esta playlist → userPlaylistSongs
-       ------------------------------------------------------------ */
+         ------------------------------------------------------------ */
       const playlistSongsRef = collection(firestore, "userPlaylistSongs");
       const songsQuery = query(
         playlistSongsRef,
@@ -62,32 +58,28 @@ export async function GET() {
       );
 
       const songsSnap = await getDocs(songsQuery);
-
       const fullSongs: any[] = [];
 
       for (const s of songsSnap.docs) {
         const data = s.data();
 
-        // ahora buscar la canción real en songs/
-        const songDocRef = collection(firestore, "songs");
-        const songQuery = query(songDocRef, where("id", "==", data.songId));
-        const songSnap = await getDocs(songQuery);
-
-        let finalSong: any = null;
+        // Buscar la canción real en songs/
+        const songRef = doc(firestore, "songs", data.songId);
+        const songSnap = await getDocs(
+          query(collection(firestore, "songs"), where("__name__", "==", data.songId))
+        );
 
         if (!songSnap.empty) {
           const songData = songSnap.docs[0].data();
-          finalSong = {
+          fullSongs.push({
             id: data.songId,
             title: songData.title,
             artist: songData.artist,
             coverImage: songData.coverImage,
             audioUrl: songData.audioUrl,
             position: data.position,
-          };
+          });
         }
-
-        fullSongs.push(finalSong);
       }
 
       playlists.push({
@@ -97,12 +89,16 @@ export async function GET() {
         isPublic: plData.isPublic ?? false,
         createdAt: plData.createdAt,
         songCount: fullSongs.length,
-        songs: fullSongs.filter(Boolean),
+        songs: fullSongs,
       });
     }
 
     return NextResponse.json(playlists);
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.message === "UNAUTHORIZED") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     console.error("🔥 Fatal error GET /api/user-playlists:", err);
     return NextResponse.json(
       { error: "Error fetching playlists" },
@@ -116,12 +112,9 @@ export async function GET() {
    ============================================================ */
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.id) {
-      console.warn("❌ POST /api/user-playlists → Unauthorized");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // 🔐 Autenticación
+    const user = await requireUser();
+    const userId = user.id;
 
     const { name, description, isPublic } = await request.json();
 
@@ -132,11 +125,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const userId = session.user.id;
-
     /* ------------------------------------------------------------
        1) Crear playlist en Firestore
-     ------------------------------------------------------------ */
+       ------------------------------------------------------------ */
     const playlistPayload = {
       userId,
       name: name.trim(),
@@ -150,40 +141,44 @@ export async function POST(request: Request) {
 
     /* ------------------------------------------------------------
        2) Actualizar stats del usuario
-     ------------------------------------------------------------ */
+       ------------------------------------------------------------ */
     const usersRef = collection(firestore, "users");
     const userQuery = query(usersRef, where("id", "==", userId));
     const userSnap = await getDocs(userQuery);
 
     if (!userSnap.empty) {
       const uRef = doc(firestore, "users", userSnap.docs[0].id);
+      const uData = userSnap.docs[0].data();
+
       await updateDoc(uRef, {
-        playlistCount: (userSnap.docs[0].data().playlistCount ?? 0) + 1,
-        loyaltyPoints: (userSnap.docs[0].data().loyaltyPoints ?? 0) + 10,
+        playlistCount: (uData.playlistCount ?? 0) + 1,
+        loyaltyPoints: (uData.loyaltyPoints ?? 0) + 10,
       });
     }
 
     /* ------------------------------------------------------------
        3) Registrar actividad
-     ------------------------------------------------------------ */
+       ------------------------------------------------------------ */
     const activityRef = collection(firestore, "activities");
     await addDoc(activityRef, {
       userId,
       type: "playlist_create",
-      metadata: JSON.stringify({
-        playlistName: name,
-      }),
+      metadata: JSON.stringify({ playlistName: name }),
       createdAt: now(),
     });
 
     /* ------------------------------------------------------------
        4) Respuesta final
-     ------------------------------------------------------------ */
+       ------------------------------------------------------------ */
     return NextResponse.json({
       id: playlistDoc.id,
       ...playlistPayload,
     });
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.message === "UNAUTHORIZED") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     console.error("🔥 Fatal error POST /api/user-playlists:", err);
     return NextResponse.json(
       { error: "Error creating playlist" },
